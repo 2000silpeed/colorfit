@@ -456,18 +456,21 @@ TASK.md는 업데이트
     </div>
 
     <div class="code-block">
-      <div class="code-label">W1 프롬프트 예시 (Lane A)</div>
-<span class="prompt">"기획서 섹션 5.2를 참고해서 12톤 퍼스널컬러 팔레트 JSON을 만들어줘.
-backend/data/palettes/ 디렉토리에 각 톤별 파일로.
-각 톤당 20~30개 대표 색상을 HEX + RGB + HSL + 한글 색상명으로."</span>
+      <div class="code-label">W1 프롬프트 예시 — 하나씩 시키기</div>
+<span class="prompt">"Task 1.1을 진행해줘. 완료되면 TASK.md 업데이트해줘."</span>
+
+<span class="comment"># Task 1.1 끝나면:</span>
+<span class="prompt">"Task 1.2를 진행해줘."</span>
+
+<span class="comment"># 또는 여러 개를 한번에:</span>
+<span class="prompt">"Task 1.1부터 1.4까지 순서대로 진행해줘.
+각 Task 끝날 때마다 TASK.md 업데이트해줘."</span>
     </div>
 
     <div class="code-block">
-      <div class="code-label">W1 프롬프트 예시 (Lane B)</div>
-<span class="prompt">"frontend/ 디렉토리에 Next.js 15 프로젝트를 만들어줘.
-App Router 사용, TypeScript, TailwindCSS 4.0, Framer Motion 11 설치.
-DESIGN.md를 읽고 디자인 토큰을 globals.css의 CSS variables로 세팅.
-Nanum Myeongjo 폰트를 Google Fonts에서 로딩하는 설정도 추가."</span>
+      <div class="code-label">W1 인프라 — 터미널 2에서</div>
+<span class="prompt">"Task 1.12부터 1.14까지 진행해줘.
+TASK.md는 터미널 1에서 업데이트하니까 건드리지 마."</span>
     </div>
   </div>
 
@@ -478,20 +481,22 @@ Nanum Myeongjo 폰트를 Google Fonts에서 로딩하는 설정도 추가."</spa
 
     <div class="code-block">
       <div class="code-label">W2 프롬프트 예시 (추천 엔진)</div>
-<span class="prompt">"기획서 섹션 5.5를 참고해서 services/scoring.py를 만들어줘.
-5축 스코어링 함수 5개: calculate_pcf, calculate_of, calculate_ch,
-calculate_pe, calculate_sf.
-각 함수는 순수 함수로, DB 의존 없이 입력/출력이 명확하게.
-그리고 각 함수에 대한 pytest 테스트도 같이 만들어줘."</span>
+<span class="prompt">"Task 2.1을 진행해줘.
+PCF 스코어링 함수와 pytest 테스트를 만들어줘.
+완료되면 TASK.md 업데이트해줘."</span>
+
+<span class="comment"># Task 2.1 끝나면:</span>
+<span class="prompt">"Task 2.2를 진행해줘."</span>
     </div>
 
     <div class="code-block">
       <div class="code-label">W2 프롬프트 예시 (온보딩 UI)</div>
-<span class="prompt">"기획서 섹션 8.4.1을 참고해서 온보딩 5 Step 화면을 만들어줘.
-Step 1: 성별 선택, Step 2: 퍼스널컬러 12톤 선택,
-Step 3: TPO + 무드 선택, Step 4: 예산 설정, Step 5: 비주얼 취향 분석.
-DESIGN.md의 디자인 토큰을 사용하고, 화면 전환은 Framer Motion
-좌→우 슬라이드. 진행 바는 Marsala #964F4C."</span>
+<span class="prompt">"Task 2.14를 진행해줘.
+온보딩 Step 1 성별 선택 화면.
+DESIGN.md 토큰을 적용해줘."</span>
+
+<span class="comment"># Step 1 끝나면:</span>
+<span class="prompt">"Task 2.15를 진행해줘."</span>
     </div>
   </div>
 
@@ -531,33 +536,47 @@ DESIGN.md의 디자인 토큰을 사용하고, 화면 전환은 Framer Motion
 
   <h3 style="margin:32px 0 12px">효과적인 프롬프트 작성법</h3>
 
+  <div class="callout callout-info">
+    <div class="callout-title">핵심 원칙: TASK.md의 항목을 하나씩 시키세요</div>
+    <p>TASK.md에 이미 상세한 Step이 나뉘어 있습니다. 기획서를 직접 참조할 필요 없이, TASK.md의 체크리스트 항목을 하나씩 지시하면 Claude Code가 기획서를 알아서 참조합니다.</p>
+  </div>
+
   <div class="grid-2">
     <div class="card card-green">
       <h3>좋은 프롬프트</h3>
       <p>
-        "기획서 섹션 6.6을 참고해서 <span class="inline-code">style_filter.py</span>를 만들어줘.
-        카테고리 궁합 227개 매트릭스는 <span class="inline-code">data/style_compat.json</span>에서 읽고,
-        55점 미만이면 False 반환.
-        pytest 테스트도 같이."
+        <strong>방법 1: TASK.md 항목 지정</strong><br>
+        "TASK.md의 W1 Lane A에서<br>
+        '12톤 팔레트 JSON 데이터 생성' Task를 진행해줘.<br>
+        완료되면 TASK.md 업데이트해줘."<br><br>
+        <strong>방법 2: 여러 항목 한번에</strong><br>
+        "TASK.md의 W1 Lane B 전체를 순서대로 진행해줘.<br>
+        각 Task마다 TASK.md 업데이트해줘."<br><br>
+        <strong>방법 3: 맥락이 필요할 때만 기획서 참조</strong><br>
+        "TASK.md의 '하이브리드 분류' Task를 진행해줘.<br>
+        기획서 섹션 5.4.1에 상세 설계가 있어."
       </p>
     </div>
     <div class="card" style="border-left:3px solid #ccc">
       <h3>나쁜 프롬프트</h3>
       <p>
-        "스타일 필터 만들어줘" → 너무 막연. Claude Code가 기획서의 어느 부분을 참조해야 할지 모름.
-        구체적인 파일명, 기획서 섹션, 입출력을 명시하세요.
+        <strong style="color:#C62828">X</strong> "프론트엔드 만들어줘" → 범위가 너무 넓음<br><br>
+        <strong style="color:#C62828">X</strong> "기획서 읽고 전부 구현해줘" → 3,300줄을 한번에 읽으면 비효율<br><br>
+        <strong style="color:#C62828">X</strong> "W1~W3 전부 해줘" → 한 세션에 너무 많은 작업
       </p>
     </div>
   </div>
 
-  <div class="callout callout-info">
+  <div class="callout">
     <div class="callout-title">프롬프트 템플릿</div>
     <p>
-      <strong>"기획서 섹션 [X]를 참고해서 [파일경로]를 만들어줘.<br>
-      [구체적인 요구사항 1~3개].<br>
-      테스트도 같이 만들어줘.<br>
-      완료되면 TASK.md 업데이트해줘."</strong><br><br>
-      이 패턴을 기본으로 쓰면 됩니다.
+      <strong>"Task [번호]를 진행해줘. 완료되면 TASK.md 업데이트해줘."</strong><br><br>
+      이것만으로 충분합니다. 각 Task에 참조할 기획서 섹션, 파일 경로, 세부 항목이<br>
+      이미 적혀 있으므로 Claude Code가 알아서 찾아갑니다.<br><br>
+      <strong>범위 조절:</strong><br>
+      작게: <span class="inline-code">"Task 2.1을 진행해줘"</span> (1개 함수)<br>
+      보통: <span class="inline-code">"Task 2.1부터 2.5까지 진행해줘"</span> (5축 스코어링 전체)<br>
+      크게: <span class="inline-code">"W1 Lane A 전체를 진행해줘"</span> (데이터 파이프라인 전체)
     </p>
   </div>
 </div>
