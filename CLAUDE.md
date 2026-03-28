@@ -1,64 +1,52 @@
-# CLAUDE.md
+# ColorFit
 
-## Key Documents (항상 최신 유지)
+AI 퍼스널컬러 기반 패션 의사결정 엔진. 진단 결과를 실제 쇼핑에 연결한다.
 
-- `TASK.md` — **구현의 Single Source of Truth**. 태스크 시작(⬜→🔄), 완료(🔄→✅) 즉시 반영
-- `PRD.md` — 제품 요구사항. 기능 수락 기준, KPI, 릴리스 체크리스트
-- `TRD.md` — 기술 설계. 아키텍처, DB 스키마, API 설계, FE/BE 디렉토리 구조
-- `docs/ColorFit_상세기획서_v1.0.md` — 전체 기획서 (참조용, 페르소나/시나리오/스코어링 알고리즘 상세)
+## 핵심 문서
+- **기획서:** `ColorFit_상세기획서_v1.3.md` (v1.4, 3,300줄+) — 제품 설계 전체
+- **디자인 시스템:** `DESIGN.md` — 서체, 컬러, 스페이싱, 모션
+- **Task 추적:** `TASK.md` — 주차별 진행 상황
 
-**규칙:** 코드 변경 시 TASK.md 상태를 반드시 업데이트. PRD/TRD에 영향을 주는 변경은 해당 문서도 함께 수정.
+## 기술 스택
+- Frontend: Next.js 15 + React 19 + TypeScript + TailwindCSS + Framer Motion
+- Backend: Python 3.13 + FastAPI 0.115 + Pydantic v2 + SQLAlchemy 2.0
+- DB: PostgreSQL 17 (Supabase)
+- API: Naver Shopping API, Gemini API
+- 배포: Vercel (프론트) + Railway (백엔드)
+- Redis: MVP 미사용. 스코어 프리컴퓨팅 + DB 인덱스로 대체
 
-## Architecture (계획)
+## 개발 컨벤션
+- Python: snake_case, 4 spaces 들여쓰기
+- TypeScript: camelCase (변수/함수), PascalCase (컴포넌트), 2 spaces
+- 커밋: `feat:`, `fix:`, `style:`, `chore:` prefix
+- 테스트: pytest (백엔드), vitest (프론트엔드). 핵심 서비스 100% 커버리지 목표
+- 가상환경 하에서 테스트 진행
 
-```
-Frontend (Next.js 15 + React 19 + TS + TailwindCSS 4)
-    ↕ REST API (JSON)
-Backend (Python 3.13 + FastAPI 0.115 + Pydantic v2)
-    ↕
-Recommendation Engine (ColorMatcher → OutfitScorer → Reranker → ReasonGenerator)
-    ↕
-Data (PostgreSQL 17 + Redis 7.4 + Naver Shopping API + 12-tone Palette JSON)
-```
+## 디자인 시스템
+DESIGN.md를 반드시 읽고 UI 구현할 것.
+- 서체: Nanum Myeongjo (헤드라인) + Pretendard Variable (본문)
+- 액센트: Marsala #964F4C
+- 배경: Warm Off-White #F8F6F3
+- 모든 시맨틱 컬러는 웜 톤 (표준 초록/빨강/파랑 아님)
 
-프론트: `frontend/` (App Router), 백엔드: `backend/` (FastAPI)
+## 아키텍처 핵심
+- 추천 파이프라인: Profile → Filter → StyleFilter → Score(5축) → Rerank → Gemini(선택) → Reason
+- Hard Filter(탈락) vs Soft Score(순위) 분리
+- 코디 스코어는 프리컴퓨팅 (outfits.scores JSONB)
+- P1 우선 원칙: 퍼스널컬러는 가이드, 제한 아님. H7 필터율 30% 상한
 
-## Commands
+## Fallback 전략
+W3에서 밀리면 순서대로 2차로 미룬다:
+1. A vs B 비교
+2. Top Pick + One-shot
+3. 가격비교 (외부 링크만 유지)
+4. 스코어링 5축 → 3축(PCF+OF+SF)
 
-```bash
-# Backend
-cd backend
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
+핵심 사수 라인: 온보딩 → 코디 피드 → 추천 이유 → save/dislike → 외부 링크
 
-# Frontend (W1-A2 이후)
-cd frontend
-npm install
-npm run dev
-```
-
-## Tech Stack
-
-- **FE:** Next.js 15, React 19, TypeScript 5.6, TailwindCSS 4, Framer Motion 11, Zustand 5, @tanstack/react-query 5
-- **BE:** Python 3.13, FastAPI 0.115, SQLAlchemy 2.0, Pydantic v2, httpx 0.28, Pillow 11, NumPy 2.2, scikit-learn 1.6
-- **DB:** PostgreSQL 17 (Supabase), Redis 7.4 (Upstash)
-- **Deploy:** Vercel (FE) + Railway (BE)
-
-## Core Domain Concepts
-
-- **12-tone:** 봄/여름/가을/겨울 × 라이트/뮤트/딥 등 12종 퍼스널컬러 분류
-- **스코어링 4축:** personalColorFit(0.35) + occasionFit(0.25) + colorHarmony(0.20) + priceEfficiency(0.20)
-- **추천 이유(reasons):** 상위 2개 기여 요인을 자연어 템플릿으로 변환하여 항상 동반
-- **Exact/Similar:** 동일 상품 다른 판매처(Exact) vs 유사 색상·카테고리 대체재(Similar)
-
-## Coding Conventions
-
-- 한국어로 대화
-- 함수/변수: camelCase (JS/TS), snake_case (Python)
-- 컴포넌트: PascalCase
-- 들여쓰기: 2 spaces (JS/TS), 4 spaces (Python)
-- 불필요한 주석 금지
-- 명시적 요청 없이 git commit/push 금지
-- .env 파일이나 민감 정보 커밋 금지
-- 테스트는 가상환경 하에서 진행
+## Task 관리 규칙 (필수)
+- **모든 작업 완료 후 반드시 `TASK.md`를 업데이트한다.** 체크박스를 `[x]`로 변경하고, 필요하면 결과 메모를 추가한다.
+- Task 하나가 끝나면 즉시 업데이트한다. 여러 Task를 묶어서 나중에 업데이트하지 않는다.
+- 예상과 다른 결과(수량 미달, 구조 변경 등)가 발생하면 해당 Task 옆에 `⚠️ 메모`를 남긴다.
+- W3 금요일에 Fallback 판단이 필요하면 TASK.md 상단의 "현재 상태"를 갱신한다.
+- 새로운 Task가 생기면 해당 주차에 추가한다. 임의로 삭제하지 않는다.
