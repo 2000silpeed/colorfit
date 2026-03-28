@@ -8,9 +8,40 @@
 
 ---
 
+## 병렬 실행 맵
+
+각 Task의 `🅐 🅑 🅒` 태그는 어떤 터미널에서 실행하는지를 표시합니다.
+같은 태그끼리는 **순차**, 다른 태그끼리는 **동시에** 실행 가능합니다.
+
+```
+W1 ─── 🅐 Task 1.1~1.11 (데이터)     ┐ 동시 실행 OK
+       🅑 Task 1.12~1.16 (인프라)     ┘
+
+W2 ─── 🅐 Task 2.1~2.6 (스코어링)    ┐
+       🅑 Task 2.7~2.12 (필터+API)    │ 동시 실행 OK (3개도 가능)
+       🅒 Task 2.13~2.24 (프론트)     ┘
+       ※ 🅑는 🅐의 2.1~2.5 완료 후 시작 권장 (scoring.py import)
+
+W3 ─── 🅐 Task 3.1~3.2 (백엔드)      ┐ 동시 실행 OK
+       🅑 Task 3.3~3.7 (프론트)       ┘
+
+W4 ─── 🅐 Task 4.1~4.2, 4.7~4.8 (백) ┐ 동시 실행 OK
+       🅑 Task 4.3~4.6, 4.9 (프론트)  ┘
+       ── Task 4.10 (통합 테스트)       ← 단독 (전체 합친 후)
+
+W5 ─── 단독 실행 (통합 작업)
+```
+
+**TASK.md 동기화 규칙:**
+- 🅐 터미널만 TASK.md를 직접 업데이트
+- 🅑 🅒 터미널은 완료 시 "Task X.X 끝났어"라고 알려주기만 함
+- 사람이 🅑 🅒 결과를 확인 후 TASK.md에 수동 체크
+
+---
+
 ## W1: 데이터 + 인프라 (3/24~3/28)
 
-### Lane A: 데이터 파이프라인
+### 🅐 Lane A: 데이터 파이프라인
 
 **Task 1.1 — 12톤 팔레트 JSON 생성**
 - [ ] `backend/data/palettes/` 디렉토리 생성
@@ -87,7 +118,7 @@
 - [ ] 평가 결과를 `llm_quality_score` 필드에 저장
 - [ ] 비용 추산: ~$6 (1,900개 x ~$0.003)
 
-### Lane B: 인프라 셋업
+### 🅑 Lane B: 인프라 셋업 (🅐와 동시 실행 가능)
 
 **Task 1.12 — Next.js 15 프로젝트 초기화**
 - [ ] `frontend/` 디렉토리에 Next.js 15 (App Router) 생성
@@ -139,7 +170,7 @@
 
 ## W2: 추천 엔진 + 온보딩 (3/31~4/4)
 
-### Lane C: 추천 엔진 코어
+### 🅐 Lane C: 추천 엔진 — 스코어링 (Task 2.1~2.6)
 
 **Task 2.1 — PCF 스코어링 (퍼스널컬러 적합도)**
 - [ ] `backend/app/services/scoring.py` 생성
@@ -181,6 +212,8 @@
 - [ ] `backend/data/silhouette_rules.json` 생성 — 실루엣 15개 조합
 - [ ] `backend/data/formality_map.json` 생성 — 아이템별 포멀도 (1~5) 33개 규칙
 - [ ] 참조: 기획서 섹션 6.6
+
+### 🅑 Lane C: 추천 엔진 — 필터+파이프라인+API (Task 2.7~2.12, 🅐 2.1~2.5 완료 후 시작)
 
 **Task 2.7 — StyleFilter (규칙 기반 사전 필터)**
 - [ ] `backend/app/services/style_filter.py` 생성
@@ -225,7 +258,7 @@
 - [ ] outfits.scores JSONB에 저장
 - [ ] 런타임에는 개인화 보정만 적용
 
-### Lane D: 온보딩 + 피드 UI
+### 🅒 Lane D: 온보딩 + 피드 UI (🅐🅑와 동시 실행 가능)
 
 **Task 2.13 — 온보딩 공통 레이아웃**
 - [ ] `frontend/app/onboarding/layout.tsx` — 공통 레이아웃
@@ -323,6 +356,8 @@
 
 ## W3: 가격비교 + 유사상품 (4/7~4/11)
 
+### 🅐 백엔드 (Task 3.1~3.2)
+
 **Task 3.1 — 유사 상품 매칭 서비스**
 - [ ] `backend/app/services/similar_finder.py` 생성
 - [ ] 색상 유사도 (가중치 0.6) + 가격 유사도 (0.4) 계산
@@ -336,6 +371,8 @@
 - [ ] GET /api/item/{id} — 아이템 상세 + 판매처별 가격
 - [ ] GET /api/item/{id}/similar — 유사 상품 리스트
 - [ ] Pydantic 스키마 정의
+
+### 🅑 프론트엔드 (Task 3.3~3.7, 🅐와 동시 실행 가능)
 
 **Task 3.3 — 아이템 상세 화면**
 - [ ] `frontend/app/item/[id]/page.tsx`
@@ -386,6 +423,8 @@
 
 ## W4: 결정 지원 + 통합 (4/14~4/18)
 
+### 🅐 백엔드 (Task 4.1~4.2, 4.7~4.8)
+
 **Task 4.1 — Top Pick 서비스**
 - [ ] `backend/app/services/top_pick.py`
 - [ ] 저장 목록 기반: 저장 코디 중 최고 점수 1개
@@ -397,6 +436,8 @@
 - [ ] `backend/app/services/comparator.py`
 - [ ] 두 코디의 5축 점수 비교 + 결정적 차이 요인 추출
 - [ ] `backend/app/routers/compare.py` — GET /api/compare?ids=a,b
+
+### 🅑 프론트엔드 (Task 4.3~4.6, 4.9, 🅐와 동시 실행 가능)
 
 **Task 4.3 — 저장 목록 화면**
 - [ ] `frontend/app/saved/page.tsx`
@@ -442,6 +483,8 @@
 - [ ] "이 추천이 도움이 됐나요?" + 3개 버튼
 - [ ] 👎 선택 시 이유 태그 추가 표시
 - [ ] POST /api/feedback 연동
+
+### 단독 실행 (🅐🅑 모두 완료 후)
 
 **Task 4.10 — 통합 테스트**
 - [ ] 온보딩 → 피드 → 코디 상세 → 가격비교 → 외부 링크 전체 플로우

@@ -434,6 +434,192 @@ TASK.md는 업데이트
 
 <div class="divider"></div>
 
+<!-- SECTION 4.5: PARALLEL DETAIL -->
+<div class="section" id="병렬상세">
+  <div class="section-num">SECTION 04-B</div>
+  <h2>병렬 작업 상세 가이드</h2>
+  <p class="section-desc">어떤 Task를 동시에 돌릴 수 있는지, TASK.md는 어떻게 동기화하는지 구체적으로 설명합니다.</p>
+
+  <h3 style="margin-bottom:16px">병렬 가능 맵 (전체)</h3>
+
+  <table>
+    <tr><th>주차</th><th>🅐 터미널 1</th><th>🅑 터미널 2</th><th>🅒 터미널 3 (선택)</th><th>주의사항</th></tr>
+    <tr>
+      <td><span class="pill pill-accent">W1</span></td>
+      <td>Task 1.1~1.11<br><small style="color:var(--text-2)">데이터 파이프라인</small></td>
+      <td>Task 1.12~1.16<br><small style="color:var(--text-2)">인프라 셋업</small></td>
+      <td style="color:var(--text-3)">해당 없음</td>
+      <td>완전 독립. 충돌 없음</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-ocean">W2</span></td>
+      <td>Task 2.1~2.6<br><small style="color:var(--text-2)">스코어링 함수</small></td>
+      <td>Task 2.7~2.12<br><small style="color:var(--text-2)">필터+파이프라인+API</small></td>
+      <td>Task 2.13~2.24<br><small style="color:var(--text-2)">온보딩+피드 UI</small></td>
+      <td>🅑는 🅐의 2.5 끝난 후 시작<br>(scoring.py를 import하므로)</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-green">W3</span></td>
+      <td>Task 3.1~3.2<br><small style="color:var(--text-2)">백엔드 API</small></td>
+      <td>Task 3.3~3.7<br><small style="color:var(--text-2)">프론트 화면</small></td>
+      <td style="color:var(--text-3)">해당 없음</td>
+      <td>API 스키마 먼저 합의</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-honey">W4</span></td>
+      <td>Task 4.1~4.2, 4.7~4.8<br><small style="color:var(--text-2)">백엔드</small></td>
+      <td>Task 4.3~4.6, 4.9<br><small style="color:var(--text-2)">프론트</small></td>
+      <td style="color:var(--text-3)">해당 없음</td>
+      <td>Task 4.10 통합 테스트는<br>전부 끝난 후 단독</td>
+    </tr>
+    <tr>
+      <td><span class="pill" style="background:var(--grape);color:#fff">W5</span></td>
+      <td colspan="3" style="text-align:center">단독 실행 (통합 작업)</td>
+      <td>병렬 불가</td>
+    </tr>
+  </table>
+
+  <div class="callout">
+    <div class="callout-title">TASK.md에 🅐🅑🅒 태그가 표시되어 있습니다</div>
+    <p>TASK.md를 열면 각 섹션 헤더에 <strong>🅐 🅑 🅒</strong> 태그가 붙어 있습니다. 같은 태그는 순차, 다른 태그는 동시 실행 가능합니다.</p>
+  </div>
+
+  <h3 style="margin:32px 0 16px">TASK.md 동기화 워크플로</h3>
+  <p style="margin-bottom:16px">2~3개 터미널이 동시에 작업하면 TASK.md를 누가 업데이트할지 정해야 합니다. 안 그러면 Git 충돌이 납니다.</p>
+
+  <div class="card card-accent" style="margin-bottom:24px">
+    <h3>규칙: 🅐 터미널만 TASK.md를 수정한다</h3>
+    <p>
+      <strong>🅐 터미널:</strong> 자기 Task 완료 시 TASK.md 직접 업데이트 + 커밋<br>
+      <strong>🅑 🅒 터미널:</strong> TASK.md를 건드리지 않음. 대신 완료 보고만 함
+    </p>
+  </div>
+
+  <h3 style="margin:24px 0 12px">Step-by-Step 실행 예시 (W1)</h3>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <h4>터미널 2개를 열고 각각 Claude Code 실행</h4>
+      <div class="code-block" style="font-size:12.5px">
+<span class="comment"># 터미널 1 (🅐 데이터)</span>
+<span class="cmd">cd</span> colorfit && <span class="cmd">claude</span>
+
+<span class="comment"># 터미널 2 (🅑 인프라)</span>
+<span class="cmd">cd</span> colorfit && <span class="cmd">claude</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <h4>각 터미널에 작업 지시</h4>
+      <div class="grid-2">
+        <div class="code-block" style="font-size:12px">
+          <div class="code-label">🅐 터미널 1</div>
+<span class="prompt">"Task 1.1을 진행해줘.
+완료되면 TASK.md 업데이트하고
+커밋해줘."</span>
+        </div>
+        <div class="code-block" style="font-size:12px">
+          <div class="code-label">🅑 터미널 2</div>
+<span class="prompt">"Task 1.12를 진행해줘.
+TASK.md는 건드리지 말고,
+끝나면 뭘 만들었는지만
+알려줘."</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content">
+      <h4>🅑 터미널 작업 완료 시: 사람이 TASK.md 업데이트</h4>
+      <p>🅑 터미널이 "Task 1.12 완료"라고 보고하면, <strong>🅐 터미널</strong>에서 다음과 같이 시킵니다:</p>
+      <div class="code-block" style="font-size:12.5px">
+        <div class="code-label">🅐 터미널에서</div>
+<span class="prompt">"TASK.md에서 Task 1.12 체크박스를 완료로 바꿔줘.
+🅑 터미널에서 Next.js 15 초기화가 끝났어."</span>
+      </div>
+      <p style="margin-top:8px;font-size:14px;color:var(--text-2)">또는 직접 TASK.md를 에디터로 열어서 <span class="inline-code">- [x]</span>로 바꿔도 됩니다.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-content">
+      <h4>중간중간 Git 동기화</h4>
+      <p>한 터미널이 커밋하면, 다른 터미널에서 최신 코드를 받아야 합니다.</p>
+      <div class="code-block" style="font-size:12.5px">
+<span class="comment"># 🅑 터미널에서 🅐의 커밋을 받기 (같은 로컬 repo이므로 자동 반영)</span>
+<span class="comment"># 같은 폴더에서 작업하면 별도 pull 필요 없음!</span>
+<span class="comment"># 단, 🅑에서 새 세션 시작 시:</span>
+<span class="prompt">"git 최신 상태 확인해줘"</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-content">
+      <h4>주차 끝: 전체 상태 확인</h4>
+      <div class="code-block" style="font-size:12.5px">
+<span class="comment"># 터미널 아무 곳에서나</span>
+<span class="prompt">"TASK.md 열어서 W1 완료 기준을
+전부 확인해줘. 미완료 항목이 있으면
+알려줘."</span>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="margin:32px 0 16px">W2 병렬 3개 터미널 예시</h3>
+  <p style="margin-bottom:16px">W2는 백엔드를 스코어링(🅐)과 필터+API(🅑)로 나누고, 프론트(🅒)를 별도로 돌립니다.</p>
+
+  <div class="diagram" style="font-size:13px">
+<span style="color:#964F4C">🅐 터미널 1</span>                <span style="color:#4F97A3">🅑 터미널 2</span>               <span style="color:#6B5876">🅒 터미널 3</span>
+Task 2.1 (PCF)  ───┐
+Task 2.2 (OF)      │
+Task 2.3 (CH)      │     대기 중...              Task 2.13 (레이아웃)
+Task 2.4 (PE)      │                              Task 2.14 (Step 1)
+Task 2.5 (SF)  ────┘──→  Task 2.7 (StyleFilter)   Task 2.15 (Step 2)
+Task 2.6 (데이터)         Task 2.8 (Hard Filter)   Task 2.16 (Step 3)
+                          Task 2.9 (리랭킹)         Task 2.17 (Step 4)
+                          Task 2.10 (이유 생성)      Task 2.18 (Step 5)
+                          Task 2.11 (Feed API)      Task 2.19 (API 연동)
+                          Task 2.12 (프리컴퓨팅)     Task 2.20 (카드)
+                                                    Task 2.21 (피드)
+                                                    Task 2.22 (save)
+                                                    Task 2.23 (상세)
+                                                    Task 2.24 (탭바)</div>
+
+  <div class="callout callout-warn">
+    <div class="callout-title">🅑이 🅐를 기다리는 이유</div>
+    <p><span class="inline-code">feed_builder.py</span>(Task 2.8)가 <span class="inline-code">scoring.py</span>(Task 2.1~2.5)를 import합니다. scoring.py가 아직 없는 상태에서 feed_builder를 만들면 import 에러가 납니다. 🅐의 Task 2.5까지 끝나면 🅑를 시작하세요. 🅒(프론트)는 백엔드와 독립이라 처음부터 동시 실행 가능합니다.</p>
+  </div>
+
+  <h3 style="margin:32px 0 16px">충돌이 났을 때</h3>
+  <div class="card" style="border-left:3px solid #C62828">
+    <h3>Git 충돌 해결법</h3>
+    <p>두 터미널이 같은 파일을 수정하면 충돌이 납니다. 이때:</p>
+    <div class="code-block" style="font-size:12.5px">
+<span class="comment"># 충돌 파일 확인</span>
+<span class="cmd">git</span> status
+
+<span class="comment"># Claude Code에게 해결 요청</span>
+<span class="prompt">"git 충돌이 났어. 충돌 파일을 확인하고 해결해줘."</span>
+
+<span class="comment"># 또는 한쪽 버전으로 강제 선택</span>
+<span class="cmd">git</span> checkout --theirs TASK.md  <span class="comment"># 상대방 버전 사용</span>
+<span class="cmd">git</span> checkout --ours TASK.md    <span class="comment"># 내 버전 사용</span>
+    </div>
+    <p style="margin-top:12px;font-size:14px;color:var(--text-2)"><strong>예방이 최선:</strong> TASK.md는 🅐 터미널에서만, 코드는 디렉토리를 나눠서.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
 <!-- SECTION 5 -->
 <div class="section" id="주차별">
   <div class="section-num">SECTION 05</div>
