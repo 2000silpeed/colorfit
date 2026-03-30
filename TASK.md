@@ -66,12 +66,13 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 테스트: API 연결 테스트 스크립트 (14개 단위 테스트)
 - 🔧 codex 리뷰 반영: 429 재시도 로직(while 루프), dotenv .env 자동 로드, 빈 결과 시 rate limit sleep 추가
 
-**Task 1.4 — 톤별 수집 키워드 설계**
-- [ ] `backend/data/tone_queries.json` 생성
-- [ ] 12톤별 검색 키워드 리스트 (톤 x 카테고리)
-- [ ] 예: `"spring_warm_light": ["봄 코랄 블라우스", "아이보리 원피스", ...]`
-- [ ] 카테고리: outer, top, bottom, onepiece, shoes, bag, acc
-- [ ] 참조: 기획서 섹션 5.2 (수집 쿼리 설계)
+**Task 1.4 — 톤별 수집 키워드 설계** ✅
+- [x] `backend/data/tone_queries.json` 생성
+- [x] 13톤별 검색 키워드 리스트 (톤 x 카테고리)
+- [x] 예: `"spring_warm_light": {"outer": ["아이보리 가디건", ...], ...}`
+- [x] 카테고리: outer, top, bottom, onepiece, shoes, bag, acc
+- [x] 참조: 기획서 섹션 5.2 (수집 쿼리 설계)
+- [x] curate_by_tone.py가 JSON에서 쿼리 로드하도록 리팩토링
 
 **Task 1.5 — 상품 수집 실행**
 - [ ] Task 1.3 스크립트로 실제 수집 실행
