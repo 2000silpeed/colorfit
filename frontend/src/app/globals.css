@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+/* ──────────────────────────────────────
+   ColorFit Design Tokens
+   Source: DESIGN.md
+   ────────────────────────────────────── */
+
+:root {
+  /* Background */
+  --bg-primary: #F8F6F3;
+  --bg-secondary: #F0EDE8;
+
+  /* Text */
+  --text-primary: #222222;
+  --text-secondary: #8C8578;
+  --text-tertiary: #B5AFA6;
+
+  /* Brand */
+  --brand-accent: #964F4C;
+  --brand-sub-accent: #D4A5A5;
+  --brand-warm-neutral: #F5DEB3;
+
+  /* Surface & Border */
+  --surface: #F0EDE8;
+  --border: #E5E1DA;
+
+  /* Score Axis */
+  --score-pcf: #964F4C;
+  --score-of: #4F97A3;
+  --score-ch: #DDB67D;
+  --score-pe: #D1933F;
+  --score-sf: #6B5876;
+  --score-track: #E5E1DA;
+
+  /* Semantic — Success */
+  --semantic-success-bg: #F0EDE8;
+  --semantic-success-text: #6B7F5E;
+  --semantic-success-border: #D4DCCC;
+
+  /* Semantic — Warning */
+  --semantic-warning-bg: #F5F0E8;
+  --semantic-warning-text: #A07830;
+  --semantic-warning-border: #E5D9C0;
+
+  /* Semantic — Error */
+  --semantic-error-bg: #F5EDEC;
+  --semantic-error-text: #964F4C;
+  --semantic-error-border: #E0CBC9;
+
+  /* Semantic — Info */
+  --semantic-info-bg: #EDF3F4;
+  --semantic-info-text: #4F97A3;
+  --semantic-info-border: #C8DDE0;
+
+  /* Spacing (8px base) */
+  --space-2xs: 2px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+}
+
+/* Dark Mode */
+[data-theme="dark"] {
+  --bg-primary: #1A1714;
+  --bg-secondary: #242018;
+
+  --text-primary: #F0EDE8;
+  --text-secondary: #B5AFA6;
+  --text-tertiary: #8C8578;
+
+  --brand-accent: #C4726F;
+  --brand-sub-accent: #D4A5A5;
+
+  --surface: #242018;
+  --border: #3A3530;
+
+  --score-pcf: #C4726F;
+  --score-of: #6BADB9;
+  --score-ch: #E8C693;
+  --score-pe: #DBA84F;
+  --score-sf: #896E96;
+  --score-track: #3A3530;
+
+  --semantic-success-bg: #1E2118;
+  --semantic-success-text: #8FA07E;
+  --semantic-success-border: #3A4030;
+
+  --semantic-warning-bg: #24201A;
+  --semantic-warning-text: #C09848;
+  --semantic-warning-border: #4A3E28;
+
+  --semantic-error-bg: #241A18;
+  --semantic-error-text: #C4726F;
+  --semantic-error-border: #4A2E2C;
+
+  --semantic-info-bg: #182224;
+  --semantic-info-text: #6BADB9;
+  --semantic-info-border: #2A4448;
+}
+
+/* Tailwind theme tokens */
+@theme inline {
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-accent: var(--brand-accent);
+  --color-sub-accent: var(--brand-sub-accent);
+  --color-warm-neutral: var(--brand-warm-neutral);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-score-pcf: var(--score-pcf);
+  --color-score-of: var(--score-of);
+  --color-score-ch: var(--score-ch);
+  --color-score-pe: var(--score-pe);
+  --color-score-sf: var(--score-sf);
+  --color-score-track: var(--score-track);
+  --font-display: "Nanum Myeongjo", serif;
+  --font-body: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+}

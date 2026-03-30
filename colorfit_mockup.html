@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ColorFit - Full App Mockup</title>
+  
+  <!-- Loading Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/variable/pretendardvariable.css" />
+  
+  <style>
+    :root {
+      /* Colors */
+      --color-primary-text: #222222;
+      --color-background: #F8F6F3;
+      --color-surface: #F0EDE8;
+      --color-accent: #964F4C;
+      --color-sub-accent: #D4A5A5;
+      --color-warm-neutral: #F5DEB3;
+      --color-border: #E5E1DA;
+      --color-text-secondary: #8C8578;
+      --color-text-tertiary: #B5AFA6;
+      
+      /* Score Colors */
+      --score-pcf: #964F4C;
+      --score-of: #4F97A3;
+      --score-ch: #DDB67D;
+      --score-pe: #D1933F;
+      --score-sf: #6B5876;
+      --score-track: #E5E1DA;
+      
+      /* Typography */
+      --font-display: 'Nanum Myeongjo', serif;
+      --font-body: 'Pretendard Variable', -apple-system, sans-serif;
+      
+      /* Spacing */
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+      
+      /* Radius */
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-full: 9999px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+      font-family: var(--font-body);
+      background-color: #000; /* Desktop contrast */
+      color: var(--color-primary-text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 480px; /* Mobile width */
+      height: 100%;
+      background-color: var(--color-background);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(0,0,0,0.5);
+    }
+
+    /* Views */
+    .view {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 80px; /* Space for bottom nav */
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .view.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header */
+    .header {
+      padding: var(--space-xl) var(--space-md) var(--space-md);
+      position: sticky;
+      top: 0;
+      background: rgba(248, 246, 243, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 10;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .header-title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 700;
+    }
+    .header-subtitle {
+      font-size: 13px;
+      color: var(--color-accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    /* UI Elements */
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: var(--space-md);
+      margin-top: var(--space-xl);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px var(--space-lg);
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      border: none;
+      width: 100%;
+      transition: 0.2s;
+    }
+    .btn-primary { background-color: var(--color-accent); color: white; }
+    .btn-primary:active { background-color: #7A403D; }
+    .btn-secondary { background-color: var(--color-surface); color: var(--color-primary-text); border: 1px solid var(--color-border); }
+
+    .tag-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .btn-tag {
+      padding: 8px 16px;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      border-radius: var(--radius-full);
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      font-weight: 500;
+    }
+    .btn-tag.active {
+      background: var(--color-accent);
+      color: white;
+      border-color: var(--color-accent);
+    }
+
+    /* Cards */
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin: var(--space-md);
+      cursor: pointer;
+    }
+    .card-img {
+      width: 100%;
+      height: 380px;
+      object-fit: cover;
+      display: block;
+    }
+    .card-content { padding: var(--space-md); }
+    .brand { font-size: 12px; font-weight: 600; color: var(--color-text-secondary); letter-spacing: 0.05em; }
+    .item-name { font-size: 16px; font-weight: 500; margin: 4px 0 8px; }
+    .item-price { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 16px; margin-bottom: 12px; }
+    
+    /* Saved Grid */
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+      padding: 0 var(--space-md);
+    }
+    .grid-card {
+      background: var(--color-surface);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+      position: relative;
+    }
+    .grid-card img { width: 100%; height: 200px; object-fit: cover; }
+    .grid-card-info { padding: 8px; }
+    .grid-card-title { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background: rgba(248, 246, 243, 0.95);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-around;
+      padding: var(--space-sm) 0 calc(var(--space-sm) + env(safe-area-inset-bottom, 15px));
+      z-index: 50;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: var(--color-text-tertiary);
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .nav-item.active { color: var(--color-accent); font-weight: 600; }
+    .nav-item svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+    /* Detail Overlay Modal */
+    .detail-overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--color-background);
+      z-index: 100;
+      transform: translateY(100%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+    }
+    .detail-overlay.open { transform: translateY(0); }
+    .detail-header {
+      position: absolute; top: 0; width: 100%;
+      padding: var(--space-md); display: flex; justify-content: space-between;
+      z-index: 101; background: linear-gradient(rgba(0,0,0,0.3), transparent);
+    }
+    .icon-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(255,255,255,0.9); border: none;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--color-primary-text);
+    }
+    .detail-content {
+      flex: 1; overflow-y: auto; padding-bottom: 100px;
+    }
+    .detail-img { width: 100%; height: 450px; object-fit: cover; }
+    
+    .reason-box {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin-top: var(--space-md);
+    }
+
+    .score-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .score-label { width: 32px; font-size: 11px; font-weight: 600; }
+    .score-bar { flex: 1; height: 4px; background: var(--color-border); border-radius: 2px; }
+    .score-fill { height: 100%; border-radius: 2px; }
+
+    /* Sticky Bottom Button */
+    .sticky-bottom-btn {
+      position: absolute; bottom: 0; width: 100%;
+      padding: var(--space-md) var(--space-md) calc(var(--space-md) + env(safe-area-inset-bottom, 10px));
+      background: linear-gradient(transparent, var(--color-background) 20%);
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- VIEW 1: CURATE (Onboarding/Settings) -->
+    <div id="view-curate" class="view">
+      <div class="header">
+        <div class="header-subtitle">Style Setup</div>
+        <h1 class="header-title">나만의 맞춤 설정</h1>
+        <p style="font-size: 14px; color: var(--color-text-secondary); margin-top: 4px;">정확한 설정을 통해 완벽한 핏을 추천받으세요.</p>
+      </div>
+      <div style="padding: 0 var(--space-md);">
+        
+        <h2 class="section-title">퍼스널 컬러</h2>
+        <div class="tag-grid">
+          <button class="btn-tag">봄 웜톤</button>
+          <button class="btn-tag">여름 쿨톤</button>
+          <button class="btn-tag active">가을 웜톤</button>
+          <button class="btn-tag">겨울 쿨톤</button>
+        </div>
+
+        <h2 class="section-title">주요 TPO (상황)</h2>
+        <div class="tag-grid">
+          <button class="btn-tag active">출근 / 오피스</button>
+          <button class="btn-tag">소개팅 / 데이트</button>
+          <button class="btn-tag">주말 / 캐주얼</button>
+          <button class="btn-tag active">격식있는 자리</button>
+          <button class="btn-tag">여행</button>
+        </div>
+
+        <h2 class="section-title">아이템 예산 한도</h2>
+        <div class="tag-grid">
+          <button class="btn-tag">5만원 이하</button>
+          <button class="btn-tag">10만원 이하</button>
+          <button class="btn-tag active">15만원 이하</button>
+          <button class="btn-tag">제한 없음</button>
+        </div>
+
+        <div style="margin-top: var(--space-2xl);">
+          <button class="btn btn-primary" onclick="switchView('explore')">이 설정으로 추천 받기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 2: EXPLORE (Main Feed) -->
+    <div id="view-explore" class="view active">
+      <div class="header">
+        <div class="header-subtitle">Autumn Mute Curation</div>
+        <h1 class="header-title">당신의 깊이를 더해줄<br>가을의 질감</h1>
+      </div>
+      
+      <div style="padding: var(--space-md) var(--space-md) 0;">
+        <div class="tag-grid" style="flex-wrap: nowrap; overflow-x: auto; padding-bottom: 8px;">
+          <button class="btn-tag active" style="white-space: nowrap;">All</button>
+          <button class="btn-tag" style="white-space: nowrap;">Outer</button>
+          <button class="btn-tag" style="white-space: nowrap;">Top</button>
+          <button class="btn-tag" style="white-space: nowrap;">Bottom</button>
+        </div>
+      </div>
+
+      <!-- Feed Card 1 -->
+      <div class="card" onclick="openDetail()">
+        <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=800&auto=format&fit=crop" alt="Outfit" class="card-img" />
+        <div class="card-content">
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+              <p class="brand">COS</p>
+              <h3 class="item-name">오버사이즈 울 블렌드 블레이저</h3>
+              <p class="item-price">₩ 250,000</p>
+            </div>
+            <button class="icon-btn" style="box-shadow: 0 2px 8px rgba(0,0,0,0.05);" onclick="event.stopPropagation(); toggleSave(this)">
+              <svg viewBox="0 0 24 24" style="width:20px; color:var(--color-accent); fill:currentColor;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            </button>
+          </div>
+          <div style="margin-bottom: 12px;">
+            <span style="font-size:11px; font-weight:600; padding:4px 8px; border:1px solid rgba(150,79,76,0.3); color:var(--color-accent); border-radius:4px;">가을 웜 집중 추천</span>
+          </div>
+          <p style="font-size:13px; color:var(--color-text-secondary); line-height:1.5;">
+            "채도를 낮춘 애쉬 브라운 컬러가 가을 뮤트의 부드러운 인상을 더욱 강조합니다. 오피스룩에 제격입니다."
+          </p>
+        </div>
+      </div>
+
+      <!-- Feed Card 2 -->
+      <div class="card" onclick="openDetail()">
+        <img src="https://images.unsplash.com/photo-1584273143981-41c073dfe8f8?q=80&w=800&auto=format&fit=crop" alt="Outfit" class="card-img" />
+        <div class="card-content">
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+              <p class="brand">NOTHING WRITTEN</p>
+              <h3 class="item-name">알파카 브이넥 니트</h3>
+              <p class="item-price">₩ 168,000</p>
+            </div>
+            <button class="icon-btn" style="box-shadow: 0 2px 8px rgba(0,0,0,0.05);" onclick="event.stopPropagation(); toggleSave(this)">
+              <svg viewBox="0 0 24 24" style="width:20px; color:var(--color-text-tertiary); fill:currentColor;"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 3: SAVED -->
+    <div id="view-saved" class="view">
+      <div class="header">
+        <h1 class="header-title">저장된 코디</h1>
+      </div>
+      
+      <div style="padding: var(--space-md); text-align: center; margin-bottom: 8px;">
+        <button class="btn btn-primary" style="background:#222;">✨ AI Top Pick 추천받기</button>
+        <p style="font-size:12px; color:var(--color-text-secondary); margin-top:8px;">저장한 아이템 중 오늘 가장 잘 어울리는 1개를 골라드려요.</p>
+      </div>
+
+      <div class="grid-2col">
+        <div class="grid-card">
+          <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=400&auto=format&fit=crop" alt="Saved" />
+          <div class="grid-card-info">
+            <p class="brand">COS</p>
+            <p class="grid-card-title">울 블렌드 블레이저</p>
+            <p style="font-weight:700; font-size:13px; font-variant-numeric:tabular-nums;">₩ 250,000</p>
+          </div>
+        </div>
+        <div class="grid-card">
+          <img src="https://images.unsplash.com/photo-1550614000-4b95d466989e?q=80&w=400&auto=format&fit=crop" alt="Saved" />
+          <div class="grid-card-info">
+            <p class="brand">LEMAIRE</p>
+            <p class="grid-card-title">크로아상 백 미디엄</p>
+            <p style="font-weight:700; font-size:13px; font-variant-numeric:tabular-nums;">₩ 1,480,000</p>
+          </div>
+        </div>
+        <div class="grid-card">
+          <img src="https://images.unsplash.com/photo-1620799140188-3b2a02fd9a77?q=80&w=400&auto=format&fit=crop" alt="Saved" />
+          <div class="grid-card-info">
+            <p class="brand">BOTEGA VENETA</p>
+            <p class="grid-card-title">베이직 코튼 셔츠</p>
+            <p style="font-weight:700; font-size:13px; font-variant-numeric:tabular-nums;">₩ 850,000</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+      <div class="nav-item" onclick="switchView('curate')" id="nav-curate">
+        <svg viewBox="0 0 24 24"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+        <span>Curate</span>
+      </div>
+      <div class="nav-item active" onclick="switchView('explore')" id="nav-explore">
+        <svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <span>Explore</span>
+      </div>
+      <div class="nav-item" onclick="switchView('saved')" id="nav-saved">
+        <svg viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+        <span>Saved</span>
+      </div>
+    </nav>
+
+    <!-- DETAIL OVERLAY MODAL -->
+    <div id="detail-modal" class="detail-overlay">
+      <div class="detail-header">
+        <button class="icon-btn" onclick="closeDetail()">
+          <svg viewBox="0 0 24 24" style="width:24px; stroke:currentColor; stroke-width:2; fill:none;"><path d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <button class="icon-btn">
+          <svg viewBox="0 0 24 24" style="width:20px; color:var(--color-accent); fill:currentColor;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        </button>
+      </div>
+      
+      <div class="detail-content">
+        <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=800&auto=format&fit=crop" class="detail-img" />
+        
+        <div style="padding: var(--space-lg) var(--space-md);">
+          <p class="brand">COS</p>
+          <h2 style="font-family:var(--font-display); font-size:24px; margin-bottom:8px;">오버사이즈 울 블렌드 블레이저</h2>
+          <p style="font-variant-numeric:tabular-nums; font-size:20px; font-weight:700;">₩ 250,000</p>
+          
+          <div class="reason-box">
+            <h3 style="font-size:14px; font-weight:700; margin-bottom:12px; display:flex; gap:8px;">
+              <span>💡</span> AI 추천 이유
+            </h3>
+            <p style="font-size:14px; color:var(--color-primary-text); margin-bottom:16px;">
+              "채도를 낮춘 애쉬 브라운 컬러가 가을 뮤트의 부드러운 인상을 더욱 강조합니다. 오피스룩에 제격입니다."
+            </p>
+            
+            <div class="score-row">
+              <span class="score-label" style="color:var(--score-pcf)">PCF</span>
+              <div class="score-bar"><div class="score-fill" style="width:95%; background:var(--score-pcf)"></div></div>
+              <span style="font-size:11px; font-weight:600; font-variant-numeric:tabular-nums; width:24px; text-align:right; color:var(--score-pcf)">95</span>
+            </div>
+            <div class="score-row">
+              <span class="score-label" style="color:var(--score-sf)">SF</span>
+              <div class="score-bar"><div class="score-fill" style="width:88%; background:var(--score-sf)"></div></div>
+              <span style="font-size:11px; font-weight:600; font-variant-numeric:tabular-nums; width:24px; text-align:right; color:var(--score-sf)">88</span>
+            </div>
+            <div class="score-row">
+              <span class="score-label" style="color:var(--score-of)">OF</span>
+              <div class="score-bar"><div class="score-fill" style="width:82%; background:var(--score-of)"></div></div>
+              <span style="font-size:11px; font-weight:600; font-variant-numeric:tabular-nums; width:24px; text-align:right; color:var(--score-of)">82</span>
+            </div>
+          </div>
+
+          <h3 style="font-family:var(--font-display); font-size:18px; font-weight:700; margin: 32px 0 16px;">비슷한 대안 상품</h3>
+          <div style="display:flex; gap:16px; overflow-x:auto; padding-bottom:8px; margin:0 -16px; padding:0 16px;">
+            <!-- Similar Item 1 -->
+            <div style="min-width:140px; border:1px solid var(--color-border); border-radius:8px; overflow:hidden;">
+              <div style="height:140px; background:#e0e0e0;"></div>
+              <div style="padding:8px;">
+                <p style="font-size:10px; font-weight:600; color:var(--color-text-secondary);">SPA BRAND</p>
+                <p style="font-size:12px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">레귤러핏 블레이저</p>
+                <p style="font-size:13px; font-weight:700;">₩ 89,900</p>
+              </div>
+            </div>
+            <!-- Similar Item 2 -->
+            <div style="min-width:140px; border:1px solid var(--color-border); border-radius:8px; overflow:hidden;">
+              <div style="height:140px; background:#d0d0c0;"></div>
+              <div style="padding:8px;">
+                <p style="font-size:10px; font-weight:600; color:var(--color-text-secondary);">LOCAL BRAND</p>
+                <p style="font-size:12px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">싱글 브레스티드 자켓</p>
+                <p style="font-size:13px; font-weight:700;">₩ 125,000</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sticky-bottom-btn">
+        <button class="btn btn-primary" style="font-size:18px;">최저가 구매하기</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // View Switcher logic
+    function switchView(viewId) {
+      // Hide all views
+      document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+      // Remove active from all nav items
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      
+      // Show selected view
+      document.getElementById('view-' + viewId).classList.add('active');
+      // Set active nav item
+      document.getElementById('nav-' + viewId).classList.add('active');
+
+      // Scroll to top
+      document.getElementById('view-' + viewId).scrollTop = 0;
+    }
+
+    function openDetail() {
+      document.getElementById('detail-modal').classList.add('open');
+    }
+
+    function closeDetail() {
+      document.getElementById('detail-modal').classList.remove('open');
+    }
+
+    function toggleSave(btn) {
+      const svg = btn.querySelector('svg');
+      if (svg.style.color === 'var(--color-accent)') {
+        svg.style.color = 'var(--color-text-tertiary)';
+        svg.innerHTML = '<path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/>';
+      } else {
+        svg.style.color = 'var(--color-accent)';
+        svg.innerHTML = '<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>';
+      }
+    }
+
+    // Toggle tags in curate
+    document.querySelectorAll('.view .btn-tag').forEach(tag => {
+      tag.addEventListener('click', function() {
+        this.classList.toggle('active');
+      });
+    });
+  </script>
+</body>
+</html>
