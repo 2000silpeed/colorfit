@@ -113,9 +113,63 @@ class TestProcessTone:
         original_raw_dir = module.RAW_DIR
         module.RAW_DIR = raw_dir
         try:
-            result = process_tone("test_tone", WHITELIST)
+            global_seen: set[str] = set()
+            result = process_tone("test_tone", WHITELIST, global_seen)
             assert result["item_count"] == 2
             assert result["duplicates_removed"] == 1
+        finally:
+            module.RAW_DIR = original_raw_dir
+
+    def test_cross_tone_dedup(self, tmp_path):
+        raw_dir = tmp_path / "raw"
+        raw_dir.mkdir()
+        items_a = [
+            {"productId": "1", "title": "상품A", "brand": "", "link": "", "image": "",
+             "lprice": "1000", "mallName": "", "maker": ""},
+        ]
+        items_b = [
+            {"productId": "1", "title": "상품A 다른톤", "brand": "", "link": "", "image": "",
+             "lprice": "1000", "mallName": "", "maker": ""},
+            {"productId": "3", "title": "상품C", "brand": "", "link": "", "image": "",
+             "lprice": "3000", "mallName": "", "maker": ""},
+        ]
+        (raw_dir / "tone_a.json").write_text(json.dumps({"items": items_a}), encoding="utf-8")
+        (raw_dir / "tone_b.json").write_text(json.dumps({"items": items_b}), encoding="utf-8")
+
+        import scripts.rebuild_from_tones as module
+        original_raw_dir = module.RAW_DIR
+        module.RAW_DIR = raw_dir
+        try:
+            global_seen: set[str] = set()
+            result_a = process_tone("tone_a", WHITELIST, global_seen)
+            result_b = process_tone("tone_b", WHITELIST, global_seen)
+            assert result_a["item_count"] == 1
+            assert result_b["item_count"] == 1  # productId "1" already seen
+            assert "1" in global_seen
+            assert "3" in global_seen
+        finally:
+            module.RAW_DIR = original_raw_dir
+
+    def test_seen_after_validation(self, tmp_path):
+        """빈 title의 첫 항목이 같은 ID의 유효한 항목을 차단하지 않는지 확인."""
+        raw_dir = tmp_path / "raw"
+        raw_dir.mkdir()
+        items = [
+            {"productId": "1", "title": "", "brand": "", "link": "", "image": "",
+             "lprice": "1000", "mallName": "", "maker": ""},
+            {"productId": "1", "title": "유효한 상품", "brand": "", "link": "", "image": "",
+             "lprice": "1000", "mallName": "", "maker": ""},
+        ]
+        (raw_dir / "test_tone.json").write_text(json.dumps({"items": items}), encoding="utf-8")
+
+        import scripts.rebuild_from_tones as module
+        original_raw_dir = module.RAW_DIR
+        module.RAW_DIR = raw_dir
+        try:
+            global_seen: set[str] = set()
+            result = process_tone("test_tone", WHITELIST, global_seen)
+            assert result["item_count"] == 1
+            assert result["items"][0]["name"] == "유효한 상품"
         finally:
             module.RAW_DIR = original_raw_dir
 
@@ -124,7 +178,8 @@ class TestProcessTone:
         original_raw_dir = module.RAW_DIR
         module.RAW_DIR = tmp_path / "nonexistent"
         try:
-            result = process_tone("missing_tone", WHITELIST)
+            global_seen: set[str] = set()
+            result = process_tone("missing_tone", WHITELIST, global_seen)
             assert result["item_count"] == 0
         finally:
             module.RAW_DIR = original_raw_dir

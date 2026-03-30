@@ -102,8 +102,13 @@ def normalize_item(item: dict, tone_id: str, whitelist: set[str]) -> dict:
     }
 
 
-def process_tone(tone_id: str, whitelist: set[str]) -> dict:
-    """하나의 톤 raw JSON을 정규화한다."""
+def process_tone(
+    tone_id: str, whitelist: set[str], global_seen: set[str]
+) -> dict:
+    """하나의 톤 raw JSON을 정규화한다.
+
+    global_seen: 크로스-톤 중복 제거를 위한 글로벌 product_id 세트.
+    """
     raw_path = RAW_DIR / f"{tone_id}.json"
     if not raw_path.exists():
         logger.warning("[%s] raw 파일 없음: %s", tone_id, raw_path)
@@ -113,18 +118,17 @@ def process_tone(tone_id: str, whitelist: set[str]) -> dict:
         raw_data = json.load(f)
 
     raw_items = raw_data.get("items", [])
-    seen_ids: set[str] = set()
     normalized: list[dict] = []
 
     for item in raw_items:
         pid = item.get("productId", "")
-        if not pid or pid in seen_ids:
+        if not pid or pid in global_seen:
             continue
-        seen_ids.add(pid)
 
         product = normalize_item(item, tone_id, whitelist)
         if not product["name"]:
             continue
+        global_seen.add(pid)
         normalized.append(product)
 
     dedup_removed = len(raw_items) - len(normalized)
@@ -175,9 +179,10 @@ def main() -> None:
 
     total_raw = 0
     total_normalized = 0
+    global_seen: set[str] = set()
 
     for tone_id in tones:
-        result = process_tone(tone_id, whitelist)
+        result = process_tone(tone_id, whitelist, global_seen)
         if result["item_count"] > 0:
             save_normalized(tone_id, result)
         total_raw += result.get("raw_count", 0)
