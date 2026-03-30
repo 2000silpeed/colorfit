@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: colorfit-api
+    runtime: docker
+    repo: https://github.com/2000silpeed/colorfit
+    branch: sungwoon
+    rootDir: backend
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: NAVER_CLIENT_ID
+        sync: false
+      - key: NAVER_CLIENT_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
