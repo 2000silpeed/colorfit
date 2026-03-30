@@ -130,12 +130,14 @@ W5 ─── 단독 실행 (통합 작업)
 - ⚠️ create-next-app@latest가 Next.js 16 설치 → 15.5.14로 다운그레이드
 
 **Task 1.13 — 프론트엔드 디자인 토큰 세팅**
-- [ ] DESIGN.md 읽고 CSS variables 세팅 (`globals.css`)
-- [ ] 컬러 토큰 (--bg, --surface, --accent, --border 등)
-- [ ] 스코어 축 컬러 5개
-- [ ] 다크모드 토큰 (`[data-theme="dark"]`)
-- [ ] 스페이싱 스케일 (--space-2xs ~ --space-3xl)
-- [ ] Nanum Myeongjo Google Fonts 로딩 설정
+- [x] DESIGN.md 읽고 CSS variables 세팅 (`globals.css`)
+- [x] 컬러 토큰 (--bg, --surface, --accent, --border 등)
+- [x] 스코어 축 컬러 5개
+- [x] 다크모드 토큰 (`[data-theme="dark"]`)
+- [x] 스페이싱 스케일 (--space-2xs ~ --space-3xl)
+- [x] Nanum Myeongjo Google Fonts 로딩 설정
+- 🔧 codex 리뷰 반영: 폰트 변수 충돌 해소, warm-neutral 다크모드 추가, @theme에 시맨틱/스페이싱/radius 토큰 등록, 네이밍 통일, weight range 명시
+- ⚠️ Nanum Myeongjo는 Google Fonts에서 latin subset만 제공 (한글은 자동 unicode-range 분할)
 
 **Task 1.14 — FastAPI 프로젝트 초기화**
 - [ ] `backend/` 디렉토리에 FastAPI 프로젝트 생성
