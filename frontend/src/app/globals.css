@@ -7,50 +7,50 @@
 
 :root {
   /* Background */
-  --bg-primary: #F8F6F3;
-  --bg-secondary: #F0EDE8;
+  --color-bg-primary: #F8F6F3;
+  --color-bg-secondary: #F0EDE8;
 
   /* Text */
-  --text-primary: #222222;
-  --text-secondary: #8C8578;
-  --text-tertiary: #B5AFA6;
+  --color-text-primary: #222222;
+  --color-text-secondary: #8C8578;
+  --color-text-tertiary: #B5AFA6;
 
   /* Brand */
-  --brand-accent: #964F4C;
-  --brand-sub-accent: #D4A5A5;
-  --brand-warm-neutral: #F5DEB3;
+  --color-accent: #964F4C;
+  --color-sub-accent: #D4A5A5;
+  --color-warm-neutral: #F5DEB3;
 
   /* Surface & Border */
-  --surface: #F0EDE8;
-  --border: #E5E1DA;
+  --color-surface: #F0EDE8;
+  --color-border: #E5E1DA;
 
   /* Score Axis */
-  --score-pcf: #964F4C;
-  --score-of: #4F97A3;
-  --score-ch: #DDB67D;
-  --score-pe: #D1933F;
-  --score-sf: #6B5876;
-  --score-track: #E5E1DA;
+  --color-score-pcf: #964F4C;
+  --color-score-of: #4F97A3;
+  --color-score-ch: #DDB67D;
+  --color-score-pe: #D1933F;
+  --color-score-sf: #6B5876;
+  --color-score-track: #E5E1DA;
 
   /* Semantic — Success */
-  --semantic-success-bg: #F0EDE8;
-  --semantic-success-text: #6B7F5E;
-  --semantic-success-border: #D4DCCC;
+  --color-success-bg: #F0EDE8;
+  --color-success-text: #6B7F5E;
+  --color-success-border: #D4DCCC;
 
   /* Semantic — Warning */
-  --semantic-warning-bg: #F5F0E8;
-  --semantic-warning-text: #A07830;
-  --semantic-warning-border: #E5D9C0;
+  --color-warning-bg: #F5F0E8;
+  --color-warning-text: #A07830;
+  --color-warning-border: #E5D9C0;
 
   /* Semantic — Error */
-  --semantic-error-bg: #F5EDEC;
-  --semantic-error-text: #964F4C;
-  --semantic-error-border: #E0CBC9;
+  --color-error-bg: #F5EDEC;
+  --color-error-text: #964F4C;
+  --color-error-border: #E0CBC9;
 
   /* Semantic — Info */
-  --semantic-info-bg: #EDF3F4;
-  --semantic-info-text: #4F97A3;
-  --semantic-info-border: #C8DDE0;
+  --color-info-bg: #EDF3F4;
+  --color-info-text: #4F97A3;
+  --color-info-border: #C8DDE0;
 
   /* Spacing (8px base) */
   --space-2xs: 2px;
@@ -72,67 +72,100 @@
 
 /* Dark Mode */
 [data-theme="dark"] {
-  --bg-primary: #1A1714;
-  --bg-secondary: #242018;
+  --color-bg-primary: #1A1714;
+  --color-bg-secondary: #242018;
 
-  --text-primary: #F0EDE8;
-  --text-secondary: #B5AFA6;
-  --text-tertiary: #8C8578;
+  --color-text-primary: #F0EDE8;
+  --color-text-secondary: #B5AFA6;
+  --color-text-tertiary: #8C8578;
 
-  --brand-accent: #C4726F;
-  --brand-sub-accent: #D4A5A5;
+  --color-accent: #C4726F;
+  --color-sub-accent: #D4A5A5;
+  --color-warm-neutral: #3A3020;
 
-  --surface: #242018;
-  --border: #3A3530;
+  --color-surface: #242018;
+  --color-border: #3A3530;
 
-  --score-pcf: #C4726F;
-  --score-of: #6BADB9;
-  --score-ch: #E8C693;
-  --score-pe: #DBA84F;
-  --score-sf: #896E96;
-  --score-track: #3A3530;
+  --color-score-pcf: #C4726F;
+  --color-score-of: #6BADB9;
+  --color-score-ch: #E8C693;
+  --color-score-pe: #DBA84F;
+  --color-score-sf: #896E96;
+  --color-score-track: #3A3530;
 
-  --semantic-success-bg: #1E2118;
-  --semantic-success-text: #8FA07E;
-  --semantic-success-border: #3A4030;
+  --color-success-bg: #1E2118;
+  --color-success-text: #8FA07E;
+  --color-success-border: #3A4030;
 
-  --semantic-warning-bg: #24201A;
-  --semantic-warning-text: #C09848;
-  --semantic-warning-border: #4A3E28;
+  --color-warning-bg: #24201A;
+  --color-warning-text: #C09848;
+  --color-warning-border: #4A3E28;
 
-  --semantic-error-bg: #241A18;
-  --semantic-error-text: #C4726F;
-  --semantic-error-border: #4A2E2C;
+  --color-error-bg: #241A18;
+  --color-error-text: #C4726F;
+  --color-error-border: #4A2E2C;
 
-  --semantic-info-bg: #182224;
-  --semantic-info-text: #6BADB9;
-  --semantic-info-border: #2A4448;
+  --color-info-bg: #182224;
+  --color-info-text: #6BADB9;
+  --color-info-border: #2A4448;
 }
 
 /* Tailwind theme tokens */
 @theme inline {
-  --color-bg-primary: var(--bg-primary);
-  --color-bg-secondary: var(--bg-secondary);
-  --color-text-primary: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-tertiary: var(--text-tertiary);
-  --color-accent: var(--brand-accent);
-  --color-sub-accent: var(--brand-sub-accent);
-  --color-warm-neutral: var(--brand-warm-neutral);
-  --color-surface: var(--surface);
-  --color-border: var(--border);
-  --color-score-pcf: var(--score-pcf);
-  --color-score-of: var(--score-of);
-  --color-score-ch: var(--score-ch);
-  --color-score-pe: var(--score-pe);
-  --color-score-sf: var(--score-sf);
-  --color-score-track: var(--score-track);
-  --font-display: "Nanum Myeongjo", serif;
-  --font-body: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  /* Colors */
+  --color-bg-primary: var(--color-bg-primary);
+  --color-bg-secondary: var(--color-bg-secondary);
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-tertiary: var(--color-text-tertiary);
+  --color-accent: var(--color-accent);
+  --color-sub-accent: var(--color-sub-accent);
+  --color-warm-neutral: var(--color-warm-neutral);
+  --color-surface: var(--color-surface);
+  --color-border: var(--color-border);
+  --color-score-pcf: var(--color-score-pcf);
+  --color-score-of: var(--color-score-of);
+  --color-score-ch: var(--color-score-ch);
+  --color-score-pe: var(--color-score-pe);
+  --color-score-sf: var(--color-score-sf);
+  --color-score-track: var(--color-score-track);
+  --color-success-bg: var(--color-success-bg);
+  --color-success-text: var(--color-success-text);
+  --color-success-border: var(--color-success-border);
+  --color-warning-bg: var(--color-warning-bg);
+  --color-warning-text: var(--color-warning-text);
+  --color-warning-border: var(--color-warning-border);
+  --color-error-bg: var(--color-error-bg);
+  --color-error-text: var(--color-error-text);
+  --color-error-border: var(--color-error-border);
+  --color-info-bg: var(--color-info-bg);
+  --color-info-text: var(--color-info-text);
+  --color-info-border: var(--color-info-border);
+
+  /* Fonts — mapped from next/font loader vars */
+  --font-display: var(--font-nanum), "Nanum Myeongjo", serif;
+  --font-body: var(--font-pretendard), "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+
+  /* Spacing */
+  --spacing-2xs: var(--space-2xs);
+  --spacing-xs: var(--space-xs);
+  --spacing-sm: var(--space-sm);
+  --spacing-md: var(--space-md);
+  --spacing-lg: var(--space-lg);
+  --spacing-xl: var(--space-xl);
+  --spacing-2xl: var(--space-2xl);
+  --spacing-3xl: var(--space-3xl);
+
+  /* Border Radius */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-full: var(--radius-full);
 }
 
 body {
-  background: var(--bg-primary);
-  color: var(--text-primary);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
   font-family: var(--font-body);
 }

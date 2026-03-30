@@ -6,13 +6,14 @@ import "./globals.css";
 const nanumMyeongjo = Nanum_Myeongjo({
   weight: ["400", "700", "800"],
   subsets: ["latin"],
-  variable: "--font-display",
+  variable: "--font-nanum",
   display: "swap",
 });
 
 const pretendard = localFont({
   src: "../../public/fonts/PretendardVariable.woff2",
-  variable: "--font-body",
+  weight: "100 900",
+  variable: "--font-pretendard",
   display: "swap",
 });
 
@@ -30,6 +31,7 @@ export default function RootLayout({
     <html
       lang="ko"
       className={`${nanumMyeongjo.variable} ${pretendard.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
