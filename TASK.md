@@ -58,12 +58,13 @@ W5 ─── 단독 실행 (통합 작업)
 - 🔧 codex 리뷰 반영: 오표기 수정(풀앤베어), 비브랜드 제거(핸드메이드/어반디케이), 모호명 명확화, 누락 브랜드 13개 추가 → 최종 153개
 
 **Task 1.3 — 네이버 쇼핑 API 수집 스크립트 기본 구조**
-- [ ] `backend/scripts/curate_by_tone.py` 생성
-- [ ] 네이버 쇼핑 API 호출 함수 (`search_products(query, display, start)`)
-- [ ] API 응답 파싱 + raw JSON 저장
-- [ ] Rate limit 처리 (exponential backoff)
-- [ ] `.env`에서 `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET` 읽기
-- [ ] 테스트: API 연결 테스트 스크립트
+- [x] `backend/scripts/curate_by_tone.py` 생성
+- [x] 네이버 쇼핑 API 호출 함수 (`search_products(query, display, start)`)
+- [x] API 응답 파싱 + raw JSON 저장
+- [x] Rate limit 처리 (exponential backoff)
+- [x] `.env`에서 `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET` 읽기
+- [x] 테스트: API 연결 테스트 스크립트 (14개 단위 테스트)
+- 🔧 codex 리뷰 반영: 429 재시도 로직(while 루프), dotenv .env 자동 로드, 빈 결과 시 rate limit sleep 추가
 
 **Task 1.4 — 톤별 수집 키워드 설계**
 - [ ] `backend/data/tone_queries.json` 생성
@@ -141,24 +142,26 @@ W5 ─── 단독 실행 (통합 작업)
 - ⚠️ Nanum Myeongjo는 Google Fonts에서 latin subset만 제공 (한글은 자동 unicode-range 분할)
 
 **Task 1.14 — FastAPI 프로젝트 초기화**
-- [ ] `backend/` 디렉토리에 FastAPI 프로젝트 생성
-- [ ] `requirements.txt` (fastapi, uvicorn, pydantic, sqlalchemy, httpx, pillow, numpy, scikit-learn)
-- [ ] 프로젝트 구조: `app/main.py`, `app/config.py`, `app/routers/`, `app/services/`, `app/models/`, `app/schemas/`, `app/db/`
-- [ ] CORS 미들웨어 설정 (localhost:3000 허용)
-- [ ] 헬스체크 엔드포인트 (`GET /health`)
-- [ ] 동작 확인: `uvicorn app.main:app --reload` → localhost:8000/docs
+- [x] `backend/` 디렉토리에 FastAPI 프로젝트 생성
+- [x] `requirements.txt` (fastapi, uvicorn, pydantic, sqlalchemy, httpx, pillow, numpy, scikit-learn)
+- [x] 프로젝트 구조: `app/main.py`, `app/config.py`, `app/routers/`, `app/services/`, `app/models/`, `app/schemas/`, `app/db/`
+- [x] CORS 미들웨어 설정 (localhost:3000 허용)
+- [x] 헬스체크 엔드포인트 (`GET /health`)
+- [x] 동작 확인: `uvicorn app.main:app --reload` → localhost:8000/docs
+- ✅ codex 리뷰: FastAPI 코드 자체 이슈 없음 (PASS). scripts/curate_by_tone.py P1 2건은 별도 Task에서 수정 필요
 
 **Task 1.15 — DB 스키마 적용**
-- [ ] Supabase 연결 설정 (`app/db/database.py`)
-- [ ] SQLAlchemy 2.0 모델 정의
-  - [ ] `models/user.py` (users 테이블)
-  - [ ] `models/product.py` (products 테이블)
-  - [ ] `models/outfit.py` (outfits 테이블)
-  - [ ] `models/reaction.py` (reactions 테이블)
-  - [ ] `models/style_seed.py` (style_seeds 테이블)
-  - [ ] `models/user_preference.py` (user_preferences 테이블)
-- [ ] 인덱스 생성 (tone_id, designed_tpo, gender)
-- [ ] 참조: 기획서 섹션 14.4 (DB 스키마)
+- [x] Supabase 연결 설정 (`app/db/session.py` — async engine + get_db 의존성)
+- [x] SQLAlchemy 2.0 모델 정의
+  - [x] `models/user.py` (users 테이블)
+  - [x] `models/product.py` (products 테이블)
+  - [x] `models/outfit.py` (outfits 테이블)
+  - [x] `models/reaction.py` (reactions 테이블)
+  - [x] `models/style_seed.py` (style_seeds 테이블)
+  - [x] `models/user_preference.py` (user_preferences 테이블)
+- [x] 인덱스 생성 (tone_id, designed_tpo, gender)
+- [x] 참조: 기획서 섹션 14.4 (DB 스키마)
+- ✅ codex 리뷰: DB 모델 코드 이슈 없음 (PASS)
 
 **Task 1.16 — 배포 설정**
 - [ ] Vercel 연결 (frontend/) — `vercel.json` 또는 자동 감지

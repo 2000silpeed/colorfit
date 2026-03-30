@@ -44,31 +44,18 @@ TONE_IDS = [
     "winter_cool_vivid",
 ]
 
-CATEGORY_KEYWORDS: dict[str, list[str]] = {
-    "outer": ["코트", "자켓", "점퍼", "가디건", "패딩"],
-    "top": ["블라우스", "니트", "셔츠", "티셔츠", "맨투맨"],
-    "bottom": ["슬랙스", "스커트", "데님", "와이드팬츠", "치마"],
-    "onepiece": ["원피스", "점프수트"],
-    "shoes": ["플랫슈즈", "로퍼", "스니커즈", "부츠", "힐"],
-    "bag": ["토트백", "크로스백", "숄더백", "클러치"],
-    "acc": ["스카프", "귀걸이", "목걸이", "모자"],
-}
+TONE_QUERIES_PATH = DATA_DIR / "tone_queries.json"
 
-TONE_COLOR_KEYWORDS: dict[str, list[str]] = {
-    "spring_warm_light": ["아이보리", "코랄", "피치", "살몬핑크", "크림"],
-    "spring_warm_bright": ["코랄", "골드옐로우", "밝은 베이지", "오렌지", "라이트코랄"],
-    "spring_warm_vivid": ["비비드 오렌지", "선옐로우", "코랄레드", "터콰이즈", "브라이트그린"],
-    "summer_cool_light": ["라벤더", "파스텔 블루", "로즈핑크", "베이비핑크", "스카이블루"],
-    "summer_cool_soft": ["더스티 로즈", "소프트 라벤더", "그레이시 블루", "모브", "라일락"],
-    "summer_cool_bright": ["로즈", "퍼플", "블루", "체리핑크", "쿨핑크"],
-    "summer_cool_mute": ["그레이쉬 베이지", "먹색", "소프트 그레이", "뮤트 모브", "에쉬 로즈"],
-    "autumn_warm_mute": ["카키", "올리브", "머스타드", "테라코타", "뮤트 베이지"],
-    "autumn_warm_strong": ["버건디", "테라코타", "번트 오렌지", "카멜", "다크카키"],
-    "autumn_warm_deep": ["초콜릿", "다크브라운", "와인", "다크올리브", "딥카멜"],
-    "winter_cool_deep": ["블랙", "네이비", "다크그레이", "딥버건디", "차콜"],
-    "winter_cool_strong": ["블랙", "레드", "로얄블루", "에메랄드", "화이트"],
-    "winter_cool_vivid": ["비비드 레드", "코발트블루", "핫핑크", "일렉트릭블루", "마젠타"],
-}
+
+def _load_tone_queries() -> dict[str, dict[str, list[str]]]:
+    """tone_queries.json에서 톤별 카테고리별 쿼리를 로드한다."""
+    with open(TONE_QUERIES_PATH, encoding="utf-8") as f:
+        data = json.load(f)
+    data.pop("_meta", None)
+    return data
+
+
+TONE_QUERIES: dict[str, dict[str, list[str]]] = _load_tone_queries()
 
 logging.basicConfig(
     level=logging.INFO,
@@ -80,12 +67,10 @@ logger = logging.getLogger(__name__)
 
 def build_queries(tone_id: str) -> list[str]:
     """톤 ID에 해당하는 검색 쿼리 리스트를 생성한다."""
-    color_keywords = TONE_COLOR_KEYWORDS.get(tone_id, [])
+    tone_data = TONE_QUERIES.get(tone_id, {})
     queries: list[str] = []
-    for color in color_keywords:
-        for category, items in CATEGORY_KEYWORDS.items():
-            for item in items:
-                queries.append(f"{color} {item}")
+    for category_queries in tone_data.values():
+        queries.extend(category_queries)
     return queries
 
 

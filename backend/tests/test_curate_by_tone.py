@@ -29,22 +29,20 @@ class TestBuildQueries:
         queries = build_queries("spring_warm_light")
         assert all(isinstance(q, str) for q in queries)
 
-    def test_contains_color_and_category(self):
+    def test_contains_expected_keywords(self):
         queries = build_queries("spring_warm_light")
         assert any("아이보리" in q for q in queries)
-        assert any("코트" in q for q in queries)
+        assert any("가디건" in q for q in queries)
 
     def test_unknown_tone_returns_empty(self):
         queries = build_queries("nonexistent_tone")
         assert queries == []
 
-    def test_query_count_matches_combinations(self):
-        from scripts.curate_by_tone import CATEGORY_KEYWORDS, TONE_COLOR_KEYWORDS
+    def test_query_count_from_json(self):
+        from scripts.curate_by_tone import TONE_QUERIES
 
         tone_id = "spring_warm_light"
-        colors = TONE_COLOR_KEYWORDS[tone_id]
-        total_items = sum(len(v) for v in CATEGORY_KEYWORDS.values())
-        expected = len(colors) * total_items
+        expected = sum(len(v) for v in TONE_QUERIES[tone_id].values())
         assert len(build_queries(tone_id)) == expected
 
 
@@ -173,8 +171,9 @@ class TestToneIds:
     def test_has_12_or_more_tones(self):
         assert len(TONE_IDS) >= 12
 
-    def test_all_tones_have_color_keywords(self):
-        from scripts.curate_by_tone import TONE_COLOR_KEYWORDS
+    def test_all_tones_have_queries(self):
+        from scripts.curate_by_tone import TONE_QUERIES
 
         for tone_id in TONE_IDS:
-            assert tone_id in TONE_COLOR_KEYWORDS, f"{tone_id} 색상 키워드 누락"
+            assert tone_id in TONE_QUERIES, f"{tone_id} 쿼리 누락"
+            assert len(TONE_QUERIES[tone_id]) > 0, f"{tone_id} 쿼리가 비어있음"
