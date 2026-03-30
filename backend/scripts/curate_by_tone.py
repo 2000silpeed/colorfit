@@ -16,6 +16,7 @@ import time
 from pathlib import Path
 
 import httpx
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "data"
@@ -89,7 +90,8 @@ def build_queries(tone_id: str) -> list[str]:
 
 
 def _get_credentials() -> tuple[str, str]:
-    """환경변수에서 네이버 API 인증 정보를 가져온다."""
+    """환경변수에서 네이버 API 인증 정보를 가져온다. .env 파일도 로드한다."""
+    load_dotenv(BASE_DIR / ".env")
     client_id = os.environ.get("NAVER_CLIENT_ID", "")
     client_secret = os.environ.get("NAVER_CLIENT_SECRET", "")
     if not client_id or not client_secret:
@@ -135,7 +137,8 @@ async def collect_for_query(
 ) -> list[dict]:
     """하나의 쿼리에 대해 페이지네이션하며 상품을 수집한다."""
     all_items: list[dict] = []
-    for page in range(max_pages):
+    page = 0
+    while page < max_pages:
         start = page * MAX_DISPLAY + 1
         if start > MAX_START:
             break
@@ -150,14 +153,16 @@ async def collect_for_query(
             )
             items = data.get("items", [])
             if not items:
+                await asyncio.sleep(REQUEST_INTERVAL)
                 break
             all_items.extend(items)
             logger.debug("  %s (start=%d): %d건", query, start, len(items))
             await asyncio.sleep(REQUEST_INTERVAL)
+            page += 1
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 429:
                 wait = _backoff_wait(page)
-                logger.warning("Rate limit 초과, %0.1f초 대기 후 재시도", wait)
+                logger.warning("Rate limit 초과, %0.1f초 대기 후 재시도 (start=%d)", wait, start)
                 await asyncio.sleep(wait)
                 continue
             logger.error("API 에러 (query=%s, start=%d): %s", query, start, e)
