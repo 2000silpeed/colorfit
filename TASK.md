@@ -203,12 +203,12 @@ W5 ─── 단독 실행 (통합 작업)
 
 ### 🅐 Lane C: 추천 엔진 — 스코어링 (Task 2.1~2.6)
 
-**Task 2.1 — PCF 스코어링 (퍼스널컬러 적합도)**
-- [ ] `backend/app/services/scoring.py` 생성
-- [ ] `calculate_pcf(item_tone_ids, item_hex_colors, user_tone_id)` 함수
-- [ ] 톤 레벨 매칭 (동일 100, 호환 95) + 색상 레벨 매칭 (RGB 거리 → 점수)
-- [ ] pytest 테스트: 동일 톤, 호환 톤, 반대 시즌, 경계값
-- [ ] 참조: 기획서 섹션 5.5.1
+**Task 2.1 — PCF 스코어링 (퍼스널컬러 적합도)** ✅
+- [x] `backend/app/services/scoring.py` 생성
+- [x] `calculate_pcf(item_tone_ids, item_hex_colors, user_tone_id)` 함수
+- [x] 톤 레벨 매칭 (동일 100, 호환 95) + 색상 레벨 매칭 (RGB 거리 → 점수)
+- [x] pytest 테스트: 동일 톤, 호환 톤, 반대 시즌, 경계값
+- [x] 참조: 기획서 섹션 5.5.1
 
 **Task 2.2 — OF 스코어링 (TPO 적합도)**
 - [ ] `calculate_of(outfit_tags, user_tpo_list)` 함수
