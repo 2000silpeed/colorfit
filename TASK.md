@@ -103,6 +103,7 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 분류 속성: category, silhouette, formality, tpo, gender
 - [x] 참조: 기획서 섹션 5.4.1 (하이브리드 분류 체계)
 - ⚠️ 키워드+raw_category 커버리지 92.2% (예상 70%보다 높음, raw_category3/4 힌트 활용)
+- 🔧 codex 리뷰 반영: '티' 오매칭 제거, 키워드 매칭 시 캐시 메타데이터 보충, google-generativeai 의존성 추가
 
 **Task 1.9 — 코디 레시피 JSON 정의**
 - [ ] `backend/data/outfit_recipes.json` 생성
