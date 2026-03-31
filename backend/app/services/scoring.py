@@ -6,6 +6,10 @@
 
 from pathlib import Path
 
+import colorsys
+from itertools import combinations
+from statistics import stdev
+
 from app.services.color_matcher import TonePalette, _hex_to_rgb, _rgb_distance
 
 PALETTES_DIR = Path(__file__).resolve().parent.parent.parent / "data" / "palettes"
@@ -163,3 +167,56 @@ def calculate_of(
         return round(60.0 + (1.0 / total_tags) * 20.0, 2)
     else:
         return 30.0
+
+
+# ---------------------------------------------------------------------------
+# CH (Color Harmony) — 색상 조화도  (기획서 섹션 5.5.3)
+# ---------------------------------------------------------------------------
+
+
+def _saturation(hex_color: str) -> float:
+    """HEX 색상의 HSV 채도(Saturation) 값을 반환한다 (0.0~1.0)."""
+    r, g, b = _hex_to_rgb(hex_color)
+    _, s, _ = colorsys.rgb_to_hsv(r / 255.0, g / 255.0, b / 255.0)
+    return s
+
+
+def _distance_score(d_avg: float) -> float:
+    """평균 RGB 거리를 기반으로 구간별 점수를 산출한다."""
+    if d_avg < 30:
+        return 60.0
+    elif d_avg < 80:
+        return 80.0 + (d_avg - 30) / 50 * 20.0
+    elif d_avg < 150:
+        return 100.0 - (d_avg - 80) / 70 * 21.0
+    else:
+        return max(30.0, 79.0 - (d_avg - 150) / 290 * 49.0)
+
+
+def calculate_ch(item_hex_colors: list[str]) -> float:
+    """코디의 CH(Color Harmony) 스코어를 계산한다.
+
+    기획서 섹션 5.5.3 구현.
+
+    Args:
+        item_hex_colors: 코디 아이템들의 HEX 색상 리스트
+
+    Returns:
+        0~100 범위의 CH 점수
+    """
+    if len(item_hex_colors) < 2:
+        return 50.0
+
+    rgbs = [_hex_to_rgb(c) for c in item_hex_colors]
+    distances = [_rgb_distance(a, b) for a, b in combinations(rgbs, 2)]
+    d_avg = sum(distances) / len(distances)
+
+    score = _distance_score(d_avg)
+
+    if len(item_hex_colors) >= 3:
+        sats = [_saturation(c) for c in item_hex_colors]
+        sat_std = stdev(sats)
+        if 0.15 <= sat_std <= 0.40:
+            score += 5.0
+
+    return round(min(100.0, max(0.0, score)), 2)
