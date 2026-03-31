@@ -1,7 +1,7 @@
 {
   "$schema": "outfit_recipes",
   "version": "1.0",
-  "description": "TPO x mood outfit recipes. category names match category_classifier.py",
+  "description": "TPO x mood outfit recipes. category names match category_classifier.py. required: pick 1 from each slot. required_sets: pick 1 set, then pick 1 from each slot in that set (for onepiece alternatives).",
   "recipes": [
     {
       "gender": "female",
@@ -40,9 +40,9 @@
       "gender": "female",
       "tpo": "date",
       "moods": ["lovely", "casual", "editorial"],
-      "required": [
-        ["니트", "블라우스", "원피스"],
-        ["스커트", "슬랙스"]
+      "required_sets": [
+        [["니트", "블라우스"], ["스커트", "슬랙스"]],
+        [["원피스"]]
       ],
       "optional": [
         {"categories": ["가디건"], "probability": 0.4},
@@ -105,9 +105,9 @@
       "gender": "female",
       "tpo": "event",
       "moods": ["classic", "editorial"],
-      "required": [
-        ["블라우스", "원피스"],
-        ["스커트", "슬랙스"]
+      "required_sets": [
+        [["블라우스"], ["스커트", "슬랙스"]],
+        [["원피스"]]
       ],
       "optional": [
         {"categories": ["코트"], "probability": 0.25},
