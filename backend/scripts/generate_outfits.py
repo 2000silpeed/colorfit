@@ -1,10 +1,12 @@
-"""레시피 기반 코디 조합 생성 스크립트.
+"""레시피 기반 코디 조합 생성 스크립트 v2.
 
-기획서 5.3.1 구현. TPO x 무드 레시피를 기반으로 코디 조합을 생성한다.
+기획서 5.3.1 구현. TPO x 무드 x 계절 레시피를 기반으로 코디 조합을 생성한다.
 - 필수 카테고리 선택 → 선택 카테고리 확률적 추가 → 금지 카테고리 검증
-- 포멀도 편차 ≤ 2, 가격 비율 5배 이내, 중복 조합 방지
-- designed_tpo, designed_moods 태그 부여
-- 목표: 2(성별) x 12(톤) x 8(TPO) x 8~10(코디) = 1,500~1,900개
+- 계절별 금지 카테고리 오버레이 (여름에 패딩 금지 등)
+- 포멀도 편차 ≤ 2, 가격 비율 3배 이내, 중복 조합 방지
+- 성별 키워드 교차 검증 (상품명에 반대 성별 키워드 포함 시 제외)
+- designed_tpo, designed_moods, designed_season 태그 부여
+- 최소 3피스 보장 (신발 required)
 """
 
 import argparse
@@ -15,7 +17,6 @@ import sys
 import time
 from pathlib import Path
 
-# 프로젝트 루트를 path에 추가
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.services.category_classifier import classify_by_keyword
@@ -31,7 +32,6 @@ NORMALIZED_DIR = DATA_DIR / "normalized"
 RECIPES_PATH = DATA_DIR / "outfit_recipes.json"
 OUTPUT_PATH = DATA_DIR / "generated_outfits.json"
 
-# 12톤 (winter_cool_vivid 제외 — 기획서 기준 12톤)
 TONES_12 = [
     "spring_warm_light", "spring_warm_bright", "spring_warm_vivid",
     "summer_cool_light", "summer_cool_soft", "summer_cool_bright", "summer_cool_mute",
@@ -39,7 +39,6 @@ TONES_12 = [
     "winter_cool_deep", "winter_cool_strong",
 ]
 
-# 카테고리 → 기본 포멀도 (LLM 캐시 없을 때 사용)
 DEFAULT_FORMALITY: dict[str, int] = {
     "셔츠": 4, "블라우스": 4, "니트": 3, "티셔츠": 2, "맨투맨": 2,
     "후드": 1, "크롭탑": 1, "탱크탑": 2, "폴로": 3,
@@ -51,25 +50,27 @@ DEFAULT_FORMALITY: dict[str, int] = {
     "가방": 3, "액세서리": 3,
 }
 
-# raw_category2 → gender 매핑
 RAW_GENDER_MAP: dict[str, str] = {
     "여성의류": "female", "남성의류": "male",
     "여성신발": "female", "남성신발": "male",
     "여성가방": "female", "남성가방": "male",
 }
 
+MALE_KEYWORDS = {"남성", "남자", "맨즈", "mens", "남성용"}
+FEMALE_KEYWORDS = {"여성", "여자", "우먼", "womens", "여성용"}
+
 MAX_ATTEMPTS_PER_OUTFIT = 50
-TARGET_OUTFITS_PER_SLOT = 10
+TARGET_OUTFITS_PER_SLOT = 3
 
 
-def load_recipes() -> list[dict]:
+def load_recipes() -> tuple[list[dict], dict[str, list[str]]]:
     with open(RECIPES_PATH, encoding="utf-8") as f:
         data = json.load(f)
-    return data["recipes"]
+    season_forbidden = data.get("season_forbidden", {})
+    return data["recipes"], season_forbidden
 
 
 def load_and_classify_items(tone_id: str) -> list[dict]:
-    """normalized 파일을 로드하고 키워드 기반 분류를 적용한다."""
     filepath = NORMALIZED_DIR / f"{tone_id}.json"
     if not filepath.exists():
         logger.warning("톤 파일 없음: %s", tone_id)
@@ -103,11 +104,18 @@ def load_and_classify_items(tone_id: str) -> list[dict]:
 def build_item_pool(
     items: list[dict], gender: str
 ) -> dict[str, list[dict]]:
-    """성별 필터링 후 카테고리별 아이템 풀을 만든다."""
+    """성별 필터링 후 카테고리별 아이템 풀을 만든다.
+
+    raw_category2 기반 성별 + 상품명 키워드 교차 검증.
+    """
+    opposite_keywords = FEMALE_KEYWORDS if gender == "male" else MALE_KEYWORDS
     pool: dict[str, list[dict]] = {}
     for item in items:
         item_gender = item.get("gender", "unisex")
         if item_gender != gender and item_gender != "unisex":
+            continue
+        name_lower = item.get("name", "").lower()
+        if any(kw in name_lower for kw in opposite_keywords):
             continue
         cat = item["category"]
         pool.setdefault(cat, []).append(item)
@@ -117,11 +125,6 @@ def build_item_pool(
 def pick_required_items(
     recipe: dict, pool: dict[str, list[dict]]
 ) -> list[dict] | None:
-    """레시피의 필수 카테고리에서 아이템을 선택한다.
-
-    required: 각 슬롯에서 1개씩 선택
-    required_sets: 세트 중 1개를 고르고, 그 세트의 각 슬롯에서 1개씩 선택
-    """
     if "required_sets" in recipe:
         sets = recipe["required_sets"]
         random.shuffle(sets)
@@ -137,7 +140,6 @@ def pick_required_items(
 def _pick_from_slots(
     slots: list[list[str]], pool: dict[str, list[dict]]
 ) -> list[dict] | None:
-    """각 슬롯에서 카테고리 1개를 골라 아이템을 선택한다."""
     selected = []
     for slot in slots:
         candidates = []
@@ -152,7 +154,6 @@ def _pick_from_slots(
 def pick_optional_items(
     recipe: dict, pool: dict[str, list[dict]]
 ) -> list[dict]:
-    """선택 카테고리에서 확률적으로 아이템을 추가한다."""
     optional_items = []
     for opt in recipe.get("optional", []):
         prob = opt.get("probability", 0.5)
@@ -167,7 +168,6 @@ def pick_optional_items(
 
 
 def validate_forbidden(items: list[dict], forbidden: list[str]) -> bool:
-    """금지 카테고리 아이템이 포함되어 있으면 False."""
     for item in items:
         if item["category"] in forbidden:
             return False
@@ -175,7 +175,6 @@ def validate_forbidden(items: list[dict], forbidden: list[str]) -> bool:
 
 
 def validate_formality(items: list[dict], formality_range: list[int]) -> bool:
-    """포멀도 편차 ≤ 2이고 레시피 범위 내인지 검증."""
     formalities = [item["formality"] for item in items]
     if max(formalities) - min(formalities) > 2:
         return False
@@ -186,31 +185,33 @@ def validate_formality(items: list[dict], formality_range: list[int]) -> bool:
 
 
 def validate_price_ratio(items: list[dict]) -> bool:
-    """가격 비율 5배 이내 검증."""
     prices = [item.get("price", 0) for item in items if item.get("price", 0) > 0]
     if len(prices) < 2:
         return True
-    return max(prices) / min(prices) <= 5.0
+    return max(prices) / min(prices) <= 3.0
 
 
-def make_outfit_id(gender: str, tone_id: str, tpo: str, idx: int) -> str:
-    """고유 코디 ID 생성."""
+def make_outfit_id(
+    gender: str, tone_id: str, tpo: str, season: str, idx: int
+) -> str:
     tone_short = tone_id.replace("_", "")[:8]
-    return f"outfit_{gender[0]}_{tone_short}_{tpo}_{idx:03d}"
+    season_short = season[:2]
+    return f"outfit_{gender[0]}_{tone_short}_{tpo}_{season_short}_{idx:03d}"
 
 
 def generate_outfits_for_slot(
     recipe: dict,
     pool: dict[str, list[dict]],
     tone_id: str,
+    season: str,
+    forbidden_extra: list[str],
     seen_combos: set[frozenset[str]],
     target_count: int = TARGET_OUTFITS_PER_SLOT,
 ) -> list[dict]:
-    """하나의 (gender, tpo, tone) 슬롯에서 코디를 생성한다."""
     gender = recipe["gender"]
     tpo = recipe["tpo"]
     moods = recipe["moods"]
-    forbidden = recipe.get("forbidden", [])
+    forbidden = list(set(recipe.get("forbidden", []) + forbidden_extra))
     formality_range = recipe.get("formality_range", [1, 5])
 
     outfits = []
@@ -256,7 +257,7 @@ def generate_outfits_for_slot(
 
         total_price = sum(item.get("price", 0) for item in items)
         idx = len(outfits) + 1
-        outfit_id = make_outfit_id(gender, tone_id, tpo, idx)
+        outfit_id = make_outfit_id(gender, tone_id, tpo, season, idx)
 
         outfit = {
             "id": outfit_id,
@@ -264,10 +265,11 @@ def generate_outfits_for_slot(
             "gender": gender,
             "designed_tpo": tpo,
             "designed_moods": moods,
+            "designed_season": season,
             "total_price": total_price,
             "lowest_total_price": total_price,
             "is_complete_outfit": is_complete,
-            "tags": [tone_id, tpo, gender],
+            "tags": [tone_id, tpo, gender, season],
             "scores": None,
             "style_details": None,
             "reasons": None,
@@ -290,9 +292,8 @@ def generate_outfits_for_slot(
 
 
 def generate_all(seed: int = 42, target_per_slot: int = TARGET_OUTFITS_PER_SLOT) -> list[dict]:
-    """전체 코디 생성 파이프라인."""
     random.seed(seed)
-    recipes = load_recipes()
+    recipes, season_forbidden = load_recipes()
     all_outfits: list[dict] = []
     seen_combos: set[frozenset[str]] = set()
 
@@ -300,15 +301,16 @@ def generate_all(seed: int = 42, target_per_slot: int = TARGET_OUTFITS_PER_SLOT)
         "by_gender": {"female": 0, "male": 0},
         "by_tpo": {},
         "by_tone": {},
+        "by_season": {},
         "incomplete": 0,
         "skipped_slots": 0,
     }
 
-    logger.info("레시피 %d개 로드", len(recipes))
-    logger.info("목표: %d톤 x %d레시피 x %d개 = %d~%d개",
-                len(TONES_12), len(recipes), target_per_slot,
-                len(TONES_12) * len(recipes) * (target_per_slot - 2),
-                len(TONES_12) * len(recipes) * target_per_slot)
+    total_slots = sum(len(r.get("seasons", [])) for r in recipes) * len(TONES_12)
+    logger.info("레시피 %d개, 계절 슬롯 %d개 로드", len(recipes), total_slots)
+    logger.info("목표: %d톤 x %d슬롯 x %d개 = ~%d개",
+                len(TONES_12), total_slots // len(TONES_12),
+                target_per_slot, total_slots * target_per_slot)
 
     start = time.time()
 
@@ -320,25 +322,33 @@ def generate_all(seed: int = 42, target_per_slot: int = TARGET_OUTFITS_PER_SLOT)
         for recipe in recipes:
             gender = recipe["gender"]
             tpo = recipe["tpo"]
+            seasons = recipe.get("seasons", ["spring", "summer", "fall", "winter"])
             pool = build_item_pool(items, gender)
 
-            outfits = generate_outfits_for_slot(
-                recipe, pool, tone_id, seen_combos,
-                target_count=target_per_slot,
-            )
+            for season in seasons:
+                forbidden_extra = season_forbidden.get(season, [])
 
-            if not outfits:
-                stats["skipped_slots"] += 1
-                logger.warning("  [%s/%s] 생성 실패 (아이템 부족)", gender, tpo)
-                continue
+                outfits = generate_outfits_for_slot(
+                    recipe, pool, tone_id, season, forbidden_extra,
+                    seen_combos, target_count=target_per_slot,
+                )
 
-            all_outfits.extend(outfits)
-            stats["by_gender"][gender] += len(outfits)
-            stats["by_tpo"][tpo] = stats["by_tpo"].get(tpo, 0) + len(outfits)
-            stats["by_tone"][tone_id] = stats["by_tone"].get(tone_id, 0) + len(outfits)
-            stats["incomplete"] += sum(1 for o in outfits if not o["is_complete_outfit"])
+                if not outfits:
+                    stats["skipped_slots"] += 1
+                    continue
 
-            logger.info("  [%s/%s] %d개 생성", gender, tpo, len(outfits))
+                all_outfits.extend(outfits)
+                stats["by_gender"][gender] += len(outfits)
+                stats["by_tpo"][tpo] = stats["by_tpo"].get(tpo, 0) + len(outfits)
+                stats["by_tone"][tone_id] = stats["by_tone"].get(tone_id, 0) + len(outfits)
+                stats["by_season"][season] = stats["by_season"].get(season, 0) + len(outfits)
+                stats["incomplete"] += sum(1 for o in outfits if not o["is_complete_outfit"])
+
+            logger.info("  [%s/%s] %s — %d개",
+                        gender, tpo, "/".join(seasons),
+                        sum(1 for o in all_outfits
+                            if o["designed_tpo"] == tpo and o["gender"] == gender
+                            and tone_id in o["tags"]))
 
     elapsed = time.time() - start
 
@@ -346,6 +356,7 @@ def generate_all(seed: int = 42, target_per_slot: int = TARGET_OUTFITS_PER_SLOT)
     logger.info("총 생성: %d개 (%.1f초)", len(all_outfits), elapsed)
     logger.info("성별: %s", stats["by_gender"])
     logger.info("TPO별: %s", stats["by_tpo"])
+    logger.info("계절별: %s", stats["by_season"])
     logger.info("미완성 코디: %d개", stats["incomplete"])
     logger.info("건너뛴 슬롯: %d개", stats["skipped_slots"])
 
@@ -353,10 +364,10 @@ def generate_all(seed: int = 42, target_per_slot: int = TARGET_OUTFITS_PER_SLOT)
 
 
 def main():
-    parser = argparse.ArgumentParser(description="레시피 기반 코디 조합 생성")
+    parser = argparse.ArgumentParser(description="레시피 기반 코디 조합 생성 v2")
     parser.add_argument("--seed", type=int, default=42, help="랜덤 시드")
     parser.add_argument("--target", type=int, default=TARGET_OUTFITS_PER_SLOT,
-                        help="슬롯당 목표 코디 수 (기본 10)")
+                        help="슬롯당 목표 코디 수 (기본 3)")
     parser.add_argument("--output", type=str, default=str(OUTPUT_PATH),
                         help="출력 파일 경로")
     parser.add_argument("--dry-run", action="store_true",
@@ -368,7 +379,7 @@ def main():
     if not args.dry_run:
         output_path = Path(args.output)
         output_data = {
-            "version": "1.0",
+            "version": "2.0",
             "generated_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
             "total_count": len(outfits),
             "outfits": outfits,
@@ -379,7 +390,6 @@ def main():
     else:
         logger.info("[DRY-RUN] 파일 저장 건너뜀")
 
-    # 샘플 출력
     if outfits:
         sample = random.choice(outfits)
         logger.info("샘플 코디: %s", json.dumps(sample, ensure_ascii=False, indent=2))

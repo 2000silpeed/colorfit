@@ -20,9 +20,10 @@ from scripts.evaluate_outfits import (
 
 
 def _outfit(
-    outfit_id: str = "outfit_f_springwa_date_001",
+    outfit_id: str = "outfit_f_springwa_date_sp_001",
     gender: str = "female",
     tpo: str = "date",
+    season: str = "spring",
     moods: list[str] | None = None,
     score: int | None = None,
 ) -> dict:
@@ -30,6 +31,7 @@ def _outfit(
         "id": outfit_id,
         "gender": gender,
         "designed_tpo": tpo,
+        "designed_season": season,
         "designed_moods": moods or ["lovely", "casual"],
         "items_snapshot": [
             {
@@ -119,14 +121,16 @@ class TestBuildPrompt:
         prompt = build_prompt(outfit)
         assert "여성" in prompt
         assert "date" in prompt
+        assert "봄" in prompt
         assert "lovely" in prompt
         assert "블라우스" in prompt
         assert "스커트" in prompt
 
-    def test_male_prompt(self):
-        outfit = _outfit(gender="male")
+    def test_male_winter_prompt(self):
+        outfit = _outfit(gender="male", season="winter")
         prompt = build_prompt(outfit)
         assert "남성" in prompt
+        assert "겨울" in prompt
 
 
 class TestFilterLowQuality:

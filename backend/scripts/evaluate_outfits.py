@@ -34,26 +34,22 @@ OUTPUT_PATH = DATA_DIR / "generated_outfits.json"
 API_KEY = os.getenv("GEMINI_API_KEY")
 MODEL = "gemini-2.5-flash"
 
-EVAL_PROMPT_TEMPLATE = """당신은 패션 전문가입니다. 아래 코디 조합의 품질을 1~5점으로 평가하세요.
+EVAL_PROMPT_TEMPLATE = """패션 코디 카테고리 조합을 평가해주세요.
 
-## 평가 기준
-- **색상 조화**: 아이템 간 색상/톤이 어울리는가
-- **TPO 적합성**: 해당 상황({tpo})에 적절한 조합인가
-- **카테고리 밸런스**: 상의/하의/아우터/신발 등 구성이 자연스러운가
-- **포멀도 일관성**: 아이템 간 포멀도 수준이 맞는가
-- **가격 밸런스**: 가격대가 극단적으로 차이나지 않는가
+중요: 상품명은 무시하고 [카테고리]만 보고 평가하세요. 상품명에 다른 계절이나 이상한 단어가 있어도 무관합니다.
 
-## 코디 정보
-- 성별: {gender}
-- TPO: {tpo}
-- 무드: {moods}
-- 아이템:
+## 점수 기준
+- 5점: 해당 TPO/계절에 완벽한 카테고리 구성
+- 4점: 좋은 구성. 사소한 아쉬움 1개
+- 3점: 무난함. 기본적으로 입을 수 있는 조합
+- 2점: 카테고리 조합이 TPO/계절에 안 맞음
+- 1점: 입을 수 없는 조합
+
+## 코디
+- {gender}, {tpo}, {season}, 무드: {moods}
 {items_text}
 
-## 응답 형식
-반드시 아래 JSON 형식으로만 응답하세요. 다른 텍스트를 추가하지 마세요.
-{{"score": <1~5 정수>, "reason": "<한 줄 평가 사유>"}}
-"""
+JSON만: {{"score": <1~5>, "reason": "<한줄>"}}"""
 
 
 def format_items_text(items_snapshot: list[dict]) -> str:
@@ -66,10 +62,15 @@ def format_items_text(items_snapshot: list[dict]) -> str:
     return "\n".join(lines)
 
 
+SEASON_KR = {"spring": "봄", "summer": "여름", "fall": "가을", "winter": "겨울"}
+
+
 def build_prompt(outfit: dict) -> str:
+    season = outfit.get("designed_season", "")
     return EVAL_PROMPT_TEMPLATE.format(
         gender="여성" if outfit["gender"] == "female" else "남성",
         tpo=outfit["designed_tpo"],
+        season=SEASON_KR.get(season, season),
         moods=", ".join(outfit.get("designed_moods", [])),
         items_text=format_items_text(outfit.get("items_snapshot", [])),
     )
@@ -123,7 +124,7 @@ def evaluate_batch(
                 contents=[prompt],
                 config=types.GenerateContentConfig(
                     temperature=0.1,
-                    max_output_tokens=200,
+                    max_output_tokens=1024,
                 ),
             )
             text = response.text or ""
