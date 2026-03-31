@@ -75,31 +75,34 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] curate_by_tone.py가 JSON에서 쿼리 로드하도록 리팩토링
 
 **Task 1.5 — 상품 수집 실행**
-- [ ] Task 1.3 스크립트로 실제 수집 실행
-- [ ] 4톤 병렬 수집 x 3라운드 = 12톤 커버
-- [ ] raw JSON을 `backend/data/raw/` 에 톤별 저장
-- [ ] 목표: 25,000개 상품
-- [ ] 톤별 수집량 확인 (최소 1,000개/톤)
+- [x] Task 1.3 스크립트로 실제 수집 실행
+- [x] 4톤 병렬 수집 x 3라운드 = 13톤 커버
+- [x] raw JSON을 `backend/data/raw/` 에 톤별 저장
+- [x] 목표: 25,000개 상품 ✅ 실제 110,850건 수집
+- [x] 톤별 수집량 확인 (최소 1,000개/톤) ✅ 최소 7,642건(spring_warm_vivid)
 
-**Task 1.6 — 전처리: 상품 정규화**
-- [ ] `backend/scripts/rebuild_from_tones.py` 생성
-- [ ] HTML 태그 제거 (`<b>` 등 title에 포함된 태그)
-- [ ] 브랜드명 추출 (title 파싱 또는 mallName 기반)
-- [ ] 정규화 결과를 `NormalizedProduct` 형식으로 출력
-- [ ] 참조: 기획서 섹션 5.4 (전처리 과정)
+**Task 1.6 — 전처리: 상품 정규화** ✅
+- [x] `backend/scripts/rebuild_from_tones.py` 생성
+- [x] HTML 태그 제거 (`<b>` 등 title에 포함된 태그)
+- [x] 브랜드명 추출 (title 파싱 또는 mallName 기반)
+- [x] 정규화 결과를 `NormalizedProduct` 형식으로 출력 ✅ 110,850건 → 100,682건
+- [x] 참조: 기획서 섹션 5.4 (전처리 과정)
+- 🔧 codex 리뷰 반영: 크로스-톤 중복 제거(global_seen) + validation 후 seen 마킹
 
 **Task 1.7 — 전처리: 이미지 색상 추출 + 톤 매핑**
-- [ ] PIL + scikit-learn K-means로 상위 3개 dominant color 추출
-- [ ] 추출된 HEX → 12톤 팔레트와 RGB 유클리드 거리 비교
-- [ ] 가장 가까운 톤 ID 매핑 (`tone_id` 부여)
-- [ ] 참조: 기획서 섹션 7.1 (상품 색상 → 톤 매핑 흐름도)
+- [x] PIL + scikit-learn K-means로 상위 3개 dominant color 추출
+- [x] 추출된 HEX → 13톤 팔레트와 RGB 유클리드 거리 비교
+- [x] 가장 가까운 톤 ID 매핑 (`tone_id` 부여)
+- [x] 참조: 기획서 섹션 7.1 (상품 색상 → 톤 매핑 흐름도)
+- 🔧 codex 리뷰 반영: summer_cool_soft 팔레트 누락 → 25색 팔레트 생성 + EXPECTED_TONES 검증 추가
 
 **Task 1.8 — 전처리: 하이브리드 카테고리 분류**
-- [ ] 키워드 기반 분류 딕셔너리 (31개 카테고리 x 3~5 키워드)
-- [ ] 키워드 매칭 실패 시 Gemini Flash 폴백 분류
-- [ ] LLM 분류 결과 캐싱 (`backend/data/llm_cache.json`)
-- [ ] 분류 속성: category, silhouette, formality, tpo, gender
-- [ ] 참조: 기획서 섹션 5.4.1 (하이브리드 분류 체계)
+- [x] 키워드 기반 분류 딕셔너리 (31개 카테고리 x 3~5 키워드)
+- [x] 키워드 매칭 실패 시 Gemini Flash 폴백 분류
+- [x] LLM 분류 결과 캐싱 (`backend/data/llm_cache.json`)
+- [x] 분류 속성: category, silhouette, formality, tpo, gender
+- [x] 참조: 기획서 섹션 5.4.1 (하이브리드 분류 체계)
+- ⚠️ 키워드+raw_category 커버리지 92.2% (예상 70%보다 높음, raw_category3/4 힌트 활용)
 
 **Task 1.9 — 코디 레시피 JSON 정의**
 - [ ] `backend/data/outfit_recipes.json` 생성
@@ -165,10 +168,11 @@ W5 ─── 단독 실행 (통합 작업)
 - ✅ codex 리뷰: DB 모델 코드 이슈 없음 (PASS)
 
 **Task 1.16 — 배포 설정**
-- [ ] Vercel 연결 (frontend/) — `vercel.json` 또는 자동 감지
-- [ ] Railway 연결 (backend/) — `Dockerfile` 또는 `railway.json`
-- [ ] 환경변수 설정 (각 플랫폼)
-- [ ] 배포 확인: 프론트 + 백엔드 둘 다 접속 가능
+- [x] Vercel 연결 (frontend/) — 자동 감지, https://frontend-nine-nu-tw6mmgf7ut.vercel.app
+- [x] ~~Railway~~ → Render 연결 (backend/) — Dockerfile, https://colorfit.onrender.com ⚠️ Railway 무료 종료로 Render로 변경
+- [x] 환경변수 설정 (각 플랫폼)
+- [x] 배포 확인: 프론트 + 백엔드 둘 다 접속 가능
+- 🔧 codex 리뷰 반영: .dockerignore 추가 (venv, .env, __pycache__ 제외)
 
 **Task 1.17 — Virtual Try-On API 조사 + 선정 (v1.5)**
 - [ ] Fashn.ai API 테스트 (동일 옷 사진 3장으로 결과 비교)
