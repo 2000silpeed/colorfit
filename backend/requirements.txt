@@ -9,3 +9,4 @@ pillow==11.2.1
 numpy==2.2.5
 scikit-learn==1.6.1
 python-dotenv==1.1.0
+google-generativeai>=0.8.0

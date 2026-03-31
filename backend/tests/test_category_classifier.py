@@ -80,6 +80,11 @@ class TestClassifyByKeyword:
         result = classify_by_keyword("와이드 팬츠 린넨")
         assert result["category"] == "와이드팬츠"
 
+    def test_no_false_positive_on_ti(self):
+        """'티' 단독 키워드 제거 후 벨티드/시티 오매칭 방지."""
+        assert classify_by_keyword("벨티드 팬츠") is None or classify_by_keyword("벨티드 팬츠")["category"] != "티셔츠"
+        assert classify_by_keyword("시티보이 팬츠") is None or classify_by_keyword("시티보이 팬츠")["category"] != "티셔츠"
+
 
 class TestLlmClassificationCache:
     """LLM 분류 캐시."""
@@ -221,13 +226,31 @@ class TestClassifyProduct:
         assert result["category"] is None
         assert result["source"] == "unknown"
 
-    def test_keyword_takes_priority_over_cache(self, tmp_path):
-        """키워드 매칭이 성공하면 캐시를 조회하지 않는다."""
+    def test_keyword_category_with_cache_metadata(self, tmp_path):
+        """키워드로 category 결정 + 캐시에서 메타데이터 보충."""
         cache = LlmClassificationCache(tmp_path / "cache.json")
-        cache.put("p1", {"category": "코트"})
+        cache.put("p1", {
+            "category": "코트",  # 캐시의 category는 무시됨
+            "silhouette": "oversized",
+            "formality": 2,
+            "tpo": ["weekend"],
+            "gender": "female",
+        })
         product = {"product_id": "p1", "name": "여성 봄 니트"}
         result = classify_product(product, cache=cache)
+        assert result["category"] == "니트"  # 키워드 결과 유지
+        assert result["silhouette"] == "oversized"  # 캐시에서 보충
+        assert result["formality"] == 2
+        assert result["tpo"] == ["weekend"]
+        assert result["gender"] == "female"
+        assert result["source"] == "keyword"
+
+    def test_keyword_without_cache(self):
+        """캐시 없이 키워드 매칭 시 메타데이터는 None."""
+        product = {"product_id": "p2", "name": "여성 봄 니트"}
+        result = classify_product(product)
         assert result["category"] == "니트"
+        assert result["silhouette"] is None
         assert result["source"] == "keyword"
 
 

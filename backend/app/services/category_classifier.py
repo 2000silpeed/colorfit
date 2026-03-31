@@ -33,7 +33,7 @@ CATEGORY_KEYWORDS: dict[str, dict[str, list[str]]] = {
         "니트": ["니트", "스웨터", "풀오버", "터틀넥", "목폴라", "캐시미어"],
         "셔츠": ["셔츠", "남방"],
         "블라우스": ["블라우스"],
-        "티셔츠": ["티셔츠", "반팔티", "반팔", "티", "롱슬리브"],
+        "티셔츠": ["티셔츠", "반팔티", "반팔", "롱슬리브"],
         "맨투맨": ["맨투맨", "스웨트셔츠", "크루넥"],
         "후드": ["후드", "후디", "후드티"],
         "크롭탑": ["크롭탑", "크롭", "브라탑", "브라렛"],
@@ -300,13 +300,15 @@ def classify_product(
                 if raw_cat and raw_cat in RAW_CATEGORY_MAP:
                     source = "raw_category"
                     break
+        # LLM 캐시에서 메타데이터 보충 (category는 키워드 결과 유지)
+        cached_meta = cache.get(product_id) if cache and product_id else None
         return {
             "category": kw_result["category"],
             "group": kw_result["group"],
-            "silhouette": None,
-            "formality": None,
-            "tpo": None,
-            "gender": None,
+            "silhouette": cached_meta.get("silhouette") if cached_meta else None,
+            "formality": cached_meta.get("formality") if cached_meta else None,
+            "tpo": cached_meta.get("tpo") if cached_meta else None,
+            "gender": cached_meta.get("gender") if cached_meta else None,
             "source": source,
         }
 
