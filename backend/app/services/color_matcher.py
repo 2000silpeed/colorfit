@@ -32,14 +32,32 @@ class TonePalette:
         self.tones: dict[str, list[tuple[int, int, int]]] = {}
         self._load_palettes(palettes_dir)
 
+    EXPECTED_TONES = {
+        "spring_warm_light", "spring_warm_bright", "spring_warm_vivid",
+        "summer_cool_light", "summer_cool_soft", "summer_cool_bright", "summer_cool_mute",
+        "autumn_warm_deep", "autumn_warm_mute", "autumn_warm_strong",
+        "winter_cool_deep", "winter_cool_strong", "winter_cool_vivid",
+    }
+
     def _load_palettes(self, palettes_dir: Path) -> None:
-        """팔레트 JSON 파일들을 로드한다."""
+        """팔레트 JSON 파일들을 로드한다.
+
+        Raises:
+            FileNotFoundError: 필수 톤 팔레트가 누락된 경우
+        """
         for path in sorted(palettes_dir.glob("*.json")):
             with open(path, encoding="utf-8") as f:
                 data = json.load(f)
             tone_id = data["tone_id"]
             colors = [tuple(c["rgb"]) for c in data["colors"]]
             self.tones[tone_id] = colors
+
+        missing = self.EXPECTED_TONES - set(self.tones.keys())
+        if missing:
+            raise FileNotFoundError(
+                f"필수 톤 팔레트 누락: {sorted(missing)}. "
+                f"data/palettes/ 디렉토리를 확인하세요."
+            )
         logger.info("팔레트 로드: %d개 톤", len(self.tones))
 
     def match_color(self, hex_color: str) -> tuple[str, float]:

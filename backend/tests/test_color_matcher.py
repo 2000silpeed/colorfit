@@ -36,8 +36,9 @@ class TestRgbDistance:
 
 class TestTonePalette:
     @pytest.fixture
-    def palette(self, tmp_path):
+    def palette(self, tmp_path, monkeypatch):
         """테스트용 미니 팔레트를 생성한다."""
+        monkeypatch.setattr(TonePalette, "EXPECTED_TONES", {"spring_warm_light", "winter_cool_deep"})
         tone_a = {
             "tone_id": "spring_warm_light",
             "colors": [
@@ -82,6 +83,18 @@ class TestTonePalette:
         assert tone_id == ""
         assert primary_hex == ""
 
+    def test_missing_palette_raises(self, tmp_path):
+        """필수 팔레트 누락 시 FileNotFoundError."""
+        tone = {
+            "tone_id": "spring_warm_light",
+            "colors": [{"hex": "#FADADD", "rgb": [250, 218, 221], "hsl": [354, 76, 92], "name_ko": "핑크"}],
+        }
+        path = tmp_path / "spring_warm_light.json"
+        with open(path, "w") as f:
+            json.dump(tone, f)
+        with pytest.raises(FileNotFoundError, match="필수 톤 팔레트 누락"):
+            TonePalette(palettes_dir=tmp_path)
+
 
 class TestTonePaletteReal:
     """실제 팔레트 데이터로 검증한다."""
@@ -93,8 +106,9 @@ class TestTonePaletteReal:
             pytest.skip("팔레트 데이터 없음")
         return TonePalette(palettes_dir=palettes_dir)
 
-    def test_all_12_tones_loaded(self, palette):
-        assert len(palette.tones) >= 12
+    def test_all_13_tones_loaded(self, palette):
+        assert len(palette.tones) == 13
+        assert "summer_cool_soft" in palette.tones
 
     def test_warm_color_maps_to_warm_tone(self, palette):
         tone_id, _ = palette.match_color("#FF6B6B")  # 밝은 코랄/레드

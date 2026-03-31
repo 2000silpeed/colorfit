@@ -10,8 +10,9 @@ from app.services.color_matcher import TonePalette
 
 
 @pytest.fixture
-def mock_palette(tmp_path):
+def mock_palette(tmp_path, monkeypatch):
     """테스트용 미니 팔레트."""
+    monkeypatch.setattr(TonePalette, "EXPECTED_TONES", {"spring_warm_light"})
     tone = {
         "tone_id": "spring_warm_light",
         "colors": [
