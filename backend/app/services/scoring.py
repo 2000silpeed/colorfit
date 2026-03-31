@@ -99,3 +99,67 @@ def calculate_pcf(
         for tone_id, hex_color in zip(item_tone_ids, item_hex_colors)
     ]
     return round(sum(scores) / len(scores), 2)
+
+
+# ---------------------------------------------------------------------------
+# OF (Occasion Fit) — TPO 적합도  (기획서 섹션 5.5.2)
+# ---------------------------------------------------------------------------
+
+TPO_SYNONYMS: dict[str, set[str]] = {
+    "commute": {"office", "commute"},
+    "office": {"office", "commute"},
+    "weekend": {"casual", "weekend", "daily"},
+    "casual": {"casual", "weekend", "daily"},
+    "daily": {"casual", "daily", "weekend"},
+    "interview": {"interview", "office"},
+    "campus": {"campus", "casual"},
+    "event": {"party", "wedding", "event"},
+    "party": {"party", "event"},
+    "wedding": {"wedding", "event"},
+    "workout": {"workout"},
+    "date": {"date"},
+    "travel": {"travel"},
+}
+
+
+def _expand_tpos(tpo_list: list[str]) -> set[str]:
+    """사용자 TPO 리스트를 동의어 확장하여 집합으로 반환한다."""
+    expanded: set[str] = set()
+    for tpo in tpo_list:
+        synonyms = TPO_SYNONYMS.get(tpo)
+        if synonyms:
+            expanded.update(synonyms)
+        else:
+            expanded.add(tpo)
+    return expanded
+
+
+def calculate_of(
+    outfit_tags: list[str],
+    user_tpo_list: list[str],
+) -> float:
+    """코디의 OF(Occasion Fit) 스코어를 계산한다.
+
+    기획서 섹션 5.5.2 구현.
+
+    Args:
+        outfit_tags: 코디에 부여된 TPO 태그 리스트
+        user_tpo_list: 사용자가 설정한 TPO 리스트
+
+    Returns:
+        30~100 범위의 OF 점수 (30점 하한)
+    """
+    if not outfit_tags or not user_tpo_list:
+        return 30.0
+
+    expanded_tpos = _expand_tpos(user_tpo_list)
+    outfit_tag_set = set(outfit_tags)
+    match_count = len(outfit_tag_set & expanded_tpos)
+    total_tags = len(outfit_tag_set)
+
+    if match_count >= 2:
+        return min(100.0, round(80.0 + (match_count / total_tags) * 20.0, 2))
+    elif match_count == 1:
+        return round(60.0 + (1.0 / total_tags) * 20.0, 2)
+    else:
+        return 30.0

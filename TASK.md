@@ -211,11 +211,11 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 참조: 기획서 섹션 5.5.1
 
 **Task 2.2 — OF 스코어링 (TPO 적합도)**
-- [ ] `calculate_of(outfit_tags, user_tpo_list)` 함수
-- [ ] TPO 동의어 확장 매핑 (commute↔office 등)
-- [ ] match_count 기반 점수 변환 (30점 하한)
-- [ ] pytest 테스트: 정확 매칭, 동의어 매칭, 미매칭
-- [ ] 참조: 기획서 섹션 5.5.2
+- [x] `calculate_of(outfit_tags, user_tpo_list)` 함수
+- [x] TPO 동의어 확장 매핑 (commute↔office 등)
+- [x] match_count 기반 점수 변환 (30점 하한)
+- [x] pytest 테스트: 정확 매칭, 동의어 매칭, 미매칭 (20개 전체 통과)
+- [x] 참조: 기획서 섹션 5.5.2
 
 **Task 2.3 — CH 스코어링 (색상 조화)**
 - [ ] `calculate_ch(item_hex_colors)` 함수
