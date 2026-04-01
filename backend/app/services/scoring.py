@@ -4,11 +4,15 @@
 기획서 섹션 5.5 참조.
 """
 
+from __future__ import annotations
+
+import json
 from pathlib import Path
 
 import colorsys
 from itertools import combinations
 from statistics import stdev
+from typing import Any
 
 from app.services.color_matcher import TonePalette, _hex_to_rgb, _rgb_distance
 
@@ -265,3 +269,124 @@ def calculate_pe(
         return round(max(40.0, score), 2)
 
     return round(max(0.0, min(100.0, score)), 2)
+
+
+# ---------------------------------------------------------------------------
+# SF (Style Fit) — 스타일 적합도  (기획서 섹션 5.5.5 / 6.6)
+# ---------------------------------------------------------------------------
+
+DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
+
+_style_compat: dict[str, int] | None = None
+_silhouette_rules: dict[str, dict[str, Any]] | None = None
+_formality_map: dict[str, int] | None = None
+
+
+def _load_style_compat() -> dict[str, int]:
+    global _style_compat
+    if _style_compat is None:
+        with open(DATA_DIR / "style_compat.json", encoding="utf-8") as f:
+            raw = json.load(f)
+        _style_compat = {k: v for k, v in raw.items() if not k.startswith("_")}
+    return _style_compat
+
+
+def _load_silhouette_rules() -> dict[str, dict[str, Any]]:
+    global _silhouette_rules
+    if _silhouette_rules is None:
+        with open(DATA_DIR / "silhouette_rules.json", encoding="utf-8") as f:
+            raw = json.load(f)
+        _silhouette_rules = {k: v for k, v in raw.items() if not k.startswith("_")}
+    return _silhouette_rules
+
+
+def _load_formality_map() -> dict[str, int]:
+    global _formality_map
+    if _formality_map is None:
+        with open(DATA_DIR / "formality_map.json", encoding="utf-8") as f:
+            raw = json.load(f)
+        _formality_map = {k: v for k, v in raw.items() if not k.startswith("_")}
+    return _formality_map
+
+
+def _compat_key(cat_a: str, cat_b: str) -> str:
+    """두 카테고리를 알파벳 순 정렬하여 키를 생성한다."""
+    return f"{cat_a}:{cat_b}"
+
+
+def _category_compat_score(categories: list[str]) -> float:
+    """카테고리 궁합 점수 (0~100). 모든 2-조합의 평균."""
+    if len(categories) < 2:
+        return 70.0
+
+    compat = _load_style_compat()
+    scores: list[float] = []
+
+    for a, b in combinations(categories, 2):
+        key = _compat_key(a, b)
+        rev_key = _compat_key(b, a)
+        score = compat.get(key) or compat.get(rev_key)
+        if score is not None:
+            scores.append(float(score))
+        else:
+            scores.append(60.0)
+
+    return sum(scores) / len(scores)
+
+
+def _silhouette_balance_score(
+    top_silhouette: str | None,
+    bottom_silhouette: str | None,
+) -> float:
+    """실루엣 밸런스 점수 (0~100). 상의-하의 조합 규칙 기반."""
+    if not top_silhouette or not bottom_silhouette:
+        return 70.0
+
+    rules = _load_silhouette_rules()
+    key = f"{top_silhouette}:{bottom_silhouette}"
+    rule = rules.get(key)
+
+    if rule is not None:
+        return float(rule["score"])
+
+    return 70.0
+
+
+def _formality_consistency_score(categories: list[str]) -> float:
+    """포멀도 일관성 점수 (0~100). 표준편차 기반 감점."""
+    if len(categories) < 2:
+        return 100.0
+
+    fmap = _load_formality_map()
+    formalities = [float(fmap.get(cat, 3)) for cat in categories]
+
+    std_dev = stdev(formalities)
+    return round(max(0.0, 100.0 - std_dev * 40.0), 2)
+
+
+def calculate_sf(
+    categories: list[str],
+    top_silhouette: str | None = None,
+    bottom_silhouette: str | None = None,
+) -> float:
+    """코디의 SF(Style Fit) 스코어를 계산한다.
+
+    기획서 섹션 5.5.5 / 6.6 구현.
+
+    Args:
+        categories: 코디 아이템들의 카테고리 리스트 (e.g. ["블라우스", "슬랙스", "로퍼"])
+        top_silhouette: 상의 실루엣 (e.g. "fitted", "oversized")
+        bottom_silhouette: 하의 실루엣 (e.g. "slim", "wide")
+
+    Returns:
+        0~100 범위의 SF 점수
+    """
+    if not categories:
+        return 0.0
+
+    cat_score = _category_compat_score(categories)
+    sil_score = _silhouette_balance_score(top_silhouette, bottom_silhouette)
+    form_score = _formality_consistency_score(categories)
+
+    sf = cat_score * 0.50 + sil_score * 0.25 + form_score * 0.25
+    return round(max(0.0, min(100.0, sf)), 2)

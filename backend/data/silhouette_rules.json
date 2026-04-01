@@ -1,0 +1,19 @@
+{
+  "_description": "실루엣 밸런스 규칙. 키: 'top_silhouette:bottom_silhouette', 값: {score, line}. 기획서 섹션 6.6 참조.",
+
+  "oversized:slim": {"score": 95, "line": "Y"},
+  "oversized:skinny": {"score": 95, "line": "Y"},
+  "fitted:wide": {"score": 95, "line": "A"},
+  "fitted:flared": {"score": 95, "line": "A"},
+  "fitted:slim": {"score": 85, "line": "I"},
+  "fitted:skinny": {"score": 80, "line": "I"},
+  "oversized:wide": {"score": 60, "line": "I"},
+  "oversized:oversized": {"score": 55, "line": "I"},
+  "crop:high_waist": {"score": 90, "line": "X"},
+  "crop:wide": {"score": 80, "line": "A"},
+  "crop:slim": {"score": 85, "line": "X"},
+  "fitted:regular": {"score": 80, "line": "I"},
+  "oversized:regular": {"score": 70, "line": "Y"},
+  "regular:regular": {"score": 75, "line": "I"},
+  "regular:wide": {"score": 80, "line": "A"}
+}
