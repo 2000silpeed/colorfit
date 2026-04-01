@@ -30,9 +30,9 @@ class TestCalculatePE:
         assert score == pytest.approx(85.0)
 
     def test_within_range_near_mid(self):
-        """범위 내 중앙 근처 → 높은 점수."""
+        """범위 내 중앙 근처 → 100 - |110000-100000|/100000 * 30 = 97점."""
         score = calculate_pe(110_000, self.BUDGET_MIN, self.BUDGET_MAX)
-        assert score > 90.0
+        assert score == pytest.approx(97.0)
 
     def test_over_10_percent(self):
         """10% 초과 → 70 - 0.1*100 = 60점."""
@@ -53,9 +53,9 @@ class TestCalculatePE:
         assert score == 0.0
 
     def test_under_budget_mild(self):
-        """예산 미만 완만 감점."""
+        """예산 미만 → max(40, 80 - 0.2*80) = 64점."""
         score = calculate_pe(40_000, self.BUDGET_MIN, self.BUDGET_MAX)
-        assert 40.0 <= score < 80.0
+        assert score == pytest.approx(64.0)
 
     def test_extreme_low_price_floors_at_40(self):
         """극단 저가 → 최저 40점."""
