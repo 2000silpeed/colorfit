@@ -291,11 +291,13 @@ W5 ─── 단독 실행 (통합 작업)
 - 🔧 codex 리뷰 반영: dislike에 user_id 필터 추가, budget_min 누락 수정, 프리컴퓨팅 reasons 우선 사용
 - ⚠️ C1(전체 메모리 로드), W2(비즈니스 로직 서비스 분리), W3(커서 페이지네이션)은 별도 최적화 Task 필요
 
-**Task 2.12 — 스코어 프리컴퓨팅**
-- [ ] `backend/scripts/precompute_scores.py` 생성
-- [ ] 전체 코디에 대해 기본 5축 스코어 사전 계산
-- [ ] outfits.scores JSONB에 저장
-- [ ] 런타임에는 개인화 보정만 적용
+**Task 2.12 — 스코어 프리컴퓨팅** ✅
+- [x] `backend/scripts/precompute_scores.py` 생성
+- [x] 전체 코디에 대해 기본 5축 스코어 사전 계산 (1,790개, 0.7s)
+- [x] outfits.scores JSONB에 저장
+- [x] 런타임에는 개인화 보정만 적용
+- ⚠️ color_hex 미추출 상태: PCF는 tone_id 레벨 매칭, CH는 기본값 50점. 색상 추출(Task 1.7) 실행 후 재계산 필요
+- 🔧 codex 리뷰 반영: 원자적 파일 쓰기(os.replace), dead code 제거, PCF 예외 로깅 추가
 
 ### 🅒 Lane D: 온보딩 + 피드 UI (🅐🅑와 동시 실행 가능)
 
@@ -331,10 +333,11 @@ W5 ─── 단독 실행 (통합 작업)
 - 🔧 codex 리뷰 반영: WebKit scrollbar 숨김 CSS 추가, 무드 태그 선택 시 텍스트 색상 #222222 유지(스펙 준수), localStorage try/catch 추가
 
 **Task 2.17 — 온보딩 Step 4: 예산 설정**
-- [ ] `frontend/app/onboarding/step4/page.tsx`
-- [ ] 듀얼 썸 레인지 슬라이더 (min/max)
-- [ ] 빠른 프리셋 4개 버튼 (~3만 / 3~7만 / 7~15만 / 15만~)
-- [ ] "추천 코디 보러가기" CTA (풀와이드, Marsala)
+- [x] `frontend/src/app/onboarding/step4/page.tsx`
+- [x] 듀얼 썸 레인지 슬라이더 (min/max)
+- [x] 빠른 프리셋 4개 버튼 (~3만 / 3~7만 / 7~15만 / 15만~)
+- [x] "추천 코디 보러가기" CTA (풀와이드, Marsala)
+- 🔧 codex 리뷰 반영: 키보드 접근성(onKeyDown) 추가, handlePointerMove functional updater로 stale closure 방지, localStorage 타입 검증 강화
 
 **Task 2.18 — 온보딩 Step 5: 비주얼 취향 분석**
 - [ ] `frontend/app/onboarding/step5/page.tsx`
