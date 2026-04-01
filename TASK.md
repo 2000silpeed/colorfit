@@ -314,11 +314,12 @@ W5 ─── 단독 실행 (통합 작업)
 - 🔧 codex 리뷰 반영: localStorage에 성별 저장, Framer Motion animate로 scale 1.05 전환(whileTap 제거), step2 placeholder 추가
 
 **Task 2.15 — 온보딩 Step 2: 퍼스널컬러 선택**
-- [ ] `frontend/app/onboarding/step2/page.tsx`
-- [ ] 시즌별 그라데이션 스트립 4개 (봄/여름/가을/겨울)
-- [ ] 각 스트립 아래 세부 톤 칩 3개
-- [ ] 선택 시 다른 시즌 디밍 (opacity 0.4)
-- [ ] "잘 모르겠어요" → 바텀시트 간이 진단 2문항
+- [x] `frontend/app/onboarding/step2/page.tsx`
+- [x] 시즌별 그라데이션 스트립 4개 (봄/여름/가을/겨울)
+- [x] 각 스트립 아래 세부 톤 칩 3개
+- [x] 선택 시 다른 시즌 디밍 (opacity 0.4)
+- [x] "잘 모르겠어요" → 바텀시트 간이 진단 2문항
+- 🔧 codex 리뷰 반영: Q2 답변→톤 매핑 2차원 테이블로 교체, 바텀시트 role="dialog"+aria-modal+Escape 닫기 추가, Q1 문구 스펙 일치
 
 **Task 2.16 — 온보딩 Step 3: TPO + 무드 선택**
 - [ ] `frontend/app/onboarding/step3/page.tsx`
