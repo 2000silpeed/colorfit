@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 
@@ -92,19 +92,22 @@ export default function Step3Page() {
   const router = useRouter();
   const prefersReducedMotion = useReducedMotion();
 
-  const [gender, setGender] = useState<string>("female");
-  const [tone, setTone] = useState<string | null>(null);
+  const [gender, setGender] = useState<string>(() => {
+    if (typeof window === "undefined") return "female";
+    try {
+      return localStorage.getItem("colorfit_gender") || "female";
+    } catch {}
+    return "female";
+  });
+  const [tone, setTone] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      return localStorage.getItem("colorfit_tone");
+    } catch {}
+    return null;
+  });
   const [selectedTpos, setSelectedTpos] = useState<string[]>([]);
   const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
-
-  useEffect(() => {
-    try {
-      const storedGender = localStorage.getItem("colorfit_gender");
-      if (storedGender) setGender(storedGender);
-      const storedTone = localStorage.getItem("colorfit_tone");
-      if (storedTone) setTone(storedTone);
-    } catch {}
-  }, []);
 
   const tpoOptions = useMemo(
     () => (gender === "male" ? MALE_TPOS : FEMALE_TPOS),
