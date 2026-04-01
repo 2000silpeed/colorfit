@@ -394,10 +394,13 @@ W5 ─── 단독 실행 (통합 작업)
 - 🔧 codex 리뷰 통과
 
 **Task 2.24 — 하단 탭바**
-- [ ] `frontend/components/BottomTabBar.tsx`
-- [ ] 홈/저장/Top/마이 4탭
-- [ ] 활성 탭: Marsala 아이콘 + bold 라벨
-- [ ] 전환 모션: 아이콘 scale 0.9→1.1→1.0
+- [x] `frontend/src/components/BottomTabBar.tsx`
+- [x] 홈/저장/Top/마이 4탭
+- [x] 활성 탭: Marsala 아이콘 + bold 라벨
+- [x] 전환 모션: 아이콘 scale 0.9→1.1→1.0
+- ⚠️ Route Group `(main)` 도입하여 feed/outfit 이동. 온보딩은 탭바 제외
+- ⚠️ outfit/[id] setState-in-effect 에러 수정 (초기화 함수로 변경)
+- 🔧 codex 리뷰 통과
 
 ### W2 완료 기준
 - [ ] 5 Step 온보딩 → 코디 피드 진입 동작

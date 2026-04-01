@@ -107,7 +107,11 @@ export default function OutfitDetailPage() {
 
   const [outfit, setOutfit] = useState<OutfitDetailResponse | null>(null);
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const savedIds = JSON.parse(localStorage.getItem("colorfit_saved_ids") ?? "[]");
+    return (savedIds as string[]).includes(outfitId);
+  });
 
   /* parallax scroll */
   const heroRef = useRef<HTMLDivElement>(null);
@@ -134,11 +138,6 @@ export default function OutfitDetailPage() {
     return () => { cancelled = true; };
   }, [outfitId]);
 
-  /* 저장 상태 localStorage 동기화 */
-  useEffect(() => {
-    const savedIds = JSON.parse(localStorage.getItem("colorfit_saved_ids") ?? "[]");
-    if (savedIds.includes(outfitId)) setSaved(true);
-  }, [outfitId]);
 
   const userId =
     typeof window !== "undefined"
