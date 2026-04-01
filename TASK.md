@@ -281,13 +281,15 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] pytest 테스트: PCF 최고 기여, OF 최고 기여, 동점 처리 (16개 테스트 통과)
 - [x] 참조: 기획서 섹션 6.4
 
-**Task 2.11 — Feed API 엔드포인트**
-- [ ] `backend/app/routers/feed.py` — GET /api/feed
-- [ ] 파라미터: tone_id, tpo, gender, budget_min, budget_max, page
-- [ ] Profile Load → Filter → StyleFilter → Score → Rerank → Reason 전체 파이프라인
-- [ ] 응답: 코디 리스트 + 5축 스코어 + 이유 2줄
-- [ ] `backend/app/routers/outfit.py` — GET /api/outfit/{id}
-- [ ] Pydantic 스키마 정의 (`schemas/outfit.py`)
+**Task 2.11 — Feed API 엔드포인트** ✅
+- [x] `backend/app/routers/feed.py` — GET /api/feed
+- [x] 파라미터: tone_id, tpo, gender, budget_min, budget_max, page + user_id
+- [x] Profile Load → Filter → StyleFilter → Score → Rerank → Reason 전체 파이프라인
+- [x] 응답: 코디 리스트 + 5축 스코어 + 이유 2줄
+- [x] `backend/app/routers/outfit.py` — GET /api/outfit/{id}
+- [x] Pydantic 스키마 정의 (`schemas/outfit.py`)
+- 🔧 codex 리뷰 반영: dislike에 user_id 필터 추가, budget_min 누락 수정, 프리컴퓨팅 reasons 우선 사용
+- ⚠️ C1(전체 메모리 로드), W2(비즈니스 로직 서비스 분리), W3(커서 페이지네이션)은 별도 최적화 Task 필요
 
 **Task 2.12 — 스코어 프리컴퓨팅**
 - [ ] `backend/scripts/precompute_scores.py` 생성
@@ -589,6 +591,13 @@ W5 ─── 단독 실행 (통합 작업)
 - [ ] "이 추천이 도움이 됐나요?" + 3개 버튼
 - [ ] 👎 선택 시 이유 태그 추가 표시
 - [ ] POST /api/feedback 연동
+
+### 🅒 Feed API 최적화 (Task 2.11 codex 리뷰 기술부채)
+
+**Task 4.11a — Feed API 성능 최적화**
+- [ ] DB 레벨 limit/offset 또는 커서 기반 페이지네이션 적용 (현재 전체 메모리 로드)
+- [ ] 비즈니스 로직(dominant_tone, category_to_group 등)을 services/ 레이어로 분리
+- [ ] 코디 수 증가 시 OOM 방지 (스트리밍 또는 배치 처리)
 
 ### 단독 실행 (🅐🅑 모두 완료 후)
 
