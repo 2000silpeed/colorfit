@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
@@ -69,53 +69,59 @@ export default function Step5Page() {
   const [selected, setSelected] = useState<string | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const seedsRef = useRef<Record<string, string>>({});
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   const round = ROUNDS[currentRound];
 
   const advanceRound = useCallback(() => {
-    const nextRound = currentRound + 1;
-    if (nextRound >= TOTAL_ROUNDS) {
-      try {
-        localStorage.setItem(
-          "colorfit_style_seeds",
-          JSON.stringify(seedsRef.current),
-        );
-        localStorage.setItem(
-          "colorfit_seed_confidence",
-          String(
-            Object.keys(seedsRef.current).length,
-          ),
-        );
-      } catch {}
-      router.push("/feed");
-      return;
-    }
-    setIsTransitioning(true);
-    const delay = prefersReducedMotion ? 0 : 500;
-    setTimeout(() => {
-      setCurrentRound(nextRound);
-      setSelected(null);
-      setIsTransitioning(false);
-    }, delay);
-  }, [currentRound, prefersReducedMotion, router]);
+    setCurrentRound((prev) => {
+      const nextRound = prev + 1;
+      if (nextRound >= TOTAL_ROUNDS) {
+        try {
+          localStorage.setItem(
+            "colorfit_style_seeds",
+            JSON.stringify(seedsRef.current),
+          );
+          localStorage.setItem(
+            "colorfit_seed_confidence",
+            String(Object.keys(seedsRef.current).length),
+          );
+        } catch {}
+        router.push("/feed");
+        return prev;
+      }
+      return nextRound;
+    });
+    setSelected(null);
+    setIsTransitioning(false);
+  }, [router]);
 
   const handleSelect = useCallback(
     (optionId: string) => {
       if (selected || isTransitioning) return;
       setSelected(optionId);
+      setIsTransitioning(true);
       seedsRef.current[round.seedKey] = optionId;
       const delay = prefersReducedMotion ? 0 : 500;
-      setTimeout(() => advanceRound(), delay);
+      timerRef.current = setTimeout(() => advanceRound(), delay);
     },
     [selected, isTransitioning, round.seedKey, prefersReducedMotion, advanceRound],
   );
 
   const handlePass = useCallback(() => {
     if (isTransitioning) return;
+    setIsTransitioning(true);
     advanceRound();
   }, [isTransitioning, advanceRound]);
 
   const handleSkipAll = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
     try {
       localStorage.setItem("colorfit_style_seeds", JSON.stringify({}));
       localStorage.setItem("colorfit_seed_confidence", "0");
@@ -133,6 +139,11 @@ export default function Step5Page() {
         <p className="mt-[var(--space-xs)] font-body text-[14px] text-text-secondary text-center">
           직감적으로 골라주세요
         </p>
+      </div>
+
+      {/* 스크린리더 라운드 알림 */}
+      <div aria-live="polite" className="sr-only">
+        {round.title} 라운드 ({currentRound + 1} / {TOTAL_ROUNDS})
       </div>
 
       {/* 2x2 이미지 그리드 */}
@@ -167,6 +178,9 @@ export default function Step5Page() {
                     y: 0,
                     opacity: isDimmed ? 0.3 : 1,
                     scale: isSelected ? 0.95 : 1,
+                    borderColor: isSelected
+                      ? "var(--color-accent)"
+                      : "rgba(0,0,0,0)",
                   }}
                   transition={
                     prefersReducedMotion
@@ -175,16 +189,11 @@ export default function Step5Page() {
                           y: { duration: 0.3, delay: i * 0.06, ease: "easeOut" },
                           opacity: { duration: 0.2 },
                           scale: { duration: 0.2 },
+                          borderColor: { duration: 0.2 },
                         }
                   }
-                  className="relative overflow-hidden rounded-[var(--radius-md)] cursor-pointer border-[3px] disabled:cursor-default"
-                  style={{
-                    aspectRatio: "3 / 4",
-                    borderColor: isSelected
-                      ? "var(--color-accent)"
-                      : "transparent",
-                    transition: "border-color 0.2s ease-out",
-                  }}
+                  className="relative overflow-hidden rounded-[var(--radius-md)] cursor-pointer border-[3px] border-transparent disabled:cursor-default"
+                  style={{ aspectRatio: "3 / 4" }}
                   aria-label={`${round.title} 선택: ${option.label}`}
                   aria-pressed={isSelected}
                 >
@@ -209,16 +218,19 @@ export default function Step5Page() {
         {/* 라운드 도트 */}
         <div className="flex items-center gap-[var(--space-sm)]">
           {ROUNDS.map((_, i) => (
-            <div
+            <motion.div
               key={i}
               className="rounded-full"
-              style={{
-                width: 8,
-                height: 8,
+              animate={{
                 backgroundColor:
                   i <= currentRound ? "var(--color-accent)" : "#E0DCD7",
-                transition: "background-color 0.2s ease-out",
               }}
+              transition={
+                prefersReducedMotion
+                  ? { duration: 0 }
+                  : { duration: 0.2 }
+              }
+              style={{ width: 8, height: 8 }}
               aria-hidden="true"
             />
           ))}
