@@ -11,7 +11,7 @@ from pathlib import Path
 
 import colorsys
 from itertools import combinations
-from statistics import stdev
+from statistics import pstdev, stdev
 from typing import Any
 
 from app.services.color_matcher import TonePalette, _hex_to_rgb, _rgb_distance
@@ -310,7 +310,7 @@ def _load_formality_map() -> dict[str, int]:
 
 
 def _compat_key(cat_a: str, cat_b: str) -> str:
-    """두 카테고리를 알파벳 순 정렬하여 키를 생성한다."""
+    """두 카테고리로 궁합 매트릭스 조회 키를 생성한다."""
     return f"{cat_a}:{cat_b}"
 
 
@@ -360,7 +360,7 @@ def _formality_consistency_score(categories: list[str]) -> float:
     fmap = _load_formality_map()
     formalities = [float(fmap.get(cat, 3)) for cat in categories]
 
-    std_dev = stdev(formalities)
+    std_dev = pstdev(formalities)
     return round(max(0.0, 100.0 - std_dev * 40.0), 2)
 
 
