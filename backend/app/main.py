@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import feed, onboarding, outfit
+from app.routers import feed, onboarding, outfit, reaction
 
 app = FastAPI(
     title=settings.app_name,
@@ -24,6 +24,7 @@ app.add_middleware(
 app.include_router(feed.router)
 app.include_router(onboarding.router)
 app.include_router(outfit.router)
+app.include_router(reaction.router)
 
 
 @app.get("/health")
