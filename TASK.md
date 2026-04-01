@@ -340,11 +340,12 @@ W5 ─── 단독 실행 (통합 작업)
 - 🔧 codex 리뷰 반영: 키보드 접근성(onKeyDown) 추가, handlePointerMove functional updater로 stale closure 방지, localStorage 타입 검증 강화
 
 **Task 2.18 — 온보딩 Step 5: 비주얼 취향 분석**
-- [ ] `frontend/app/onboarding/step5/page.tsx`
-- [ ] 2x2 이미지 그리드, 4라운드
-- [ ] 탭 시 선택 → 0.5s 후 다음 라운드 crossfade
-- [ ] "패스" 링크, 라운드 인디케이터
-- [ ] 완료 후 피드로 전환
+- [x] `frontend/src/app/onboarding/step5/page.tsx`
+- [x] 2x2 이미지 그리드, 4라운드 (무드/실루엣/컬러/가격대)
+- [x] 탭 시 선택 → 0.5s 후 다음 라운드 crossfade
+- [x] "패스" 링크, 라운드 인디케이터, "건너뛰기" 링크
+- [x] 완료 후 피드로 전환 (style_seeds + seed_confidence localStorage 저장)
+- 🔧 codex 리뷰 반영: 이중 딜레이 제거, exit/enter 비대칭 타이밍(0.2s/0.3s), aria-live 라운드 알림, setTimeout cleanup, inline CSS transition→Framer Motion
 
 **Task 2.19 — 온보딩 API 연동**
 - [ ] `backend/app/routers/onboarding.py` — POST /api/onboarding
