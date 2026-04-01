@@ -201,12 +201,11 @@ class TestH8StyleFilter:
 
     def test_bad_outfit_fails(self):
         items = [
-            {"category": "후드티", "group": "top", "silhouette": "oversized"},
-            {"category": "정장바지", "group": "bottom", "silhouette": "slim"},
+            {"category": "레깅스", "group": "bottom", "silhouette": "slim"},
+            {"category": "코트", "group": "outer", "silhouette": None},
             {"category": "힐", "group": "shoes", "silhouette": None},
         ]
-        passed = h8_style_filter(items)
-        assert isinstance(passed, bool)
+        assert h8_style_filter(items) is False
 
     def test_empty_items_fails(self):
         assert h8_style_filter([]) is False
@@ -336,6 +335,21 @@ class TestApplyHardFilters:
         )
         assert passed is False
         assert reason == "H7_tone"
+
+    def test_h8_rejection(self):
+        items = [
+            {"brand": "유니클로", "tone_id": "spring_warm_light",
+             "category": "레깅스", "group": "bottom", "silhouette": "slim"},
+            {"brand": "COS", "tone_id": "spring_warm_bright",
+             "category": "코트", "group": "outer", "silhouette": None},
+            {"brand": "무신사 스탠다드", "tone_id": "spring_warm_light",
+             "category": "힐", "group": "shoes", "silhouette": None},
+        ]
+        passed, reason = apply_hard_filters(
+            _make_outfit(), _make_user(), items, current_month=4,
+        )
+        assert passed is False
+        assert reason == "H8_style_filter"
 
     def test_h6_rejection(self):
         passed, reason = apply_hard_filters(
