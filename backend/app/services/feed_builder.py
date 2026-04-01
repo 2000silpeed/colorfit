@@ -182,3 +182,109 @@ def apply_hard_filters(
         return False, "H6_llm_quality"
 
     return True, None
+
+
+# ---------------------------------------------------------------------------
+# Soft Score + 리랭킹 (기획서 섹션 6.1, 단계 4-5)
+# ---------------------------------------------------------------------------
+
+DEFAULT_WEIGHTS: dict[str, float] = {
+    "pcf": 0.25,
+    "of": 0.20,
+    "ch": 0.15,
+    "pe": 0.15,
+    "sf": 0.25,
+}
+
+
+def calculate_soft_score(
+    scores: dict[str, float] | None,
+    weight_overrides: dict[str, float] | None = None,
+) -> float:
+    """프리컴퓨팅된 5축 스코어의 가중합을 계산한다.
+
+    Args:
+        scores: 프리컴퓨팅된 5축 점수 (pcf, of, ch, pe, sf)
+        weight_overrides: 개인화 가중치 오버라이드
+
+    Returns:
+        0~100 범위의 가중합 점수
+    """
+    if not scores:
+        return 0.0
+    weights = {**DEFAULT_WEIGHTS, **(weight_overrides or {})}
+    total = sum(
+        scores.get(axis, 0.0) * weights.get(axis, 0.0)
+        for axis in DEFAULT_WEIGHTS
+    )
+    return round(total, 2)
+
+
+def rerank(
+    scored_outfits: list[dict[str, Any]],
+    disliked_ids: set[str] | None = None,
+    personalization: dict[str, float] | None = None,
+    limit: int = 200,
+) -> list[dict[str, Any]]:
+    """리랭킹 5단계를 순차 적용하여 상위 코디를 반환한다.
+
+    기획서 섹션 6.1 (단계 5) 구현.
+
+    처리 순서:
+        1. dislike 제외
+        2. 완성도 가산 (상하의+아우터 → +3점)
+        3. 개인화 보정 (-10 ~ +10)
+        4. 점수순 정렬
+        5. 톤 다양성(동일 톤 3개 제한) + 메인아이템 중복 제거(1개 제한)
+
+    Args:
+        scored_outfits: 각 dict에 id, soft_score, is_complete_outfit,
+                        dominant_tone, main_item_id 키 필요
+        disliked_ids: 사용자 dislike 코디 ID 집합
+        personalization: 코디 ID → 보정값 매핑 (-10 ~ +10 클램핑)
+        limit: 반환 개수 (기본 200)
+
+    Returns:
+        리랭킹 적용 후 상위 코디 리스트 (final_score 포함)
+    """
+    disliked = disliked_ids or set()
+    personal = personalization or {}
+
+    candidates = []
+    for o in scored_outfits:
+        if o.get("id") in disliked:
+            continue
+        score = o.get("soft_score", 0.0)
+        if o.get("is_complete_outfit"):
+            score += 3.0
+        adj = max(-10.0, min(10.0, personal.get(o["id"], 0.0)))
+        score += adj
+        candidates.append({**o, "final_score": round(score, 2)})
+
+    candidates.sort(key=lambda o: o["final_score"], reverse=True)
+
+    result: list[dict[str, Any]] = []
+    tone_count: dict[str, int] = {}
+    main_item_seen: set[str] = set()
+
+    for o in candidates:
+        tone = o.get("dominant_tone")
+        main_item = o.get("main_item_id")
+
+        if main_item and main_item in main_item_seen:
+            continue
+
+        if tone:
+            if tone_count.get(tone, 0) >= 3:
+                continue
+            tone_count[tone] = tone_count.get(tone, 0) + 1
+
+        if main_item:
+            main_item_seen.add(main_item)
+
+        result.append(o)
+
+        if len(result) >= limit:
+            break
+
+    return result
