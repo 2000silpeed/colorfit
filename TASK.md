@@ -274,12 +274,12 @@ W5 ─── 단독 실행 (통합 작업)
 - 🔧 codex 리뷰 반영: rerank 함수 입력 dict mutation 제거 (순수 함수 원칙 준수)
 
 **Task 2.10 — 추천 이유 생성**
-- [ ] `backend/app/services/reason_generator.py` 생성
-- [ ] 5축 가중 기여도 계산 → 상위 2개 축 선택
-- [ ] high(75점+) / mid(75점 미만) 템플릿 분기
-- [ ] 톤별 한글 이름 매핑 ("여름쿨소프트 핵심 컬러...")
-- [ ] pytest 테스트: PCF 최고 기여, OF 최고 기여, 동점 처리
-- [ ] 참조: 기획서 섹션 6.4
+- [x] `backend/app/services/reason_generator.py` 생성
+- [x] 5축 가중 기여도 계산 → 상위 2개 축 선택
+- [x] high(75점+) / mid(75점 미만) 템플릿 분기
+- [x] 톤별 한글 이름 매핑 ("여름쿨소프트 핵심 컬러...")
+- [x] pytest 테스트: PCF 최고 기여, OF 최고 기여, 동점 처리 (16개 테스트 통과)
+- [x] 참조: 기획서 섹션 6.4
 
 **Task 2.11 — Feed API 엔드포인트**
 - [ ] `backend/app/routers/feed.py` — GET /api/feed
