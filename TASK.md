@@ -218,31 +218,33 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 참조: 기획서 섹션 5.5.2
 
 **Task 2.3 — CH 스코어링 (색상 조화)**
-- [ ] `calculate_ch(item_hex_colors)` 함수
-- [ ] 모든 아이템 쌍의 RGB 거리 → 구간별 점수 (유사색/보색/과도한 대비)
-- [ ] 채도 보너스 (+5점, 표준편차 0.15~0.40)
-- [ ] pytest 테스트: 올블랙, 톤온톤, 보색, 형광+파스텔
-- [ ] 참조: 기획서 섹션 5.5.3
+- [x] `calculate_ch(item_hex_colors)` 함수
+- [x] 모든 아이템 쌍의 RGB 거리 → 구간별 점수 (유사색/보색/과도한 대비)
+- [x] 채도 보너스 (+5점, 표준편차 0.15~0.40)
+- [x] pytest 테스트: 올블랙, 톤온톤, 보색, 형광+파스텔
+- [x] 참조: 기획서 섹션 5.5.3
+- 🔧 codex 리뷰 반영: 채도 보너스 테스트 입력을 실제 stdev 0.15~0.40 범위로 교체
 
 **Task 2.4 — PE 스코어링 (가격 효율)**
-- [ ] `calculate_pe(total_price, budget_min, budget_max)` 함수
-- [ ] 3개 Case: 범위 내 (중앙 가까울수록 높음), 초과 (감점), 미만 (완만 감점, 최저 40점)
-- [ ] pytest 테스트: 중앙, 상한, 하한, 50%+ 초과, 극단 저가
-- [ ] 참조: 기획서 섹션 5.5.4
+- [x] `calculate_pe(total_price, budget_min, budget_max)` 함수
+- [x] 3개 Case: 범위 내 (중앙 가까울수록 높음), 초과 (감점), 미만 (완만 감점, 최저 40점)
+- [x] pytest 테스트: 중앙, 상한, 하한, 50%+ 초과, 극단 저가
+- [x] 참조: 기획서 섹션 5.5.4 🔧 codex 리뷰 반영: 범위 단언 → 정확한 기대값 단언으로 교체
 
 **Task 2.5 — SF 스코어링 (스타일 적합도)**
-- [ ] `calculate_sf(items)` 함수
-- [ ] 카테고리 궁합 점수 (50%) — `data/style_compat.json` 매트릭스 참조
-- [ ] 실루엣 밸런스 점수 (25%) — Y/A/I/X 라인 15개 규칙
-- [ ] 포멀도 일관성 점수 (25%) — 표준편차 x 40 감점
-- [ ] pytest 테스트: 블라우스+슬랙스(높음), 후드+정장(낮음), 경계값 55점
-- [ ] 참조: 기획서 섹션 5.5.5, 6.6
+- [x] `calculate_sf(items)` 함수
+- [x] 카테고리 궁합 점수 (50%) — `data/style_compat.json` 매트릭스 참조
+- [x] 실루엣 밸런스 점수 (25%) — Y/A/I/X 라인 15개 규칙
+- [x] 포멀도 일관성 점수 (25%) — 표준편차 x 40 감점
+- [x] pytest 테스트: 블라우스+슬랙스(높음), 후드+정장(낮음), 경계값 55점
+- [x] 참조: 기획서 섹션 5.5.5, 6.6
+- 🔧 codex 리뷰 반영: stdev→pstdev(모집단 표준편차) 전환 + formality_map 누락 카테고리 9개 추가
 
 **Task 2.6 — 스타일 호환성 데이터 파일**
-- [ ] `backend/data/style_compat.json` 생성 — 카테고리 궁합 227개 조합 점수
-- [ ] `backend/data/silhouette_rules.json` 생성 — 실루엣 15개 조합
-- [ ] `backend/data/formality_map.json` 생성 — 아이템별 포멀도 (1~5) 33개 규칙
-- [ ] 참조: 기획서 섹션 6.6
+- [x] `backend/data/style_compat.json` 생성 — 카테고리 궁합 225개 조합 점수
+- [x] `backend/data/silhouette_rules.json` 생성 — 실루엣 15개 조합
+- [x] `backend/data/formality_map.json` 생성 — 아이템별 포멀도 (1~5) 46개 규칙
+- [x] 참조: 기획서 섹션 6.6
 
 ### 🅑 Lane C: 추천 엔진 — 필터+파이프라인+API (Task 2.7~2.12, 🅐 2.1~2.5 완료 후 시작)
 
