@@ -30,3 +30,8 @@ build/
 # 임시 파일
 /tmp/
 *.log
+
+# 대용량 데이터 (수집/정규화 원본)
+backend/data/raw/
+backend/data/normalized/
+backend/data/tryon_test/
