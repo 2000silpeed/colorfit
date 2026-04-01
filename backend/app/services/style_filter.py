@@ -10,14 +10,11 @@ from __future__ import annotations
 
 from app.services.category_classifier import (
     LlmClassificationCache,
+    RAW_CATEGORY_MAP,
     classify_by_keyword,
     _CATEGORY_TO_GROUP,
 )
-from app.services.scoring import (
-    _category_compat_score,
-    _silhouette_balance_score,
-    _formality_consistency_score,
-)
+from app.services.scoring import calculate_sf
 
 STYLE_FILTER_THRESHOLD = 55.0
 
@@ -61,7 +58,7 @@ def detect_category(
         source = "keyword"
         if category3 or category4:
             for raw_cat in (category4, category3):
-                if raw_cat and raw_cat in _get_raw_category_map():
+                if raw_cat and raw_cat in RAW_CATEGORY_MAP:
                     source = "raw_category"
                     break
 
@@ -99,15 +96,10 @@ def detect_category(
     }
 
 
-def _get_raw_category_map() -> dict[str, str]:
-    from app.services.category_classifier import RAW_CATEGORY_MAP
-    return RAW_CATEGORY_MAP
-
-
 def filter_outfit(items: list[dict]) -> tuple[bool, float]:
     """코디의 StyleFilter 점수를 계산하고 통과 여부를 판정한다.
 
-    3축 가중합: 카테고리 궁합(50%) + 실루엣 밸런스(25%) + 포멀도 일관성(25%)
+    scoring.py의 calculate_sf를 호출하여 3축 가중합을 계산하고,
     55점 미만이면 탈락 (Hard Filter H8).
 
     Args:
@@ -139,12 +131,5 @@ def filter_outfit(items: list[dict]) -> tuple[bool, float]:
         elif group in ("bottom",) and bottom_silhouette is None:
             bottom_silhouette = sil
 
-    # 3축 계산
-    cat_score = _category_compat_score(categories)
-    sil_score = _silhouette_balance_score(top_silhouette, bottom_silhouette)
-    form_score = _formality_consistency_score(categories)
-
-    score = round(cat_score * 0.50 + sil_score * 0.25 + form_score * 0.25, 2)
-    score = max(0.0, min(100.0, score))
-
+    score = calculate_sf(categories, top_silhouette, bottom_silhouette)
     return score >= STYLE_FILTER_THRESHOLD, score
