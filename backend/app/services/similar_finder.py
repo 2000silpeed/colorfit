@@ -111,6 +111,7 @@ async def find_similar_products(
             Product.id != source.id,
             Product.color_hex.isnot(None),
             Product.price.isnot(None),
+            Product.price > 0,
         )
     )
     result = await db.execute(stmt)
