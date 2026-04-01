@@ -414,13 +414,14 @@ W5 ─── 단독 실행 (통합 작업)
 
 ### 🅐 가격비교 + 유사상품 (Task 3.1~3.4)
 
-**Task 3.1 — 유사 상품 매칭 서비스**
-- [ ] `backend/app/services/similar_finder.py` 생성
-- [ ] 색상 유사도 (가중치 0.6) + 가격 유사도 (0.4) 계산
-- [ ] Exact(동일 상품 다른 판매처) / Similar(대체재) 구분
-- [ ] 상위 5개 반환
-- [ ] pytest 테스트
-- [ ] 참조: 기획서 섹션 6.2
+**Task 3.1 — 유사 상품 매칭 서비스** ✅
+- [x] `backend/app/services/similar_finder.py` 생성
+- [x] 색상 유사도 (가중치 0.6) + 가격 유사도 (0.4) 계산
+- [x] Exact(동일 상품 다른 판매처) / Similar(대체재) 구분
+- [x] 상위 5개 반환
+- [x] pytest 테스트 (26개 통과)
+- [x] 참조: 기획서 섹션 6.2
+- 🔧 codex 리뷰 반영: candidate price=0 필터 추가
 
 **Task 3.2 — 아이템 API**
 - [ ] `backend/app/routers/item.py`
