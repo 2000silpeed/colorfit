@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class StyleSeedRequest(BaseModel):
@@ -19,6 +19,13 @@ class OnboardingRequest(BaseModel):
     budget_max: int | None = Field(None, ge=0)
     style_seeds: StyleSeedRequest | None = None
     seed_confidence: int | None = Field(None, ge=0, le=4)
+
+    @model_validator(mode="after")
+    def check_budget_range(self) -> OnboardingRequest:
+        if self.budget_min is not None and self.budget_max is not None:
+            if self.budget_min > self.budget_max:
+                raise ValueError("budget_min must be <= budget_max")
+        return self
 
 
 class OnboardingResponse(BaseModel):

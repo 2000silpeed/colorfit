@@ -123,6 +123,24 @@ class TestOnboardingEndpoint:
         assert resp.status_code == 422
 
     @pytest.mark.asyncio
+    async def test_budget_min_greater_than_max_rejected(self, client):
+        body = {**VALID_BODY, "budget_min": 100000, "budget_max": 30000}
+        resp = await client.post("/api/onboarding", json=body)
+        assert resp.status_code == 422
+
+    @pytest.mark.asyncio
+    async def test_negative_budget_rejected(self, client):
+        body = {**VALID_BODY, "budget_min": -1}
+        resp = await client.post("/api/onboarding", json=body)
+        assert resp.status_code == 422
+
+    @pytest.mark.asyncio
+    async def test_seed_confidence_over_4_rejected(self, client):
+        body = {**VALID_BODY, "seed_confidence": 5}
+        resp = await client.post("/api/onboarding", json=body)
+        assert resp.status_code == 422
+
+    @pytest.mark.asyncio
     async def test_tpo_primary_secondary_set(self, client, db_session):
         resp = await client.post("/api/onboarding", json=VALID_BODY)
         user_id = resp.json()["user_id"]
