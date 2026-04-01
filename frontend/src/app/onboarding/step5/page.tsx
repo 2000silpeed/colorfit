@@ -79,28 +79,60 @@ export default function Step5Page() {
 
   const round = ROUNDS[currentRound];
 
+  const submitOnboarding = useCallback(async () => {
+    try {
+      localStorage.setItem(
+        "colorfit_style_seeds",
+        JSON.stringify(seedsRef.current),
+      );
+      const confidence = Object.keys(seedsRef.current).length;
+      localStorage.setItem("colorfit_seed_confidence", String(confidence));
+
+      const gender = localStorage.getItem("colorfit_gender") || "female";
+      const toneId = localStorage.getItem("colorfit_tone") || "";
+      const tpoList = JSON.parse(localStorage.getItem("colorfit_tpos") || "[]");
+      const styleMoods = JSON.parse(localStorage.getItem("colorfit_moods") || "[]");
+      const budget = JSON.parse(localStorage.getItem("colorfit_budget") || "[null,null]");
+
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const res = await fetch(`${apiBase}/api/onboarding`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          gender,
+          tone_id: toneId,
+          tpo_list: tpoList,
+          style_moods: styleMoods,
+          budget_min: budget[0],
+          budget_max: budget[1],
+          style_seeds: Object.keys(seedsRef.current).length > 0 ? seedsRef.current : null,
+          seed_confidence: confidence,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem("colorfit_user_id", data.user_id);
+      }
+    } catch {
+      // API 실패해도 피드 이동은 허용 (localStorage 기반 fallback)
+    }
+
+    router.push("/feed");
+  }, [router]);
+
   const advanceRound = useCallback(() => {
     setCurrentRound((prev) => {
       const nextRound = prev + 1;
       if (nextRound >= TOTAL_ROUNDS) {
-        try {
-          localStorage.setItem(
-            "colorfit_style_seeds",
-            JSON.stringify(seedsRef.current),
-          );
-          localStorage.setItem(
-            "colorfit_seed_confidence",
-            String(Object.keys(seedsRef.current).length),
-          );
-        } catch {}
-        router.push("/feed");
+        submitOnboarding();
         return prev;
       }
       return nextRound;
     });
     setSelected(null);
     setIsTransitioning(false);
-  }, [router]);
+  }, [submitOnboarding]);
 
   const handleSelect = useCallback(
     (optionId: string) => {
@@ -122,12 +154,9 @@ export default function Step5Page() {
 
   const handleSkipAll = useCallback(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
-    try {
-      localStorage.setItem("colorfit_style_seeds", JSON.stringify({}));
-      localStorage.setItem("colorfit_seed_confidence", "0");
-    } catch {}
-    router.push("/feed");
-  }, [router]);
+    seedsRef.current = {};
+    submitOnboarding();
+  }, [submitOnboarding]);
 
   return (
     <div className="flex-1 flex flex-col pb-[var(--space-lg)]">

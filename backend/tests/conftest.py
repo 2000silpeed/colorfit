@@ -84,6 +84,34 @@ reactions_table = Table(
     Column("created_at", Text),
 )
 
+users_table = Table(
+    "users", test_metadata,
+    Column("id", String(36), primary_key=True),
+    Column("email", String(255)),
+    Column("provider", String(20)),
+    Column("gender", String(10)),
+    Column("tone_id", String(30)),
+    Column("tpo_primary", String(20)),
+    Column("tpo_secondary", String(20)),
+    Column("tpo_list", Text),       # ARRAY → TEXT
+    Column("style_moods", Text),    # ARRAY → TEXT
+    Column("budget_min", Integer),
+    Column("budget_max", Integer),
+    Column("created_at", Text),
+)
+
+style_seeds_table = Table(
+    "style_seeds", test_metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("user_id", String(36)),
+    Column("mood_seed", String(30)),
+    Column("silhouette_seed", String(30)),
+    Column("color_seed", String(30)),
+    Column("price_seed", String(30)),
+    Column("seed_confidence", Integer),
+    Column("created_at", Text),
+)
+
 
 @pytest_asyncio.fixture
 async def db_engine():
