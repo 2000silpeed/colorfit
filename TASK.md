@@ -324,10 +324,11 @@ W5 ─── 단독 실행 (통합 작업)
 - 🔧 codex 리뷰 반영: Q2 답변→톤 매핑 2차원 테이블로 교체, 바텀시트 role="dialog"+aria-modal+Escape 닫기 추가, Q1 문구 스펙 일치
 
 **Task 2.16 — 온보딩 Step 3: TPO + 무드 선택**
-- [ ] `frontend/app/onboarding/step3/page.tsx`
-- [ ] TPO 8종 필 버튼 (성별에 따라 다른 세트)
-- [ ] 무드 태그 클라우드 (성별에 따라 다른 세트)
-- [ ] 복수 선택: TPO 최대 3개, 무드 최대 5개
+- [x] `frontend/src/app/onboarding/step3/page.tsx`
+- [x] TPO 8종 필 버튼 (성별에 따라 다른 세트)
+- [x] 무드 태그 클라우드 (성별에 따라 다른 세트)
+- [x] 복수 선택: TPO 최대 3개, 무드 최대 5개
+- 🔧 codex 리뷰 반영: WebKit scrollbar 숨김 CSS 추가, 무드 태그 선택 시 텍스트 색상 #222222 유지(스펙 준수), localStorage try/catch 추가
 
 **Task 2.17 — 온보딩 Step 4: 예산 설정**
 - [ ] `frontend/app/onboarding/step4/page.tsx`
