@@ -248,26 +248,30 @@ W5 ─── 단독 실행 (통합 작업)
 
 ### 🅑 Lane C: 추천 엔진 — 필터+파이프라인+API (Task 2.7~2.12, 🅐 2.1~2.5 완료 후 시작)
 
-**Task 2.7 — StyleFilter (규칙 기반 사전 필터)**
-- [ ] `backend/app/services/style_filter.py` 생성
-- [ ] `detect_category(title, category3)` — 키워드 → 캐시 → LLM 3단계
-- [ ] `filter_outfit(items)` — 3축 가중합 계산, 55점 미만 False
-- [ ] pytest 테스트: 통과 코디, 탈락 코디, 55점 경계
-- [ ] 참조: 기획서 섹션 6.6
+**Task 2.7 — StyleFilter (규칙 기반 사전 필터)** ✅
+- [x] `backend/app/services/style_filter.py` 생성
+- [x] `detect_category(title, category3)` — 키워드 → 캐시 → LLM 3단계
+- [x] `filter_outfit(items)` — 3축 가중합 계산, 55점 미만 False
+- [x] pytest 테스트: 통과 코디, 탈락 코디, 55점 경계 (16개 전체 통과)
+- [x] 참조: 기획서 섹션 6.6
+- 🔧 codex 리뷰 반영: filter_outfit이 calculate_sf() 재사용(로직 중복 제거), RAW_CATEGORY_MAP 직접 임포트
 
 **Task 2.8 — Hard Filter 체인**
-- [ ] `backend/app/services/feed_builder.py` 생성
-- [ ] Hard Filter 8단계 순차 적용 (H1 성별 → H2 예산 → ... → H8 StyleFilter)
-- [ ] 각 필터는 독립 함수로 분리
-- [ ] pytest 테스트: 각 필터별 통과/탈락 케이스
-- [ ] 참조: 기획서 섹션 5.4 (Hard Filter 상세)
+- [x] `backend/app/services/feed_builder.py` 생성
+- [x] Hard Filter 8단계 순차 적용 (H1 성별 → H2 예산 → ... → H8 StyleFilter)
+- [x] 각 필터는 독립 함수로 분리
+- [x] pytest 테스트: 각 필터별 통과/탈락 케이스 (51개 전체 통과)
+- [x] 참조: 기획서 섹션 5.4 (Hard Filter 상세)
+- 🔧 codex 리뷰 반영: H8 테스트 실제 동작 검증(isinstance→assert False), 통합 테스트 H8 rejection 케이스 추가
 
 **Task 2.9 — Soft Score + 리랭킹**
-- [ ] feed_builder.py에 Soft Score 계산 추가 (5축 가중합)
-- [ ] 리랭킹: 완성 코디 가산(+3점), dislike 제외, 톤 다양성(동일 톤 3개 제한), 메인아이템 중복 제거
-- [ ] 개인화 보정 (-10 ~ +10)
-- [ ] 상위 200개 반환
-- [ ] 참조: 기획서 섹션 6.1
+- [x] feed_builder.py에 Soft Score 계산 추가 (5축 가중합)
+- [x] 리랭킹: 완성 코디 가산(+3점), dislike 제외, 톤 다양성(동일 톤 3개 제한), 메인아이템 중복 제거
+- [x] 개인화 보정 (-10 ~ +10)
+- [x] 상위 200개 반환
+- [x] 참조: 기획서 섹션 6.1
+- [x] pytest 테스트: 22개 신규 (73개 전체 통과)
+- 🔧 codex 리뷰 반영: rerank 함수 입력 dict mutation 제거 (순수 함수 원칙 준수)
 
 **Task 2.10 — 추천 이유 생성**
 - [ ] `backend/app/services/reason_generator.py` 생성
@@ -293,12 +297,13 @@ W5 ─── 단독 실행 (통합 작업)
 
 ### 🅒 Lane D: 온보딩 + 피드 UI (🅐🅑와 동시 실행 가능)
 
-**Task 2.13 — 온보딩 공통 레이아웃**
-- [ ] `frontend/app/onboarding/layout.tsx` — 공통 레이아웃
-- [ ] 상단 진행 바 (5단계, Marsala 채움)
-- [ ] 뒤로가기 버튼
-- [ ] 좌→우 슬라이드 전환 (Framer Motion AnimatePresence)
-- [ ] 참조: 기획서 섹션 8.4.1
+**Task 2.13 — 온보딩 공통 레이아웃** ✅
+- [x] `frontend/src/app/onboarding/layout.tsx` — 공통 레이아웃
+- [x] 상단 진행 바 (5단계, Marsala 채움)
+- [x] 뒤로가기 버튼
+- [x] 좌→우 슬라이드 전환 (Framer Motion — template.tsx로 enter 애니메이션 구현)
+- [x] 참조: 기획서 섹션 8.4.1
+- 🔧 codex 리뷰 반영: prefers-reduced-motion 지원 추가, 진행 바 aria 속성 추가
 
 **Task 2.14 — 온보딩 Step 1: 성별 선택**
 - [ ] `frontend/app/onboarding/step1/page.tsx`
