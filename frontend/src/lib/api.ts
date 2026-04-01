@@ -39,6 +39,68 @@ export interface FeedResponse {
   has_next: boolean;
 }
 
+export interface ReactionResponse {
+  id: number;
+  user_id: string;
+  outfit_id: string;
+  reaction_type: string;
+}
+
+export async function postReaction(
+  userId: string,
+  outfitId: string,
+  reactionType: "save" | "dislike",
+): Promise<ReactionResponse> {
+  const res = await fetch(`${API_BASE}/api/reaction`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      user_id: userId,
+      outfit_id: outfitId,
+      reaction_type: reactionType,
+    }),
+  });
+  if (!res.ok) {
+    throw new Error(`Reaction API error: ${res.status}`);
+  }
+  return res.json();
+}
+
+export interface ProductBrief {
+  id: string;
+  name: string | null;
+  brand: string | null;
+  category: string | null;
+  price: number | null;
+  image_url: string | null;
+  mall_url: string | null;
+}
+
+export interface OutfitDetailResponse {
+  id: string;
+  gender: string | null;
+  designed_tpo: string | null;
+  designed_season: string | null;
+  designed_moods: string[] | null;
+  total_price: number | null;
+  lowest_total_price: number | null;
+  is_complete_outfit: boolean | null;
+  tags: string[] | null;
+  scores: ScoresResponse | null;
+  reasons: string[] | null;
+  items: ProductBrief[];
+}
+
+export async function fetchOutfitDetail(
+  outfitId: string,
+): Promise<OutfitDetailResponse> {
+  const res = await fetch(`${API_BASE}/api/outfit/${outfitId}`);
+  if (!res.ok) {
+    throw new Error(`Outfit API error: ${res.status}`);
+  }
+  return res.json();
+}
+
 export async function fetchFeed(params: FeedParams): Promise<FeedResponse> {
   const q = new URLSearchParams();
   q.set("tone_id", params.toneId);

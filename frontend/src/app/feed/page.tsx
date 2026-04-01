@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import OutfitCard from "@/components/OutfitCard";
-import { fetchFeed, type OutfitFeedItem } from "@/lib/api";
+import { fetchFeed, postReaction, type OutfitFeedItem } from "@/lib/api";
 
 /* ── TPO 탭 데이터 ── */
 const TPO_TABS = [
@@ -75,6 +76,7 @@ function TodayColorFitCard({ outfit }: { outfit: OutfitFeedItem }) {
 
 export default function FeedPage() {
   const prefersReducedMotion = useReducedMotion();
+  const router = useRouter();
 
   /* 사용자 프로필 (localStorage에서 로드) */
   const [toneId, setToneId] = useState<string>("");
@@ -85,6 +87,19 @@ export default function FeedPage() {
   const [budgetMin, setBudgetMin] = useState(BUDGET_MIN_DEFAULT);
   const [budgetMax, setBudgetMax] = useState(BUDGET_MAX_DEFAULT);
   const [budgetOpen, setBudgetOpen] = useState(false);
+
+  /* 토스트 */
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showToast = useCallback((message: string) => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    setToast(message);
+    toastTimerRef.current = setTimeout(() => setToast(null), 1500);
+  }, []);
+
+  /* 저장된 코디 ID Set */
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
 
   /* 피드 데이터 */
   const [outfits, setOutfits] = useState<OutfitFeedItem[]>([]);
@@ -168,25 +183,46 @@ export default function FeedPage() {
     return () => observer.disconnect();
   }, [hasNext, loadingMore, page, status, loadFeed]);
 
-  /* save/dislike 핸들러 */
-  const handleSaveToggle = useCallback((id: string) => {
-    // TODO: POST /api/reaction (Task 2.22)
-    console.log("save toggle:", id);
+  /* toastTimer cleanup */
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    };
   }, []);
+
+  /* save/dislike 핸들러 */
+  const userId = typeof window !== "undefined"
+    ? localStorage.getItem("colorfit_user_id") ?? ""
+    : "";
+
+  const handleSaveToggle = useCallback((id: string) => {
+    const wasSaved = savedIds.has(id);
+    setSavedIds((prev) => {
+      const next = new Set(prev);
+      if (wasSaved) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+    showToast(wasSaved ? "저장 취소" : "저장했어요");
+    if (userId) {
+      postReaction(userId, id, "save").catch(() => {});
+    }
+  }, [savedIds, userId, showToast]);
 
   const handleDislike = useCallback(
     (id: string) => {
       setOutfits((prev) => prev.filter((o) => o.id !== id));
-      // TODO: POST /api/reaction (Task 2.22)
-      console.log("dislike:", id);
+      showToast("관심없음");
+      if (userId) {
+        postReaction(userId, id, "dislike").catch(() => {});
+      }
     },
-    [],
+    [userId, showToast],
   );
 
   const handleCardTap = useCallback((id: string) => {
-    // TODO: 코디 상세 페이지 이동 (Task 2.23)
-    console.log("tap:", id);
-  }, []);
+    router.push(`/outfit/${id}`);
+  }, [router]);
 
   /* 오늘의 컬러핏 (피드 첫 번째 아이템) */
   const todayPick = outfits[0] ?? null;
@@ -379,6 +415,7 @@ export default function FeedPage() {
                   of: outfit.scores?.of ?? 0,
                 }}
                 itemCount={outfit.tags?.length ?? 3}
+                isSaved={savedIds.has(outfit.id)}
                 index={i}
                 onTap={handleCardTap}
                 onSaveToggle={handleSaveToggle}
@@ -401,6 +438,21 @@ export default function FeedPage() {
         {/* 하단 여백 (탭바 겹침 방지) */}
         <div className="h-[80px]" />
       </main>
+
+      {/* 토스트 */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            className="fixed bottom-[100px] left-1/2 -translate-x-1/2 z-50 bg-[#333] text-white text-[14px] font-body px-[20px] py-[10px] rounded-full shadow-lg"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.2 }}
+          >
+            {toast}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

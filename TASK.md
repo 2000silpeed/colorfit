@@ -373,22 +373,25 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 스켈레톤 로딩 + empty state + error state
 - 🔧 codex 리뷰 반영: loadFeed stale closure 수정 (함수형 setOutfits), toneId 미설정 시 empty state 처리, 슬라이더 aria-label 추가
 
-**Task 2.22 — save/dislike 인터랙션**
-- [ ] 좌 스와이프 → dislike (카드 슬라이드 아웃 + "관심없음" 토스트)
-- [ ] 더블탭 → save (하트 뿅 애니메이션, Marsala 전환)
-- [ ] 우상단 하트 탭 → save 토글
-- [ ] POST /api/reaction 연동 (save/dislike)
-- [ ] `backend/app/routers/reaction.py` — POST /api/reaction
+**Task 2.22 — save/dislike 인터랙션** ✅
+- [x] 좌 스와이프 → dislike (카드 슬라이드 아웃 + "관심없음" 토스트)
+- [x] 더블탭 → save (하트 뿅 애니메이션, Marsala 전환)
+- [x] 우상단 하트 탭 → save 토글
+- [x] POST /api/reaction 연동 (save/dislike)
+- [x] `backend/app/routers/reaction.py` — POST /api/reaction
+- 🔧 codex 리뷰 통과 (save 토글 로직 라우터 내 배치는 현 단계 적정)
 
 **Task 2.23 — 코디 상세 화면**
-- [ ] `frontend/app/outfit/[id]/page.tsx`
-- [ ] 히어로 이미지 (풀블리드, parallax scroll)
-- [ ] 5축 스코어 바 차트 (width 0% → 실제값, ease-out 0.8s)
-- [ ] 추천 이유 카드 (배경 #F0EDE8)
-- [ ] 아이템 캐러셀 (가로 스크롤, 80px 정사각 이미지)
-- [ ] 코디 합계 가격 + 최저가 합산
-- [ ] 하단 CTA ("저장" + "A vs B 비교")
-- [ ] GET /api/outfit/{id} 연동
+- [x] `frontend/app/outfit/[id]/page.tsx`
+- [x] 히어로 이미지 (풀블리드, parallax scroll)
+- [x] 5축 스코어 바 차트 (width 0% → 실제값, ease-out 0.8s)
+- [x] 추천 이유 카드 (배경 #F0EDE8)
+- [x] 아이템 캐러셀 (가로 스크롤, 80px 정사각 이미지)
+- [x] 코디 합계 가격 + 최저가 합산
+- [x] 하단 CTA ("저장" + "A vs B 비교")
+- [x] GET /api/outfit/{id} 연동
+- ⚠️ A vs B 비교 버튼은 disabled 처리 (후속 Task에서 구현)
+- 🔧 codex 리뷰 통과
 
 **Task 2.24 — 하단 탭바**
 - [ ] `frontend/components/BottomTabBar.tsx`
