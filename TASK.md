@@ -296,7 +296,7 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 전체 코디에 대해 기본 5축 스코어 사전 계산 (1,790개, 0.7s)
 - [x] outfits.scores JSONB에 저장
 - [x] 런타임에는 개인화 보정만 적용
-- ⚠️ color_hex 미추출 상태: PCF는 tone_id 레벨 매칭, CH는 기본값 50점. 색상 추출(Task 1.7) 실행 후 재계산 필요
+- ✅ color_hex 추출 완료 (174,319/174,353건, 실패 34건 0.02%) → 프리컴퓨팅 재실행: PCF 82.9, CH 81.3
 - 🔧 codex 리뷰 반영: 원자적 파일 쓰기(os.replace), dead code 제거, PCF 예외 로깅 추가
 
 ### 🅒 Lane D: 온보딩 + 피드 UI (🅐🅑와 동시 실행 가능)
@@ -363,14 +363,15 @@ W5 ─── 단독 실행 (통합 작업)
 - 🔧 codex 리뷰 반영: onClick/onDoubleClick 충돌 해결(타이머 기반 구분), setTimeout cleanup(useRef), 할인가 Marsala 색상 적용, isSaved prop 동기화, tabIndex+키보드 접근성 추가
 
 **Task 2.21 — 코디 피드 화면**
-- [ ] `frontend/app/feed/page.tsx`
-- [ ] 헤더 (ColorFit 로고 + 프로필 아이콘)
-- [ ] TPO 탭 필터 (가로 스크롤 필 버튼)
-- [ ] 예산 슬라이더 (접힌 상태, 탭 시 펼침)
-- [ ] "오늘의 컬러핏" 특별 카드 (피드 최상단)
-- [ ] OutfitCard 리스트 (무한 스크롤, 커서 기반 페이지네이션)
-- [ ] GET /api/feed 연동
-- [ ] 스켈레톤 로딩 + empty state + error state
+- [x] `frontend/src/app/feed/page.tsx`
+- [x] 헤더 (ColorFit 로고 + 프로필 아이콘)
+- [x] TPO 탭 필터 (가로 스크롤 필 버튼)
+- [x] 예산 슬라이더 (접힌 상태, 탭 시 펼침)
+- [x] "오늘의 컬러핏" 특별 카드 (피드 최상단, 이미지 110% + 추천이유 2줄)
+- [x] OutfitCard 리스트 (무한 스크롤, IntersectionObserver 기반 페이지네이션)
+- [x] GET /api/feed 연동 (`frontend/src/lib/api.ts`)
+- [x] 스켈레톤 로딩 + empty state + error state
+- 🔧 codex 리뷰 반영: loadFeed stale closure 수정 (함수형 setOutfits), toneId 미설정 시 empty state 처리, 슬라이더 aria-label 추가
 
 **Task 2.22 — save/dislike 인터랙션**
 - [ ] 좌 스와이프 → dislike (카드 슬라이드 아웃 + "관심없음" 토스트)

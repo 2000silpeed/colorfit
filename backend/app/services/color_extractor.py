@@ -54,7 +54,7 @@ def extract_colors_from_image(
     img = img.convert("RGB")
     img = _resize_for_clustering(img)
 
-    pixels = np.array(img).reshape(-1, 3).astype(np.float64)
+    pixels = np.array(img).reshape(-1, 3).astype(np.float32)
     pixels = _remove_background(pixels)
 
     if len(pixels) < n_colors:
