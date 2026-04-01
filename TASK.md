@@ -348,10 +348,11 @@ W5 ─── 단독 실행 (통합 작업)
 - 🔧 codex 리뷰 반영: 이중 딜레이 제거, exit/enter 비대칭 타이밍(0.2s/0.3s), aria-live 라운드 알림, setTimeout cleanup, inline CSS transition→Framer Motion
 
 **Task 2.19 — 온보딩 API 연동**
-- [ ] `backend/app/routers/onboarding.py` — POST /api/onboarding
-- [ ] 프론트에서 5 Step 결과를 모아서 전송
-- [ ] users 테이블 + style_seeds 테이블에 저장
-- [ ] 프론트 → API 호출 연동
+- [x] `backend/app/routers/onboarding.py` — POST /api/onboarding
+- [x] 프론트에서 5 Step 결과를 모아서 전송
+- [x] users 테이블 + style_seeds 테이블에 저장
+- [x] 프론트 → API 호출 연동
+- 🔧 codex 리뷰 반영: DB 에러 핸들링(rollback+로깅+500), budget_min≤budget_max 교차검증, 경계값 테스트 3건 추가
 
 **Task 2.20 — 코디 카드 컴포넌트**
 - [ ] `frontend/components/OutfitCard.tsx`
