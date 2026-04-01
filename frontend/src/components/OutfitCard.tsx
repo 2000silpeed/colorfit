@@ -1,0 +1,257 @@
+"use client";
+
+import { useState, useCallback, useRef, useEffect } from "react";
+import Image from "next/image";
+import { motion, useReducedMotion } from "framer-motion";
+
+interface OutfitScores {
+  pcf: number;
+  of: number;
+}
+
+interface OutfitCardProps {
+  id: string;
+  imageUrl: string;
+  title: string;
+  totalPrice: number;
+  originalPrice?: number;
+  reason: string;
+  scores: OutfitScores;
+  itemCount: number;
+  isSaved?: boolean;
+  index?: number;
+  onTap?: (id: string) => void;
+  onSaveToggle?: (id: string) => void;
+  onDislike?: (id: string) => void;
+}
+
+function formatPrice(price: number): string {
+  if (price >= 10000) {
+    const man = Math.floor(price / 10000);
+    const remainder = price % 10000;
+    if (remainder === 0) return `${man}만`;
+    return `${man}만${remainder.toLocaleString("ko-KR")}`;
+  }
+  return `${price.toLocaleString("ko-KR")}`;
+}
+
+const SWIPE_THRESHOLD = 100;
+const DOUBLE_TAP_DELAY = 250;
+
+export default function OutfitCard({
+  id,
+  imageUrl,
+  title,
+  totalPrice,
+  originalPrice,
+  reason,
+  scores,
+  itemCount,
+  isSaved = false,
+  index = 0,
+  onTap,
+  onSaveToggle,
+  onDislike,
+}: OutfitCardProps) {
+  const prefersReducedMotion = useReducedMotion();
+  const [saved, setSaved] = useState(isSaved);
+  const [showHeartPop, setShowHeartPop] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+
+  const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const heartPopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    setSaved(isSaved);
+  }, [isSaved]);
+
+  useEffect(() => {
+    return () => {
+      if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
+      if (heartPopTimerRef.current) clearTimeout(heartPopTimerRef.current);
+    };
+  }, []);
+
+  const handleSaveToggle = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setSaved((prev) => !prev);
+      onSaveToggle?.(id);
+    },
+    [id, onSaveToggle],
+  );
+
+  const handleDoubleTap = useCallback(() => {
+    if (saved) return;
+    setSaved(true);
+    setShowHeartPop(true);
+    onSaveToggle?.(id);
+    heartPopTimerRef.current = setTimeout(() => setShowHeartPop(false), 600);
+  }, [id, saved, onSaveToggle]);
+
+  const handleCardClick = useCallback(() => {
+    if (tapTimerRef.current) {
+      clearTimeout(tapTimerRef.current);
+      tapTimerRef.current = null;
+      handleDoubleTap();
+    } else {
+      tapTimerRef.current = setTimeout(() => {
+        tapTimerRef.current = null;
+        onTap?.(id);
+      }, DOUBLE_TAP_DELAY);
+    }
+  }, [id, onTap, handleDoubleTap]);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        onTap?.(id);
+      }
+    },
+    [id, onTap],
+  );
+
+  const handleDragEnd = useCallback(
+    (_: unknown, info: { offset: { x: number } }) => {
+      if (info.offset.x < -SWIPE_THRESHOLD) {
+        setDismissed(true);
+        onDislike?.(id);
+      }
+    },
+    [id, onDislike],
+  );
+
+  if (dismissed) return null;
+
+  const hasDiscount = originalPrice && originalPrice > totalPrice;
+  const discountRate = hasDiscount
+    ? Math.round((1 - totalPrice / originalPrice) * 100)
+    : 0;
+
+  return (
+    <motion.article
+      className="px-[20px] mb-[20px] cursor-pointer"
+      tabIndex={0}
+      role="link"
+      initial={prefersReducedMotion ? false : { y: 30, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={
+        prefersReducedMotion
+          ? { duration: 0 }
+          : { duration: 0.4, delay: index * 0.1, ease: "easeOut" }
+      }
+      onClick={handleCardClick}
+      onKeyDown={handleKeyDown}
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.3}
+      onDragEnd={handleDragEnd}
+      whileDrag={{ cursor: "grabbing" }}
+    >
+      {/* Image Container */}
+      <div className="relative w-full rounded-[var(--radius-lg)] overflow-hidden"
+        style={{ aspectRatio: "3/4" }}
+      >
+        <Image
+          src={imageUrl}
+          alt={title}
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
+          className="object-cover"
+          loading="lazy"
+        />
+
+        {/* Item Count Badge - bottom left */}
+        <span className="absolute bottom-[10px] left-[10px] bg-black/50 text-white text-[11px] font-body rounded-full px-[10px] py-[4px]">
+          {itemCount}pcs
+        </span>
+
+        {/* Save Heart - top right */}
+        <button
+          type="button"
+          onClick={handleSaveToggle}
+          className="absolute top-[10px] right-[10px] w-[36px] h-[36px] flex items-center justify-center"
+          aria-label={saved ? "저장 취소" : "저장"}
+          aria-pressed={saved}
+        >
+          <motion.svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill={saved ? "var(--color-accent)" : "none"}
+            stroke={saved ? "var(--color-accent)" : "#FFFFFF"}
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            animate={
+              saved
+                ? { scale: [0.8, 1.2, 1.0] }
+                : { scale: 1 }
+            }
+            transition={{ duration: 0.2 }}
+          >
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+          </motion.svg>
+        </button>
+
+        {/* Double-tap heart pop animation */}
+        {showHeartPop && (
+          <motion.div
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: [0.8, 1.4, 1.0], opacity: [0, 1, 0] }}
+            transition={{ duration: 0.6 }}
+          >
+            <svg
+              width="64"
+              height="64"
+              viewBox="0 0 24 24"
+              fill="var(--color-accent)"
+              stroke="none"
+            >
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+          </motion.div>
+        )}
+      </div>
+
+      {/* Title */}
+      <h3 className="font-display text-[16px] text-text-primary mt-[12px] line-clamp-1" title={title}>
+        {title}
+      </h3>
+
+      {/* Price */}
+      <div className="flex items-center gap-[6px] mt-[4px]">
+        {hasDiscount && (
+          <>
+            <span className="font-body text-[15px] text-text-secondary line-through">
+              {formatPrice(originalPrice)}
+            </span>
+            <span className="font-body text-[15px] text-accent font-bold">
+              {discountRate}%
+            </span>
+          </>
+        )}
+        <span className={`font-body text-[15px] font-bold ${hasDiscount ? "text-accent" : "text-text-primary"}`}>
+          {"\u20A9"}{formatPrice(totalPrice)}
+        </span>
+      </div>
+
+      {/* Reason */}
+      <p className="font-body text-[13px] text-text-secondary mt-[4px] line-clamp-1" title={reason}>
+        {reason}
+      </p>
+
+      {/* Score Badges */}
+      <div className="flex gap-[6px] mt-[8px]">
+        <span className="bg-bg-secondary text-text-primary text-[11px] font-body rounded-full px-[8px] py-[3px]">
+          PCF {Math.round(scores.pcf)}
+        </span>
+        <span className="bg-bg-secondary text-text-primary text-[11px] font-body rounded-full px-[8px] py-[3px]">
+          OF {Math.round(scores.of)}
+        </span>
+      </div>
+    </motion.article>
+  );
+}

@@ -355,11 +355,12 @@ W5 ─── 단독 실행 (통합 작업)
 - 🔧 codex 리뷰 반영: DB 에러 핸들링(rollback+로깅+500), budget_min≤budget_max 교차검증, 경계값 테스트 3건 추가
 
 **Task 2.20 — 코디 카드 컴포넌트**
-- [ ] `frontend/components/OutfitCard.tsx`
-- [ ] 이미지 (3:4, rounded-lg) + 아이템 수 뱃지 + 하트 아이콘
-- [ ] 제목 (Nanum Myeongjo 16px) + 가격 (bold) + 추천 이유 1줄
-- [ ] 스코어 뱃지 미니 필 2개 ("PCF 95" "OF 80")
-- [ ] fadeInUp 등장 애니메이션
+- [x] `frontend/components/OutfitCard.tsx`
+- [x] 이미지 (3:4, rounded-lg) + 아이템 수 뱃지 + 하트 아이콘
+- [x] 제목 (Nanum Myeongjo 16px) + 가격 (bold) + 추천 이유 1줄
+- [x] 스코어 뱃지 미니 필 2개 ("PCF 95" "OF 80")
+- [x] fadeInUp 등장 애니메이션
+- 🔧 codex 리뷰 반영: onClick/onDoubleClick 충돌 해결(타이머 기반 구분), setTimeout cleanup(useRef), 할인가 Marsala 색상 적용, isSaved prop 동기화, tabIndex+키보드 접근성 추가
 
 **Task 2.21 — 코디 피드 화면**
 - [ ] `frontend/app/feed/page.tsx`
