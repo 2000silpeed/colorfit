@@ -306,11 +306,12 @@ W5 ─── 단독 실행 (통합 작업)
 - 🔧 codex 리뷰 반영: prefers-reduced-motion 지원 추가, 진행 바 aria 속성 추가
 
 **Task 2.14 — 온보딩 Step 1: 성별 선택**
-- [ ] `frontend/app/onboarding/step1/page.tsx`
-- [ ] "나에 대해 알려주세요" 헤드라인 (Nanum Myeongjo 28px)
-- [ ] 여성/남성 2개 카드 (가로 배치, 3:4 비율)
-- [ ] 탭 시 scale 1.05 + Marsala 아웃라인 → 자동 다음 Step
-- [ ] "건너뛰기" 텍스트 링크
+- [x] `frontend/app/onboarding/step1/page.tsx`
+- [x] "나에 대해 알려주세요" 헤드라인 (Nanum Myeongjo 28px)
+- [x] 여성/남성 2개 카드 (가로 배치, 3:4 비율)
+- [x] 탭 시 scale 1.05 + Marsala 아웃라인 → 자동 다음 Step
+- [x] "건너뛰기" 텍스트 링크
+- 🔧 codex 리뷰 반영: localStorage에 성별 저장, Framer Motion animate로 scale 1.05 전환(whileTap 제거), step2 placeholder 추가
 
 **Task 2.15 — 온보딩 Step 2: 퍼스널컬러 선택**
 - [ ] `frontend/app/onboarding/step2/page.tsx`
