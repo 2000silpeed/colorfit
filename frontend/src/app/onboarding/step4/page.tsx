@@ -42,7 +42,12 @@ export default function Step4Page() {
       const stored = localStorage.getItem("colorfit_budget");
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length === 2) return parsed[0];
+        if (
+          Array.isArray(parsed) &&
+          parsed.length === 2 &&
+          typeof parsed[0] === "number"
+        )
+          return parsed[0] as number;
       }
     } catch {}
     return 30000;
@@ -53,19 +58,18 @@ export default function Step4Page() {
       const stored = localStorage.getItem("colorfit_budget");
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length === 2) return parsed[1];
+        if (
+          Array.isArray(parsed) &&
+          parsed.length === 2 &&
+          typeof parsed[1] === "number"
+        )
+          return parsed[1] as number;
       }
     } catch {}
     return 100000;
   });
   const [activePreset, setActivePreset] = useState<number | null>(null);
-  const [hasBudgetSet, setHasBudgetSet] = useState(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      return localStorage.getItem("colorfit_budget") !== null;
-    } catch {}
-    return false;
-  });
+  const [hasBudgetSet, setHasBudgetSet] = useState(false);
 
   const toPercent = useCallback(
     (value: number) =>
@@ -96,20 +100,57 @@ export default function Step4Page() {
       if (!draggingRef.current) return;
       const value = fromClientX(e.clientX);
       if (draggingRef.current === "min") {
-        setRangeMin(clamp(value, BUDGET_MIN, rangeMax - BUDGET_STEP));
+        setRangeMax((prevMax) => {
+          setRangeMin(clamp(value, BUDGET_MIN, prevMax - BUDGET_STEP));
+          return prevMax;
+        });
       } else {
-        setRangeMax(clamp(value, rangeMin + BUDGET_STEP, BUDGET_MAX));
+        setRangeMin((prevMin) => {
+          setRangeMax(clamp(value, prevMin + BUDGET_STEP, BUDGET_MAX));
+          return prevMin;
+        });
       }
       setActivePreset(null);
       setHasBudgetSet(true);
     },
-    [fromClientX, rangeMin, rangeMax],
+    [fromClientX],
   );
 
   const handlePointerUp = useCallback(() => {
     draggingRef.current = null;
     setDragging(null);
   }, []);
+
+  const handleKeyDown = useCallback(
+    (thumb: "min" | "max") => (e: React.KeyboardEvent) => {
+      const delta =
+        e.key === "ArrowRight" || e.key === "ArrowUp"
+          ? BUDGET_STEP
+          : e.key === "ArrowLeft" || e.key === "ArrowDown"
+            ? -BUDGET_STEP
+            : 0;
+      if (delta === 0) return;
+      e.preventDefault();
+      if (thumb === "min") {
+        setRangeMax((prevMax) => {
+          setRangeMin((prev) =>
+            clamp(prev + delta, BUDGET_MIN, prevMax - BUDGET_STEP),
+          );
+          return prevMax;
+        });
+      } else {
+        setRangeMin((prevMin) => {
+          setRangeMax((prev) =>
+            clamp(prev + delta, prevMin + BUDGET_STEP, BUDGET_MAX),
+          );
+          return prevMin;
+        });
+      }
+      setActivePreset(null);
+      setHasBudgetSet(true);
+    },
+    [],
+  );
 
   const handlePreset = useCallback((index: number, preset: Preset) => {
     setRangeMin(preset.min);
@@ -187,6 +228,7 @@ export default function Step4Page() {
               zIndex: dragging === "min" ? 2 : 1,
             }}
             onPointerDown={handlePointerDown("min")}
+            onKeyDown={handleKeyDown("min")}
             role="slider"
             aria-label="최소 예산"
             aria-valuemin={BUDGET_MIN}
@@ -207,6 +249,7 @@ export default function Step4Page() {
               zIndex: dragging === "max" ? 2 : 1,
             }}
             onPointerDown={handlePointerDown("max")}
+            onKeyDown={handleKeyDown("max")}
             role="slider"
             aria-label="최대 예산"
             aria-valuemin={BUDGET_MIN}
