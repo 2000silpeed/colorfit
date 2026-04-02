@@ -556,12 +556,15 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 3회 소진 시 → 프리미엄 업그레이드 바텀시트
 - 🔧 codex 리뷰 반영: outfitId 동적 생성 + 저장 버튼 추가 + 접근성(aria-modal) + AbortController
 
-**Task 4.4 — 프리미엄 구독 화면**
-- [ ] `frontend/app/premium/page.tsx`
-- [ ] 프리미엄 혜택 소개 (AI 착장 무제한, 쿠폰, 가격 알림)
-- [ ] 가격: 월 4,900원 / 연 39,000원 (월 3,250원꼴)
-- [ ] 결제 CTA (Marsala 버튼)
-- [ ] MVP: 결제 연동은 후순위. "관심 등록" 또는 더미 결제 플로우
+**Task 4.4 — 프리미엄 구독 화면** ✅
+- [x] `frontend/src/app/premium/page.tsx`
+- [x] 프리미엄 혜택 소개 (AI 착장 무제한, 쿠폰, 가격 알림, 시즌 신상 알림)
+- [x] 가격: 월 4,900원 / 연 39,000원 (월 3,250원꼴)
+- [x] 결제 CTA (Marsala 버튼)
+- [x] MVP: "관심 등록" 더미 플로우 (1초 딜레이 → 완료 상태)
+- [x] 무료 vs 프리미엄 비교 테이블
+- [x] 10개 vitest 테스트 통과
+- 🔧 codex 리뷰 반영: 비교 테이블 aria-label 접근성 추가
 
 **Task 4.5 — 프리미엄 구독 백엔드**
 - [ ] `backend/app/models/subscription.py` — subscriptions 테이블
@@ -579,10 +582,11 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] `backend/app/routers/top_pick.py` — GET /api/top-pick
 - 🔧 codex 리뷰 반영: OF 시간대 보정 추가 + item name/mall_url 필드 누락 수정
 
-**Task 4.7 — A vs B 비교 서비스**
-- [ ] `backend/app/services/comparator.py`
-- [ ] 두 코디의 5축 점수 비교 + 결정적 차이 요인 추출
-- [ ] `backend/app/routers/compare.py` — GET /api/compare?ids=a,b
+**Task 4.7 — A vs B 비교 서비스** ✅
+- [x] `backend/app/services/comparator.py`
+- [x] 두 코디의 5축 점수 비교 + 결정적 차이 요인 추출
+- [x] `backend/app/routers/compare.py` — GET /api/compare?ids=a,b
+- 🔧 codex 리뷰 반영: decisive_factor.winner↔overall winner 일치 + explanation 실제 점수 사용
 
 **Task 4.8 — 저장 목록 화면**
 - [ ] `frontend/app/saved/page.tsx`
