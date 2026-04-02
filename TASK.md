@@ -423,11 +423,12 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 참조: 기획서 섹션 6.2
 - 🔧 codex 리뷰 반영: candidate price=0 필터 추가
 
-**Task 3.2 — 아이템 API**
-- [ ] `backend/app/routers/item.py`
-- [ ] GET /api/item/{id} — 아이템 상세 + 판매처별 가격
-- [ ] GET /api/item/{id}/similar — 유사 상품 리스트
-- [ ] Pydantic 스키마 정의
+**Task 3.2 — 아이템 API** ✅
+- [x] `backend/app/routers/item.py`
+- [x] GET /api/item/{id} — 아이템 상세 + 판매처별 가격
+- [x] GET /api/item/{id}/similar — 유사 상품 리스트
+- [x] Pydantic 스키마 정의
+- 🔧 codex 리뷰 반영: 동일 판매처 중복 시 최저가 유지, limit Query 검증(ge=1, le=20)
 
 **Task 3.3 — 아이템 상세 화면**
 - [ ] `frontend/app/item/[id]/page.tsx`
@@ -446,14 +447,15 @@ W5 ─── 단독 실행 (통합 작업)
 
 ### 🅑 내 옷장 분석 (Task 3.5~3.11, 🅐와 동시 실행 가능) ⭐ v1.5
 
-**Task 3.5 — 옷 사진 분석 API**
-- [ ] `backend/app/services/closet_analyzer.py` 생성
-- [ ] 옷 사진 업로드 → 이미지에서 dominant color 추출 (K-means)
-- [ ] 사용자 퍼스널컬러 톤과 비교 → PCF 점수 산출
-- [ ] 채도/명도 세부 점수 산출
-- [ ] 점수별 상세 이유 생성 (reason_generator 재사용)
-- [ ] `backend/app/routers/closet.py` — POST /api/closet/analyze
-- [ ] 참조: 기획서 섹션 5.5.1 (PCF 계산 로직 재사용)
+**Task 3.5 — 옷 사진 분석 API** ✅
+- [x] `backend/app/services/closet_analyzer.py` 생성
+- [x] 옷 사진 업로드 → 이미지에서 dominant color 추출 (K-means)
+- [x] 사용자 퍼스널컬러 톤과 비교 → PCF 점수 산출
+- [x] 채도/명도 세부 점수 산출
+- [x] 점수별 상세 이유 생성 (reason_generator 패턴 재사용)
+- [x] `backend/app/routers/closet.py` — POST /api/closet/analyze
+- 🔧 codex 리뷰 반영: SSRF 방지(HttpUrl+https 제한), per-color 개별 톤 매핑(PCF 과대평가 수정), 비율 주석 정정
+- [x] 참조: 기획서 섹션 5.5.1 (PCF 계산 로직 재사용)
 
 **Task 3.6 — 어울리는 아이템 추천 API (역방향 추천)**
 - [ ] 사용자 옷의 색상/카테고리 → Similar Finder로 어울리는 상품 검색
