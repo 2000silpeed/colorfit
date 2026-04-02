@@ -20,11 +20,11 @@ vi.mock("framer-motion", () => ({
 }));
 
 describe("BottomTabBar", () => {
-  it("4개 탭(홈, 저장, Top, 마이)이 모두 렌더링된다", () => {
+  it("4개 탭(홈, 옷장, 저장, 마이)이 모두 렌더링된다", () => {
     render(<BottomTabBar />);
     expect(screen.getByText("홈")).toBeInTheDocument();
+    expect(screen.getByText("옷장")).toBeInTheDocument();
     expect(screen.getByText("저장")).toBeInTheDocument();
-    expect(screen.getByText("Top")).toBeInTheDocument();
     expect(screen.getByText("마이")).toBeInTheDocument();
   });
 
@@ -46,7 +46,7 @@ describe("BottomTabBar", () => {
     render(<BottomTabBar />);
     const links = screen.getAllByRole("link");
     const hrefs = links.map((link) => link.getAttribute("href"));
-    expect(hrefs).toEqual(["/feed", "/saved", "/top", "/profile"]);
+    expect(hrefs).toEqual(["/feed", "/closet", "/saved", "/profile"]);
   });
 
   it("하위 경로에서도 해당 탭이 활성화된다", () => {

@@ -27,14 +27,15 @@ function HeartIcon({ active }: { active: boolean }) {
   );
 }
 
-function TrophyIcon({ active }: { active: boolean }) {
+function ClosetIcon({ active }: { active: boolean }) {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={active ? "var(--color-accent)" : "var(--color-text-tertiary)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M6 9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2" />
-      <path d="M18 9h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2" />
-      <path d="M6 3h12v7a6 6 0 0 1-12 0V3z" />
-      <path d="M9 21h6" />
-      <path d="M12 16v5" />
+      <path d="M4 6h16" />
+      <path d="M6 6c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2" />
+      <path d="M8 6v14" />
+      <path d="M16 6v14" />
+      <path d="M10 10c.5 1 1.5 2 2 4" />
+      <path d="M14 10c-.5 1-1.5 2-2 4" />
     </svg>
   );
 }
@@ -50,8 +51,8 @@ function UserIcon({ active }: { active: boolean }) {
 
 const tabs: TabItem[] = [
   { label: "홈", path: "/feed", icon: (a) => <HomeIcon active={a} /> },
+  { label: "옷장", path: "/closet", icon: (a) => <ClosetIcon active={a} /> },
   { label: "저장", path: "/saved", icon: (a) => <HeartIcon active={a} /> },
-  { label: "Top", path: "/top", icon: (a) => <TrophyIcon active={a} /> },
   { label: "마이", path: "/profile", icon: (a) => <UserIcon active={a} /> },
 ];
 
