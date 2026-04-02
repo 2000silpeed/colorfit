@@ -44,6 +44,22 @@ class FeedResponse(BaseModel):
     has_next: bool
 
 
+class TopPickResponse(BaseModel):
+    id: str
+    gender: str | None = None
+    designed_tpo: str | None = None
+    total_price: int | None = None
+    tags: list[str] | None = None
+    scores: ScoresResponse | None = None
+    soft_score: float = 0.0
+    final_score: float = 0.0
+    reasons: list[str] = []
+    highlight_reason: str = ""
+    source: str = "db"  # "saved" | "db"
+    image_url: str | None = None
+    items: list[ProductBrief] = []
+
+
 class OutfitDetailResponse(BaseModel):
     id: str
     gender: str | None = None
