@@ -478,14 +478,16 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] `backend/app/schemas/closet.py` — ClosetItemResponse, ClosetStats, ClosetListResponse 추가
 - [x] pytest 테스트 🔧 codex 리뷰 반영: pcf=70.0 경계값 테스트 + 전체 NULL pcf 케이스 추가
 
-**Task 3.8 — 옷 분석 결과 화면**
-- [ ] `frontend/app/closet/analyze/page.tsx`
-- [ ] 내 옷 사진 + 큰 점수 (Nanum Myeongjo 36px, Marsala)
-- [ ] 상세 이유 텍스트 (색상 매칭/채도/명도 설명)
-- [ ] 미니 스코어 3개 (색상/채도/명도)
-- [ ] "이 옷으로 완성하는 코디" 섹션 (TPO별 카드 조합)
-- [ ] 각 코디 카드: 내 옷(뱃지) + 추천 아이템 3개 + 코디 점수
-- [ ] "옷장에 추가" + "다른 옷도 분석하기" CTA
+**Task 3.8 — 옷 분석 결과 화면** ✅
+- [x] `frontend/app/closet/analyze/page.tsx`
+- [x] 내 옷 사진 + 큰 점수 (Nanum Myeongjo 36px, Marsala)
+- [x] 상세 이유 텍스트 (색상 매칭/채도/명도 설명)
+- [x] 미니 스코어 3개 (색상/채도/명도)
+- [x] "이 옷으로 완성하는 코디" 섹션 (TPO별 카드 조합)
+- [x] 각 코디 카드: 내 옷(뱃지) + 추천 아이템 3개 + 코디 점수
+- [x] "옷장에 추가" + "다른 옷도 분석하기" CTA
+- [x] 16개 vitest 테스트 통과
+- 🔧 codex 리뷰 반영: spring 애니메이션, 추천 API 실패 격리, 스코어바 접근성(role=progressbar), 코디 점수 표시 추가
 
 **Task 3.9 — 내 옷장 화면**
 - [ ] `frontend/app/closet/page.tsx`
