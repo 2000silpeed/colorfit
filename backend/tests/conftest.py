@@ -113,6 +113,16 @@ style_seeds_table = Table(
 )
 
 
+tryon_cache_table = Table(
+    "tryon_cache", test_metadata,
+    Column("id", String(36), primary_key=True),
+    Column("outfit_id", String(50), index=True, nullable=False),
+    Column("closet_item_id", String(36), nullable=True),
+    Column("user_id", String(36), index=True, nullable=False),
+    Column("image_url", Text, nullable=False),
+    Column("created_at", Text),
+)
+
 closet_items_table = Table(
     "closet_items", test_metadata,
     Column("id", String(36), primary_key=True),
