@@ -530,13 +530,14 @@ W5 ─── 단독 실행 (통합 작업)
 
 ### 🅐 AI 착장 샘플 + 프리미엄 (Task 4.1~4.5) ⭐ v1.5
 
-**Task 4.1 — Virtual Try-On API 연동**
-- [ ] `backend/app/services/virtual_tryon.py` 생성
-- [ ] Task 1.17에서 선정한 Gemini 나노바나나(gemini-2.5-flash-image)와 연동
-- [ ] 내 옷 이미지 + 추천 아이템 이미지 → 착장 합성 이미지 생성
-- [ ] 결과 이미지 캐싱 (outfit_id + closet_item_id 기반)
-- [ ] `backend/app/routers/tryon.py` — POST /api/tryon/generate
-- [ ] pytest 테스트 (mock API)
+**Task 4.1 — Virtual Try-On API 연동** ✅
+- [x] `backend/app/services/virtual_tryon.py` 생성
+- [x] Task 1.17에서 선정한 Gemini 나노바나나(gemini-2.5-flash-image)와 연동
+- [x] 내 옷 이미지 + 추천 아이템 이미지 → 착장 합성 이미지 생성
+- [x] 결과 이미지 캐싱 (outfit_id + closet_item_id 기반)
+- [x] `backend/app/routers/tryon.py` — POST /api/tryon/generate
+- [x] pytest 테스트 (mock API)
+- 🔧 codex 리뷰 반영: SSRF 방어(_validate_image_url) + 캐시 user_id 필터 추가 + image_url Text 컬럼
 
 **Task 4.2 — 무료 3회 제한 로직**
 - [ ] `backend/app/services/usage_tracker.py` 생성
