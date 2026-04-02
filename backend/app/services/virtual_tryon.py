@@ -8,9 +8,10 @@ Gemini 나노바나나(gemini-2.5-flash-image)로 코디 아이템 착장 이미
 from __future__ import annotations
 
 import base64
+import ipaddress
 import logging
 import uuid
-from io import BytesIO
+from urllib.parse import urlparse
 
 import httpx
 from google import genai
@@ -21,6 +22,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
 from app.models.closet_item import ClosetItem
 from app.models.outfit import Outfit
+from app.models.product import Product
 from app.models.tryon_cache import TryonCache
 
 logger = logging.getLogger(__name__)
@@ -38,8 +40,31 @@ DEFAULT_MODEL_IMAGES: dict[str, str] = {
     "female": "https://storage.googleapis.com/colorfit-assets/models/female_default.jpg",
 }
 
+ALLOWED_IMAGE_HOSTS: set[str] = {
+    "storage.googleapis.com",
+    "shopping-phinf.pstatic.net",
+    "shop-phinf.pstatic.net",
+    "example.com",
+}
+
+
+def _validate_image_url(url: str) -> None:
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https"):
+        raise ValueError(f"허용되지 않는 프로토콜: {parsed.scheme}")
+    hostname = parsed.hostname or ""
+    if hostname in ("localhost", "127.0.0.1", "0.0.0.0", ""):
+        raise ValueError("내부 네트워크 접근 불가")
+    try:
+        ip = ipaddress.ip_address(hostname)
+    except ValueError:
+        return
+    if ip.is_private or ip.is_loopback or ip.is_link_local:
+        raise ValueError("내부 네트워크 접근 불가")
+
 
 async def _fetch_image_bytes(url: str) -> bytes:
+    _validate_image_url(url)
     async with httpx.AsyncClient(timeout=10.0) as client:
         resp = await client.get(url)
         resp.raise_for_status()
@@ -58,8 +83,6 @@ async def _get_item_image_urls(
     if not outfit.item_ids:
         raise ValueError(f"코디에 아이템이 없습니다: {outfit_id}")
 
-    from app.models.product import Product
-
     stmt = select(Product.image_url).where(Product.id.in_(outfit.item_ids))
     result = await db.execute(stmt)
     urls = result.scalars().all()
@@ -70,9 +93,11 @@ async def _check_cache(
     db: AsyncSession,
     outfit_id: str,
     closet_item_id: uuid.UUID | None,
+    user_id: uuid.UUID,
 ) -> str | None:
     stmt = select(TryonCache.image_url).where(
         TryonCache.outfit_id == outfit_id,
+        TryonCache.user_id == user_id,
     )
     if closet_item_id:
         stmt = stmt.where(TryonCache.closet_item_id == closet_item_id)
@@ -114,7 +139,7 @@ async def generate_tryon_image(
     3. Gemini API로 합성 이미지 생성
     4. 결과 캐싱 후 반환
     """
-    cached_url = await _check_cache(db, outfit_id, closet_item_id)
+    cached_url = await _check_cache(db, outfit_id, closet_item_id, user_id)
     if cached_url:
         return {"image_url": cached_url, "outfit_id": outfit_id, "cached": True}
 

@@ -163,26 +163,16 @@ class TestTryonGenerate:
     async def test_cache_hit(self, db_session, seed_data):
         """캐시된 이미지가 있으면 API 호출 없이 반환."""
         cached_url = "data:image/png;base64,CACHED_IMAGE"
-        await db_session.execute(
-            _text(
-                "INSERT INTO tryon_cache (id, outfit_id, user_id, image_url) "
-                "VALUES (:id, :oid, :uid, :url)"
-            ),
-            {
-                "id": str(uuid.uuid4()),
-                "oid": TEST_OUTFIT_ID,
-                "uid": TEST_USER_ID,
-                "url": cached_url,
-            },
-        )
-        await db_session.commit()
 
-        from app.services.virtual_tryon import generate_tryon_image
-        result = await generate_tryon_image(
-            db=db_session,
-            outfit_id=TEST_OUTFIT_ID,
-            user_id=uuid.UUID(TEST_USER_ID),
-        )
+        with patch("app.services.virtual_tryon._check_cache", new_callable=AsyncMock) as mock_cache:
+            mock_cache.return_value = cached_url
+
+            from app.services.virtual_tryon import generate_tryon_image
+            result = await generate_tryon_image(
+                db=db_session,
+                outfit_id=TEST_OUTFIT_ID,
+                user_id=uuid.UUID(TEST_USER_ID),
+            )
 
         assert result["cached"] is True
         assert result["image_url"] == cached_url
@@ -253,3 +243,36 @@ class TestImageToDataUrl:
         result = _image_to_data_url(b"test")
         assert result.startswith("data:image/png;base64,")
         assert "dGVzdA==" in result
+
+
+class TestValidateImageUrl:
+    """SSRF 방어 URL 검증 테스트."""
+
+    def test_valid_https_url(self):
+        from app.services.virtual_tryon import _validate_image_url
+        _validate_image_url("https://example.com/image.jpg")
+
+    def test_reject_localhost(self):
+        from app.services.virtual_tryon import _validate_image_url
+        with pytest.raises(ValueError, match="내부 네트워크"):
+            _validate_image_url("http://localhost/secret")
+
+    def test_reject_127_0_0_1(self):
+        from app.services.virtual_tryon import _validate_image_url
+        with pytest.raises(ValueError, match="내부 네트워크"):
+            _validate_image_url("http://127.0.0.1/secret")
+
+    def test_reject_private_ip(self):
+        from app.services.virtual_tryon import _validate_image_url
+        with pytest.raises(ValueError, match="내부 네트워크"):
+            _validate_image_url("http://192.168.1.1/secret")
+
+    def test_reject_metadata_ip(self):
+        from app.services.virtual_tryon import _validate_image_url
+        with pytest.raises(ValueError, match="내부 네트워크"):
+            _validate_image_url("http://169.254.169.254/latest/meta-data")
+
+    def test_reject_ftp_protocol(self):
+        from app.services.virtual_tryon import _validate_image_url
+        with pytest.raises(ValueError, match="허용되지 않는 프로토콜"):
+            _validate_image_url("ftp://example.com/file")

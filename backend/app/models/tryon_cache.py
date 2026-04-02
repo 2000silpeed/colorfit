@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import String, TIMESTAMP, text as sa_text
+from sqlalchemy import String, Text, TIMESTAMP, text as sa_text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -20,7 +20,7 @@ class TryonCache(Base):
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), index=True, nullable=False
     )
-    image_url: Mapped[str] = mapped_column(String(2048), nullable=False)
+    image_url: Mapped[str] = mapped_column(Text, nullable=False)
     created_at: Mapped[str | None] = mapped_column(
         TIMESTAMP(timezone=True), server_default=sa_text("NOW()")
     )
