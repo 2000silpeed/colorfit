@@ -539,12 +539,13 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] pytest 테스트 (mock API)
 - 🔧 codex 리뷰 반영: SSRF 방어(_validate_image_url) + 캐시 user_id 필터 추가 + image_url Text 컬럼
 
-**Task 4.2 — 무료 3회 제한 로직**
-- [ ] `backend/app/services/usage_tracker.py` 생성
-- [ ] 사용자별 착장 생성 횟수 추적 (tryon_usage 테이블)
-- [ ] 무료 사용자: 3회 제한. 초과 시 403 + "프리미엄으로 업그레이드" 메시지
-- [ ] 프리미엄 사용자: 무제한
-- [ ] API 미들웨어로 체크
+**Task 4.2 — 무료 3회 제한 로직** ✅
+- [x] `backend/app/services/usage_tracker.py` 생성
+- [x] 사용자별 착장 생성 횟수 추적 (tryon_usage 테이블)
+- [x] 무료 사용자: 3회 제한. 초과 시 403 + "프리미엄으로 업그레이드" 메시지
+- [x] 프리미엄 사용자: 무제한
+- [x] API 미들웨어로 체크 (check_and_increment 원자적 처리)
+- 🔧 codex 리뷰 반영: 레이스 컨디션 해소(FOR UPDATE 락) + user_id UNIQUE/FK 제약 추가
 
 **Task 4.3 — 착장 샘플 UI**
 - [ ] 옷 분석 결과 화면(Task 3.8)의 코디 카드에 "착장으로 보기" 버튼 추가
