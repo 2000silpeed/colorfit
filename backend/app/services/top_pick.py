@@ -79,6 +79,7 @@ def _build_item_dicts(products: list[Any]) -> dict[str, list[dict]]:
     return {
         p.id: {
             "id": p.id,
+            "name": p.name,
             "brand": p.brand,
             "tone_id": p.tone_id,
             "category": p.category,
@@ -87,6 +88,7 @@ def _build_item_dicts(products: list[Any]) -> dict[str, list[dict]]:
             "color_hex": p.color_hex,
             "price": p.price,
             "image_url": p.image_url,
+            "mall_url": p.mall_url,
         }
         for p in products
     }
@@ -171,10 +173,30 @@ async def _load_outfits_with_items(
     return outfits, item_map
 
 
+def _apply_time_tpo_bonus(
+    scores: dict[str, float],
+    outfit_tpo: str | None,
+    time_tpos: list[str],
+) -> dict[str, float]:
+    """시간대 TPO 매칭 시 OF 점수에 보너스를 적용한다.
+
+    코디의 designed_tpo가 시간대 TPO에 매칭되면 OF +10 (최대 100).
+    프리컴퓨팅 원칙 유지: 원본 scores를 복사 후 보정만 수행.
+    """
+    if not outfit_tpo or not time_tpos:
+        return scores
+    if outfit_tpo not in time_tpos:
+        return scores
+    adjusted = dict(scores)
+    adjusted["of"] = min(100.0, adjusted.get("of", 0.0) + 10.0)
+    return adjusted
+
+
 def _score_and_filter(
     outfits: list[Any],
     item_map: dict[str, list[dict]],
     user_profile: dict[str, Any],
+    time_tpos: list[str] | None = None,
 ) -> list[dict]:
     """Hard Filter + Soft Score를 적용하여 후보 리스트를 반환한다."""
     scored: list[dict] = []
@@ -192,7 +214,10 @@ def _score_and_filter(
         if not passed:
             continue
 
-        soft_score = calculate_soft_score(ensure_dict(o.scores))
+        scores = ensure_dict(o.scores)
+        if time_tpos:
+            scores = _apply_time_tpo_bonus(scores, o.designed_tpo, time_tpos)
+        soft_score = calculate_soft_score(scores)
         image_url = items[0]["image_url"] if items else None
 
         tone_counts: dict[str, int] = {}
@@ -214,6 +239,7 @@ def _score_and_filter(
             "main_item_id": main_item_id,
             "outfit": o,
             "image_url": image_url,
+            "adjusted_scores": scores,
         })
 
     return scored
@@ -241,6 +267,9 @@ async def get_top_pick(
     merged_tpo = _merge_tpo_list(user_profile.get("tpo_list"), current_hour)
     profile_with_tpo = {**user_profile, "tpo_list": merged_tpo}
 
+    slot = _infer_time_slot(current_hour)
+    time_tpos = TIME_SLOT_TPOS.get(slot, [])
+
     source = "db"
     top_entry: dict | None = None
 
@@ -249,7 +278,7 @@ async def get_top_pick(
         saved_ids = await _load_saved_outfit_ids(user_id, db)
         if saved_ids:
             outfits, item_map = await _load_outfits_with_items(db, outfit_ids=saved_ids)
-            scored = _score_and_filter(outfits, item_map, profile_with_tpo)
+            scored = _score_and_filter(outfits, item_map, profile_with_tpo, time_tpos)
             if scored:
                 reranked = rerank(scored, limit=1)
                 if reranked:
@@ -262,7 +291,7 @@ async def get_top_pick(
             db,
             gender=user_profile.get("gender"),
         )
-        scored = _score_and_filter(outfits, item_map, profile_with_tpo)
+        scored = _score_and_filter(outfits, item_map, profile_with_tpo, time_tpos)
         if scored:
             reranked = rerank(scored, limit=1)
             if reranked:
@@ -273,7 +302,7 @@ async def get_top_pick(
         return None
 
     o: Any = top_entry["outfit"]
-    scores = ensure_dict(o.scores)
+    scores = top_entry.get("adjusted_scores") or ensure_dict(o.scores)
     tone_id = user_profile.get("tone_id")
 
     precomputed_reasons = ensure_list(o.reasons)

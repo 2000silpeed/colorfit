@@ -12,7 +12,7 @@ from sqlalchemy import text
 
 from app.db.session import get_db
 from app.main import app
-from app.services.top_pick import _infer_time_slot, _merge_tpo_list, _generate_highlight_reason
+from app.services.top_pick import _infer_time_slot, _merge_tpo_list, _generate_highlight_reason, _apply_time_tpo_bonus
 
 
 @pytest_asyncio.fixture
@@ -116,6 +116,29 @@ class TestMergeTpoList:
     def test_no_duplicates(self):
         result = _merge_tpo_list(["daily"], current_hour=9)
         assert result.count("daily") == 1
+
+
+class TestApplyTimeTpoBonus:
+    def test_matching_tpo_gets_bonus(self):
+        scores = {"pcf": 80.0, "of": 70.0, "ch": 60.0, "pe": 50.0, "sf": 75.0}
+        result = _apply_time_tpo_bonus(scores, "commute", ["office", "commute", "daily"])
+        assert result["of"] == 80.0
+        assert result["pcf"] == 80.0  # 다른 축 미변경
+
+    def test_non_matching_tpo_no_bonus(self):
+        scores = {"pcf": 80.0, "of": 70.0, "ch": 60.0, "pe": 50.0, "sf": 75.0}
+        result = _apply_time_tpo_bonus(scores, "date", ["office", "commute", "daily"])
+        assert result["of"] == 70.0
+
+    def test_of_capped_at_100(self):
+        scores = {"pcf": 80.0, "of": 95.0, "ch": 60.0, "pe": 50.0, "sf": 75.0}
+        result = _apply_time_tpo_bonus(scores, "casual", ["casual", "daily"])
+        assert result["of"] == 100.0
+
+    def test_no_mutation(self):
+        scores = {"pcf": 80.0, "of": 70.0, "ch": 60.0, "pe": 50.0, "sf": 75.0}
+        _apply_time_tpo_bonus(scores, "commute", ["commute"])
+        assert scores["of"] == 70.0  # 원본 미변경
 
 
 class TestGenerateHighlightReason:
