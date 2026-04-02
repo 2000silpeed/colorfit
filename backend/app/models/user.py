@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import String, Integer, ARRAY, TIMESTAMP, text
+from sqlalchemy import Boolean, String, Integer, ARRAY, TIMESTAMP, text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -23,6 +23,7 @@ class User(Base):
     style_moods: Mapped[list[str] | None] = mapped_column(ARRAY(String))
     budget_min: Mapped[int | None] = mapped_column(Integer)
     budget_max: Mapped[int | None] = mapped_column(Integer)
+    is_premium: Mapped[bool] = mapped_column(Boolean, server_default=text("false"), default=False)
     created_at: Mapped[str | None] = mapped_column(
         TIMESTAMP(timezone=True), server_default=text("NOW()")
     )

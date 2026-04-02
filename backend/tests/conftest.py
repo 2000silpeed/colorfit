@@ -97,7 +97,17 @@ users_table = Table(
     Column("style_moods", Text),    # ARRAY → TEXT
     Column("budget_min", Integer),
     Column("budget_max", Integer),
+    Column("is_premium", Boolean, default=False),
     Column("created_at", Text),
+)
+
+tryon_usage_table = Table(
+    "tryon_usage", test_metadata,
+    Column("id", String(36), primary_key=True),
+    Column("user_id", String(36), index=True, nullable=False),
+    Column("usage_count", Integer, default=0),
+    Column("created_at", Text),
+    Column("updated_at", Text),
 )
 
 style_seeds_table = Table(

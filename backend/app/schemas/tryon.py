@@ -16,3 +16,10 @@ class TryonGenerateResponse(BaseModel):
     image_url: str
     outfit_id: str
     cached: bool = False
+    remaining: int | None = None
+
+
+class TryonUsageResponse(BaseModel):
+    is_premium: bool
+    usage_count: int
+    remaining: int | None = None
