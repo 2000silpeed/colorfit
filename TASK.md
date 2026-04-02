@@ -446,7 +446,9 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] `backend/app/routers/tone.py` — GET /api/tone/{id}
 - [x] `backend/app/data/tone_descriptions.py` — 13개 톤별 설명 + worst_colors 정적 데이터
 - [x] `backend/app/schemas/tone.py` — ToneColor, ToneDetailResponse Pydantic 모델
-- [ ] 취향 관리 (Style Seed 시각화, 초기화) ⚠️ 별도 Task로 분리 필요
+- [x] 취향 관리 (Style Seed 시각화, 초기화) — F-48, 8.4.11
+- [x] `backend/app/routers/preference.py` — GET /api/preference/{user_id}, DELETE /api/preference/{user_id}/reset
+- [x] `frontend/app/(main)/preference/page.tsx` — 4축 시각화 + 학습 진행바 + 초기화 다이얼로그
 
 ### 🅑 내 옷장 분석 (Task 3.5~3.11, 🅐와 동시 실행 가능) ⭐ v1.5
 

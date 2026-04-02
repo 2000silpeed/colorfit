@@ -284,12 +284,33 @@ export default function ProfilePage() {
         </div>
       </motion.div>
 
-      {/* 설정 */}
+      {/* 취향 관리 */}
       <motion.div
         className="px-[20px] mt-[32px]"
         initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.3, delay: 0.3 }}
+      >
+        <button
+          onClick={() => router.push("/preference")}
+          className="flex items-center justify-between w-full py-[14px] border-b"
+          style={{ borderColor: "var(--color-border)" }}
+        >
+          <span className="text-[15px] text-text-primary" style={{ fontFamily: "var(--font-body)" }}>
+            취향 관리
+          </span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 3l5 5-5 5" stroke="var(--color-text-tertiary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+      </motion.div>
+
+      {/* 설정 */}
+      <motion.div
+        className="px-[20px] mt-[32px]"
+        initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.3, delay: 0.4 }}
       >
         <h2
           className="text-[18px] text-text-primary mb-[16px]"

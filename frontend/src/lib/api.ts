@@ -223,6 +223,50 @@ export async function fetchCloset(userId: string): Promise<ClosetListResponse> {
   return res.json();
 }
 
+/* ── 취향 관리 ── */
+
+export interface StyleSeedData {
+  mood_seed: string | null;
+  silhouette_seed: string | null;
+  color_seed: string | null;
+  price_seed: string | null;
+  seed_confidence: number | null;
+}
+
+export interface PreferenceStatusResponse {
+  style_seed: StyleSeedData | null;
+  feedback_count: number;
+  learning_target: number;
+  learning_phase: "seed" | "hybrid" | "learned";
+  has_seed: boolean;
+}
+
+export interface PreferenceResetResponse {
+  reset_mode: string;
+  message: string;
+}
+
+export async function fetchPreferenceStatus(userId: string): Promise<PreferenceStatusResponse> {
+  const res = await fetch(`${API_BASE}/api/preference/${userId}`);
+  if (!res.ok) {
+    throw new Error(`Preference API error: ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function resetPreference(
+  userId: string,
+  mode: "all" | "feedback_only",
+): Promise<PreferenceResetResponse> {
+  const res = await fetch(`${API_BASE}/api/preference/${userId}/reset?mode=${mode}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) {
+    throw new Error(`Preference reset error: ${res.status}`);
+  }
+  return res.json();
+}
+
 /* ── 피드 ── */
 
 export async function fetchFeed(params: FeedParams): Promise<FeedResponse> {
