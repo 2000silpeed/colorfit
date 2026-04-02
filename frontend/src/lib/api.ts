@@ -101,6 +101,69 @@ export async function fetchOutfitDetail(
   return res.json();
 }
 
+/* ── 아이템 상세 ── */
+
+export interface PriceEntry {
+  mall_name: string;
+  price: number;
+  mall_url: string;
+  is_lowest: boolean;
+}
+
+export interface ItemDetail {
+  id: string;
+  name: string | null;
+  brand: string | null;
+  category: string | null;
+  color_hex: string | null;
+  tone_id: string | null;
+  price: number | null;
+  mall_name: string | null;
+  mall_url: string | null;
+  image_url: string | null;
+  gender: string | null;
+  silhouette: string | null;
+  formality: number | null;
+  price_entries: PriceEntry[];
+}
+
+export interface SimilarProduct {
+  id: string;
+  name: string | null;
+  brand: string | null;
+  price: number | null;
+  image_url: string | null;
+  mall_url: string | null;
+  similarity: number;
+  match_type: string;
+}
+
+export interface SimilarListResponse {
+  source_id: string;
+  similar: SimilarProduct[];
+}
+
+export async function fetchItemDetail(itemId: string): Promise<ItemDetail> {
+  const res = await fetch(`${API_BASE}/api/item/${itemId}`);
+  if (!res.ok) {
+    throw new Error(`Item API error: ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function fetchSimilarItems(
+  itemId: string,
+  limit: number = 6,
+): Promise<SimilarListResponse> {
+  const res = await fetch(`${API_BASE}/api/item/${itemId}/similar?limit=${limit}`);
+  if (!res.ok) {
+    throw new Error(`Similar API error: ${res.status}`);
+  }
+  return res.json();
+}
+
+/* ── 피드 ── */
+
 export async function fetchFeed(params: FeedParams): Promise<FeedResponse> {
   const q = new URLSearchParams();
   q.set("tone_id", params.toneId);

@@ -1,17 +1,27 @@
-"""내 옷장 분석 API.
+"""내 옷장 분석 + 역방향 추천 API.
 
 옷 사진 업로드 → 퍼스널컬러 점수 + 이유.
+보유 옷 기반 → TPO별 어울리는 아이템 추천.
 기획서 섹션 5.5.1, F-39 구현.
 """
 
 from __future__ import annotations
 
 import logging
+from typing import Annotated
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db.session import get_db
 from app.schemas.closet import ClosetAnalyzeRequest, ClosetAnalyzeResponse
+from app.schemas.closet_recommendation import (
+    ClosetRecommendationResponse,
+    RecommendedProduct,
+    TpoOutfitSuggestion,
+)
 from app.services.closet_analyzer import analyze_closet_item
+from app.services.closet_recommender import recommend_for_closet_item
 
 logger = logging.getLogger(__name__)
 
@@ -32,3 +42,54 @@ async def analyze_item(
         raise HTTPException(status_code=500, detail="분석 중 오류가 발생했습니다")
 
     return ClosetAnalyzeResponse(**result)
+
+
+@router.get("/recommendations", response_model=ClosetRecommendationResponse)
+async def get_recommendations(
+    color_hex: Annotated[str, Query(min_length=4, max_length=7)],
+    category: str,
+    user_tone_id: str,
+    tpo: Annotated[str | None, Query()] = None,
+    limit: int = Query(default=4, ge=1, le=10),
+    db: AsyncSession = Depends(get_db),
+) -> ClosetRecommendationResponse:
+    """보유 옷 기반 역방향 추천.
+
+    사용자 옷의 색상/카테고리에 맞는 아이템을 TPO별로 추천한다.
+    """
+    if not color_hex.startswith("#"):
+        color_hex = f"#{color_hex}"
+
+    tpo_list = [t.strip() for t in tpo.split(",")] if tpo else None
+
+    try:
+        results = await recommend_for_closet_item(
+            db=db,
+            source_color_hex=color_hex,
+            source_category=category,
+            user_tone_id=user_tone_id,
+            tpo_list=tpo_list,
+            limit_per_tpo=limit,
+        )
+    except Exception:
+        logger.exception("역방향 추천 실패")
+        raise HTTPException(status_code=500, detail="추천 중 오류가 발생했습니다")
+
+    suggestions = [
+        TpoOutfitSuggestion(
+            tpo=r["tpo"],
+            tpo_label=r["tpo_label"],
+            items=[RecommendedProduct(**item) for item in r["items"]],
+        )
+        for r in results
+    ]
+
+    total = sum(len(s.items) for s in suggestions)
+
+    return ClosetRecommendationResponse(
+        source_color_hex=color_hex,
+        source_category=category,
+        user_tone_id=user_tone_id,
+        recommendations=suggestions,
+        total_count=total,
+    )
