@@ -476,7 +476,7 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] `backend/app/routers/closet.py` — GET /api/closet (내 옷장 목록)
 - [x] 옷장 전체 퍼스널컬러 적합도 통계 (%) 계산
 - [x] `backend/app/schemas/closet.py` — ClosetItemResponse, ClosetStats, ClosetListResponse 추가
-- [ ] pytest 테스트 ⚠️ 다음 세션에서 추가
+- [x] pytest 테스트 🔧 codex 리뷰 반영: pcf=70.0 경계값 테스트 + 전체 NULL pcf 케이스 추가
 
 **Task 3.8 — 옷 분석 결과 화면**
 - [ ] `frontend/app/closet/analyze/page.tsx`

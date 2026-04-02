@@ -9,7 +9,7 @@ import os
 os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///:memory:")
 
 import pytest_asyncio
-from sqlalchemy import ARRAY as SA_ARRAY, Table, Column, String, Integer, SmallInteger, Boolean, Text, JSON
+from sqlalchemy import ARRAY as SA_ARRAY, Table, Column, String, Float, Integer, SmallInteger, Boolean, Text, JSON
 from sqlalchemy.dialects.postgresql import ARRAY as PG_ARRAY, JSONB
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.ext.compiler import compiles
@@ -109,6 +109,21 @@ style_seeds_table = Table(
     Column("color_seed", String(30)),
     Column("price_seed", String(30)),
     Column("seed_confidence", Integer),
+    Column("created_at", Text),
+)
+
+
+closet_items_table = Table(
+    "closet_items", test_metadata,
+    Column("id", String(36), primary_key=True),
+    Column("user_id", String(36), index=True, nullable=False),
+    Column("image_url", String(2048), nullable=False),
+    Column("category", String(50)),
+    Column("dominant_color_hex", String(7)),
+    Column("matched_tone_id", String(30)),
+    Column("pcf_score", Float),
+    Column("overall_score", Float),
+    Column("reasons", Text),        # ARRAY → TEXT
     Column("created_at", Text),
 )
 
