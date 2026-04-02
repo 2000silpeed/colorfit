@@ -60,6 +60,42 @@ class TopPickResponse(BaseModel):
     items: list[ProductBrief] = []
 
 
+class AxisComparison(BaseModel):
+    axis: str
+    axis_name: str
+    score_a: float = 0.0
+    score_b: float = 0.0
+    diff: float = 0.0
+    winner: str = "tie"
+
+
+class DecisiveFactor(BaseModel):
+    axis: str | None = None
+    axis_name: str | None = None
+    diff: float = 0.0
+    winner: str | None = None
+    explanation: str = ""
+
+
+class OutfitBrief(BaseModel):
+    id: str
+    gender: str | None = None
+    designed_tpo: str | None = None
+    total_price: int | None = None
+    scores: ScoresResponse | None = None
+    image_url: str | None = None
+
+
+class CompareResponse(BaseModel):
+    outfit_a: OutfitBrief
+    outfit_b: OutfitBrief
+    axis_comparison: list[AxisComparison]
+    total_a: float = 0.0
+    total_b: float = 0.0
+    winner: str = "tie"
+    decisive_factor: DecisiveFactor
+
+
 class OutfitDetailResponse(BaseModel):
     id: str
     gender: str | None = None
