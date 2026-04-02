@@ -5,5 +5,6 @@ from app.models.reaction import Reaction
 from app.models.style_seed import StyleSeed
 from app.models.user_preference import UserPreference
 from app.models.closet_item import ClosetItem
+from app.models.subscription import Subscription
 
-__all__ = ["User", "Product", "Outfit", "Reaction", "StyleSeed", "UserPreference", "ClosetItem"]
+__all__ = ["User", "Product", "Outfit", "Reaction", "StyleSeed", "UserPreference", "ClosetItem", "Subscription"]

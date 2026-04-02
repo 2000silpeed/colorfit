@@ -133,6 +133,18 @@ tryon_cache_table = Table(
     Column("created_at", Text),
 )
 
+subscriptions_table = Table(
+    "subscriptions", test_metadata,
+    Column("id", String(36), primary_key=True),
+    Column("user_id", String(36), index=True, nullable=False),
+    Column("plan", String(20), nullable=False),
+    Column("status", String(20), nullable=False, default="active"),
+    Column("coupon_code", String(50)),
+    Column("price_krw", Integer, nullable=False),
+    Column("created_at", Text),
+    Column("expires_at", Text),
+)
+
 closet_items_table = Table(
     "closet_items", test_metadata,
     Column("id", String(36), primary_key=True),

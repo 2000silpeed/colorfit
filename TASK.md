@@ -566,11 +566,15 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 10개 vitest 테스트 통과
 - 🔧 codex 리뷰 반영: 비교 테이블 aria-label 접근성 추가
 
-**Task 4.5 — 프리미엄 구독 백엔드**
-- [ ] `backend/app/models/subscription.py` — subscriptions 테이블
-- [ ] `backend/app/routers/subscription.py` — POST /api/subscribe, GET /api/subscription/status
-- [ ] 프리미엄 상태 확인 미들웨어
-- [ ] MVP: 수동 활성화 또는 테스트용 쿠폰 코드 방식
+**Task 4.5 — 프리미엄 구독 백엔드** ✅
+- [x] `backend/app/models/subscription.py` — subscriptions 테이블 (plan, status, coupon_code, price_krw, expires_at)
+- [x] `backend/app/routers/subscription.py` — POST /api/subscribe, GET /api/subscription/status
+- [x] `backend/app/services/subscription.py` — 비즈니스 로직 분리
+- [x] `backend/app/schemas/subscription.py` — Pydantic DTO (Literal["monthly","yearly"] 플랜 검증)
+- [x] 프리미엄 상태: 기존 User.is_premium 플래그 + usage_tracker 연동 유지
+- [x] MVP: 테스트용 쿠폰 코드 방식 (COLORFIT-BETA, PREMIUM-TEST)
+- [x] 10개 pytest 테스트 통과
+- 🔧 codex 리뷰 반영: plan 필드 Literal 타입 적용 (Pydantic 수준 유효성 검사)
 
 ### 🅑 결정 지원 + 로그인 (Task 4.6~4.10, 🅐와 동시 실행 가능)
 
