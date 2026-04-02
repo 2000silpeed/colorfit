@@ -489,14 +489,16 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 16개 vitest 테스트 통과
 - 🔧 codex 리뷰 반영: spring 애니메이션, 추천 API 실패 격리, 스코어바 접근성(role=progressbar), 코디 점수 표시 추가
 
-**Task 3.9 — 내 옷장 화면**
-- [ ] `frontend/app/closet/page.tsx`
-- [ ] 옷장 전체 점수 게이지 (원형, %)
-- [ ] "상의 N벌은 훌륭하고, 하의 N벌은 톤이 맞지 않아요" 한 문장 진단
-- [ ] 3열 그리드 + 점수 뱃지 (높으면 Marsala, 중간 Ocean Blue, 낮으면 회색)
-- [ ] "+" 추가 버튼 (카메라/갤러리)
-- [ ] 무료 분석 잔여 횟수 표시 + "프리미엄" 버튼
-- [ ] GET /api/closet 연동
+**Task 3.9 — 내 옷장 화면** ✅
+- [x] `frontend/src/app/closet/page.tsx`
+- [x] 옷장 전체 점수 게이지 (원형, %)
+- [x] "상의 N벌은 훌륭하고, 하의 N벌은 톤이 맞지 않아요" 한 문장 진단
+- [x] 3열 그리드 + 점수 뱃지 (높으면 Marsala, 중간 Ocean Blue, 낮으면 회색)
+- [x] "+" 추가 버튼 (카메라/갤러리)
+- [x] 무료 분석 잔여 횟수 표시 + "프리미엄" 버튼
+- [x] GET /api/closet 연동
+- [x] 19개 vitest 테스트 통과
+- 🔧 codex 리뷰 반영: ClosetItemCard aria-label 접근성, Ocean Blue 뱃지 WCAG AA 색상 대비 수정
 
 **Task 3.10 — 옷 사진 업로드 컴포넌트**
 - [ ] `frontend/components/PhotoUploader.tsx`
