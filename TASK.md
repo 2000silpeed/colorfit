@@ -501,11 +501,14 @@ W5 ─── 단독 실행 (통합 작업)
 - 🔧 codex 리뷰 반영: ClosetItemCard aria-label 접근성, Ocean Blue 뱃지 WCAG AA 색상 대비 수정
 
 **Task 3.10 — 옷 사진 업로드 컴포넌트**
-- [ ] `frontend/components/PhotoUploader.tsx`
-- [ ] 카메라 촬영 / 갤러리 선택 옵션
-- [ ] 이미지 리사이즈 (max 1024px, 품질 80%)
-- [ ] 업로드 진행 표시 + 분석 중 로딩 애니메이션
-- [ ] POST /api/closet/analyze 연동
+- [x] `frontend/src/components/PhotoUploader.tsx`
+- [x] 카메라 촬영 / 갤러리 선택 옵션
+- [x] 이미지 리사이즈 (max 1024px, 품질 80%)
+- [x] 업로드 진행 표시 + 분석 중 로딩 애니메이션
+- [x] POST /api/closet/upload 연동 → analyze 페이지로 이동
+- [x] `frontend/src/app/closet/upload/page.tsx` (카테고리 선택 + 업로드 플로우)
+- [x] 15개 vitest 테스트 통과
+- 🔧 codex 리뷰 반영: 드래그앤드롭 영역 접근성(role/aria-label) 추가
 
 **Task 3.11 — 하단 탭바 변경**
 - [ ] 홈/옷장/저장/마이 4탭으로 변경 (Top Pick → 옷장)

@@ -350,6 +350,42 @@ export async function fetchClosetRecommendations(
   return res.json();
 }
 
+/* ── 이미지 업로드 ── */
+
+export interface UploadImageResponse {
+  image_url: string;
+}
+
+export async function uploadClosetImage(
+  file: File,
+  onProgress?: (percent: number) => void,
+): Promise<UploadImageResponse> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `${API_BASE}/api/closet/upload`);
+
+    xhr.upload.addEventListener("progress", (e) => {
+      if (e.lengthComputable && onProgress) {
+        onProgress(Math.round((e.loaded / e.total) * 100));
+      }
+    });
+
+    xhr.addEventListener("load", () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(JSON.parse(xhr.responseText));
+      } else {
+        reject(new Error(`Upload error: ${xhr.status}`));
+      }
+    });
+
+    xhr.addEventListener("error", () => reject(new Error("업로드 중 네트워크 오류가 발생했습니다.")));
+
+    const formData = new FormData();
+    formData.append("file", file);
+    xhr.send(formData);
+  });
+}
+
 /* ── 피드 ── */
 
 export async function fetchFeed(params: FeedParams): Promise<FeedResponse> {
