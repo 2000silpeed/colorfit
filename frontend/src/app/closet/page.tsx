@@ -15,7 +15,7 @@ const FREE_ANALYSIS_LIMIT = 5;
 function scoreBadgeStyle(score: number | null): { bg: string; text: string } {
   if (score == null) return { bg: "var(--color-bg-secondary)", text: "var(--color-text-tertiary)" };
   if (score >= 70) return { bg: "var(--color-accent)", text: "#FFFFFF" };
-  if (score >= 50) return { bg: "var(--color-score-of)", text: "#FFFFFF" };
+  if (score >= 50) return { bg: "var(--color-score-of)", text: "#1A1714" };
   return { bg: "var(--color-bg-secondary)", text: "var(--color-text-secondary)" };
 }
 
@@ -131,6 +131,7 @@ function ClosetItemCard({
       type="button"
       onClick={onClick}
       className="w-full text-left"
+      aria-label={`${CATEGORY_LABEL[item.category ?? ""] ?? "\uB0B4 \uC637"} ${item.overall_score != null ? `${Math.round(item.overall_score)}\uC810` : ""}`}
       initial={prefersReducedMotion ? false : { y: 30, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={

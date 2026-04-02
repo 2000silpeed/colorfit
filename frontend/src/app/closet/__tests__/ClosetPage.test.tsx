@@ -269,6 +269,37 @@ describe("ClosetPage", () => {
     });
   });
 
+  it("shows mid score badge in Ocean Blue color (50-69)", async () => {
+    const midItem = { ...MOCK_ITEMS[1], id: "item-mid", overall_score: 60, pcf_score: 60 };
+    const midResponse = {
+      items: [midItem],
+      stats: { total_count: 1, average_pcf: 60, good_count: 0, good_ratio: 0 },
+    };
+    mockFetchCloset.mockResolvedValue(midResponse);
+    render(<ClosetPage />);
+
+    await waitFor(() => {
+      const allSixty = screen.getAllByText("60");
+      const badge60 = allSixty.find(
+        (el) => el.classList.contains("font-body"),
+      )!;
+      expect(badge60).toBeInTheDocument();
+      expect(badge60.style.backgroundColor).toBe("var(--color-score-of)");
+      expect(badge60.style.color).toBe("rgb(26, 23, 20)");
+    });
+  });
+
+  it("has aria-labels on item cards with category and score", async () => {
+    mockFetchCloset.mockResolvedValue(MOCK_RESPONSE);
+    render(<ClosetPage />);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("상의 82점")).toBeInTheDocument();
+    });
+    expect(screen.getByLabelText("하의 40점")).toBeInTheDocument();
+    expect(screen.getByLabelText("아우터 75점")).toBeInTheDocument();
+  });
+
   it("shows low score badge in neutral color (< 50)", async () => {
     mockFetchCloset.mockResolvedValue(MOCK_RESPONSE);
     render(<ClosetPage />);
