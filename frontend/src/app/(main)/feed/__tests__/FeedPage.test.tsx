@@ -45,6 +45,16 @@ vi.mock("next/image", () => ({
   ),
 }));
 
+const mockPush = vi.fn();
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: mockPush,
+    back: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  }),
+}));
+
 const mockFetchFeed = vi.fn();
 vi.mock("@/lib/api", () => ({
   fetchFeed: (...args: unknown[]) => mockFetchFeed(...args),
