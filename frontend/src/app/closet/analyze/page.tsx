@@ -212,6 +212,9 @@ function TryOnBottomSheet({
           />
           {/* 시트 */}
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label="AI 착장 미리보기"
             className="fixed bottom-0 left-0 right-0 z-50 bg-bg-primary rounded-t-[var(--radius-xl)] px-[20px] pt-[16px] pb-[32px] safe-area-bottom"
             initial={prefersReducedMotion ? false : { y: "100%" }}
             animate={{ y: 0 }}
@@ -256,7 +259,7 @@ function TryOnBottomSheet({
                     onClick={onClose}
                     className="flex-1 py-[14px] border border-accent text-accent font-body text-[15px] font-medium rounded-[var(--radius-full)]"
                   >
-                    닫기
+                    저장
                   </button>
                   <button
                     type="button"
@@ -497,9 +500,14 @@ export default function ClosetAnalyzeResultPage() {
   }, []);
 
   /* 착장 생성 핸들러 */
+  const abortRef = { current: null as AbortController | null };
+
   const handleTryOn = useCallback(async (itemUrls: string[]) => {
     const userId = localStorage.getItem("colorfit_user_id");
     if (!userId) return;
+
+    if (abortRef.current) abortRef.current.abort();
+    abortRef.current = new AbortController();
 
     setTryonItemUrls([imageUrl, ...itemUrls]);
     setTryonOpen(true);
@@ -507,16 +515,19 @@ export default function ClosetAnalyzeResultPage() {
     setTryonImageUrl("");
 
     try {
+      const firstItemId = itemUrls[0]?.split("/").pop()?.replace(/\.[^.]+$/, "") ?? "tryon";
       const result = await generateTryon(
-        "closet_tryon",
+        `closet_${firstItemId}`,
         userId,
         undefined,
-        undefined,
+        imageUrl,
       );
+      if (abortRef.current?.signal.aborted) return;
       setTryonImageUrl(result.image_url);
       setTryonState("success");
       setTryonRemaining(result.remaining);
     } catch (err) {
+      if (abortRef.current?.signal.aborted) return;
       if (err instanceof TryonLimitError) {
         setTryonState("limit");
       } else {
@@ -530,6 +541,7 @@ export default function ClosetAnalyzeResultPage() {
   }, [handleTryOn, tryonItemUrls]);
 
   const handleTryOnClose = useCallback(() => {
+    if (abortRef.current) abortRef.current.abort();
     setTryonOpen(false);
     setTryonState("idle");
   }, []);
