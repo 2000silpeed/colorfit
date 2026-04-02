@@ -547,13 +547,14 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] API 미들웨어로 체크 (check_and_increment 원자적 처리)
 - 🔧 codex 리뷰 반영: 레이스 컨디션 해소(FOR UPDATE 락) + user_id UNIQUE/FK 제약 추가
 
-**Task 4.3 — 착장 샘플 UI**
-- [ ] 옷 분석 결과 화면(Task 3.8)의 코디 카드에 "착장으로 보기" 버튼 추가
-- [ ] 탭 시 → Try-On API 호출 → 로딩(3~8초) → 합성 이미지 표시
-- [ ] 로딩 애니메이션: 코디 아이템 이미지들이 회전
-- [ ] 결과: 합성 이미지(3:4) + "저장" + "공유" 버튼
-- [ ] 무료 잔여 횟수 표시 ("무료 착장 2회 남음")
-- [ ] 3회 소진 시 → 프리미엄 업그레이드 바텀시트
+**Task 4.3 — 착장 샘플 UI** ✅
+- [x] 옷 분석 결과 화면(Task 3.8)의 코디 카드에 "착장으로 보기" 버튼 추가
+- [x] 탭 시 → Try-On API 호출 → 로딩(3~8초) → 합성 이미지 표시
+- [x] 로딩 애니메이션: 코디 아이템 이미지들이 회전
+- [x] 결과: 합성 이미지(3:4) + "저장" + "공유" 버튼
+- [x] 무료 잔여 횟수 표시 ("무료 착장 2회 남음")
+- [x] 3회 소진 시 → 프리미엄 업그레이드 바텀시트
+- 🔧 codex 리뷰 반영: outfitId 동적 생성 + 저장 버튼 추가 + 접근성(aria-modal) + AbortController
 
 **Task 4.4 — 프리미엄 구독 화면**
 - [ ] `frontend/app/premium/page.tsx`
@@ -570,12 +571,13 @@ W5 ─── 단독 실행 (통합 작업)
 
 ### 🅑 결정 지원 + 로그인 (Task 4.6~4.10, 🅐와 동시 실행 가능)
 
-**Task 4.6 — Top Pick 서비스**
-- [ ] `backend/app/services/top_pick.py`
-- [ ] 저장 목록 기반: 저장 코디 중 최고 점수 1개
-- [ ] 전체 DB 기반: 전체 코디 중 최고 점수 1개 (콜드스타트)
-- [ ] 시간대 기반 TPO 자동 추론 (오전=출근, 오후=캐주얼, 저녁=데이트)
-- [ ] `backend/app/routers/top_pick.py` — GET /api/top-pick
+**Task 4.6 — Top Pick 서비스** ✅
+- [x] `backend/app/services/top_pick.py`
+- [x] 저장 목록 기반: 저장 코디 중 최고 점수 1개
+- [x] 전체 DB 기반: 전체 코디 중 최고 점수 1개 (콜드스타트)
+- [x] 시간대 기반 TPO 자동 추론 (오전=출근, 오후=캐주얼, 저녁=데이트)
+- [x] `backend/app/routers/top_pick.py` — GET /api/top-pick
+- 🔧 codex 리뷰 반영: OF 시간대 보정 추가 + item name/mall_url 필드 누락 수정
 
 **Task 4.7 — A vs B 비교 서비스**
 - [ ] `backend/app/services/comparator.py`
