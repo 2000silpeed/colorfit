@@ -16,7 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.schemas.tryon import TryonGenerateRequest, TryonGenerateResponse, TryonUsageResponse
-from app.services.usage_tracker import check_tryon_limit, increment_usage
+from app.services.usage_tracker import check_and_increment, check_tryon_limit
 from app.services.virtual_tryon import generate_tryon_image
 
 logger = logging.getLogger(__name__)
@@ -30,8 +30,8 @@ async def generate(
     db: AsyncSession = Depends(get_db),
 ) -> TryonGenerateResponse:
     """착장 합성 이미지를 생성한다."""
-    limit_info = await check_tryon_limit(db, req.user_id)
-    if not limit_info["allowed"]:
+    limit_result = await check_and_increment(db, req.user_id)
+    if not limit_result["allowed"]:
         raise HTTPException(
             status_code=403,
             detail="무료 착장 생성 횟수를 모두 사용했어요. 프리미엄으로 업그레이드해주세요.",
@@ -54,17 +54,13 @@ async def generate(
             detail="이미지를 생성하지 못했어요. 다시 시도해주세요.",
         )
 
-    if not result.get("cached"):
-        await increment_usage(db, req.user_id)
-        await db.commit()
-
-    updated_limit = await check_tryon_limit(db, req.user_id)
+    await db.commit()
 
     return TryonGenerateResponse(
         image_url=result["image_url"],
         outfit_id=result["outfit_id"],
         cached=result["cached"],
-        remaining=updated_limit["remaining"],
+        remaining=limit_result["remaining"],
     )
 
 

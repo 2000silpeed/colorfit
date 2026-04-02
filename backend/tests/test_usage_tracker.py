@@ -140,3 +140,33 @@ class TestTryonLimitIntegration:
         limit = await check_tryon_limit(db_session, uid)
         assert limit["allowed"] is False
         assert limit["remaining"] == 0
+
+
+class TestCheckAndIncrement:
+    """check_and_increment 원자적 동작 테스트."""
+
+    @pytest.mark.asyncio
+    async def test_atomic_check_and_increment(self, db_session, seed_users):
+        """첫 사용 — allowed=True, remaining=2."""
+        from app.services.usage_tracker import check_and_increment
+        uid = uuid.UUID(TEST_FREE_USER_ID)
+
+        result = await check_and_increment(db_session, uid)
+        assert result["allowed"] is True
+        assert result["usage_count"] == 1
+        assert result["remaining"] == 2
+
+    @pytest.mark.asyncio
+    async def test_atomic_blocks_at_limit(self, db_session, seed_users):
+        """3회 사용 후 4번째 시도 — allowed=False."""
+        from app.services.usage_tracker import check_and_increment
+        uid = uuid.UUID(TEST_FREE_USER_ID)
+
+        for i in range(3):
+            result = await check_and_increment(db_session, uid)
+            assert result["allowed"] is True
+
+        result = await check_and_increment(db_session, uid)
+        assert result["allowed"] is False
+        assert result["remaining"] == 0
+        assert result["usage_count"] == 3

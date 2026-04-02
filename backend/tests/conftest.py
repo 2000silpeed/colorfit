@@ -104,7 +104,7 @@ users_table = Table(
 tryon_usage_table = Table(
     "tryon_usage", test_metadata,
     Column("id", String(36), primary_key=True),
-    Column("user_id", String(36), index=True, nullable=False),
+    Column("user_id", String(36), unique=True, index=True, nullable=False),
     Column("usage_count", Integer, default=0),
     Column("created_at", Text),
     Column("updated_at", Text),
