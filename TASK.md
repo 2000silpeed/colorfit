@@ -592,13 +592,14 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] `backend/app/routers/compare.py` — GET /api/compare?ids=a,b
 - 🔧 codex 리뷰 반영: decisive_factor.winner↔overall winner 일치 + explanation 실제 점수 사용
 
-**Task 4.8 — 저장 목록 화면**
-- [ ] `frontend/app/saved/page.tsx`
-- [ ] 2열 그리드 (이미지 3:4 + 1줄 제목 + 가격)
-- [ ] 정렬 드롭다운 (최근/점수/가격)
-- [ ] 비어있을 때: 일러스트 + "아직 저장한 코디가 없어요" + CTA
-- [ ] 롱프레스 → 삭제 확인 바텀시트
-- [ ] GET /api/saved 연동
+**Task 4.8 — 저장 목록 화면** ✅
+- [x] `frontend/src/app/(main)/saved/page.tsx`
+- [x] 2열 그리드 (이미지 3:4 + 1줄 제목 + 가격)
+- [x] 정렬 pill 버튼 (최근/점수/가격)
+- [x] 비어있을 때: 하트 일러스트 + "아직 저장한 코디가 없어요" + CTA
+- [x] 롱프레스 → 삭제 확인 바텀시트
+- [x] GET /api/saved 연동 (backend/app/routers/saved.py 신규)
+- 🔧 codex 리뷰 반영: userId localStorage 동기화 + price null 정렬 수정
 
 **Task 4.8.1 — Top Pick 모달**
 - [ ] "Top Pick 보기" 버튼 (저장 목록 상단)

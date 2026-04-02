@@ -444,6 +444,37 @@ export async function fetchTryonUsage(userId: string): Promise<TryonUsageRespons
   return res.json();
 }
 
+/* ── 저장 목록 ── */
+
+export interface SavedOutfit {
+  id: string;
+  gender: string | null;
+  designed_tpo: string | null;
+  total_price: number | null;
+  tags: string[] | null;
+  scores: ScoresResponse | null;
+  soft_score: number;
+  reasons: string[];
+  image_url: string | null;
+}
+
+export interface SavedListResponse {
+  outfits: SavedOutfit[];
+  total: number;
+}
+
+export async function fetchSaved(
+  userId: string,
+  sortBy: "recent" | "score" | "price" = "recent",
+): Promise<SavedListResponse> {
+  const q = new URLSearchParams({ user_id: userId, sort_by: sortBy });
+  const res = await fetch(`${API_BASE}/api/saved?${q.toString()}`);
+  if (!res.ok) {
+    throw new Error(`Saved API error: ${res.status}`);
+  }
+  return res.json();
+}
+
 /* ── 피드 ── */
 
 export async function fetchFeed(params: FeedParams): Promise<FeedResponse> {
