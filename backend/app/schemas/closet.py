@@ -29,3 +29,27 @@ class ClosetAnalyzeResponse(BaseModel):
     lightness_score: float
     overall_score: float
     reasons: list[str]
+
+
+class ClosetItemResponse(BaseModel):
+    id: str
+    image_url: str
+    category: str | None = None
+    dominant_color_hex: str | None = None
+    matched_tone_id: str | None = None
+    pcf_score: float | None = None
+    overall_score: float | None = None
+    reasons: list[str] | None = None
+    created_at: str | None = None
+
+
+class ClosetStats(BaseModel):
+    total_count: int
+    average_pcf: float
+    good_count: int
+    good_ratio: float
+
+
+class ClosetListResponse(BaseModel):
+    items: list[ClosetItemResponse]
+    stats: ClosetStats

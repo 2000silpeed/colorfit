@@ -440,11 +440,13 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 외부 쇼핑몰 링크 (새 탭)
 - [x] `frontend/src/lib/api.ts` — fetchItemDetail, fetchSimilarItems 추가
 
-**Task 3.4 — 프로필/마이페이지 + 톤 설명**
-- [ ] `frontend/app/profile/page.tsx` — 톤 카드, 대표색 스와치, 내 정보 변경
-- [ ] `frontend/app/tone/[id]/page.tsx` — 톤 설명 화면
-- [ ] `backend/app/routers/tone.py` — GET /api/tone/{id}
-- [ ] 취향 관리 (Style Seed 시각화, 초기화)
+**Task 3.4 — 프로필/마이페이지 + 톤 설명** ✅
+- [x] `frontend/app/(main)/profile/page.tsx` — 톤 카드, 대표색 스와치, 내 정보 변경
+- [x] `frontend/app/tone/[id]/page.tsx` — 톤 설명 화면
+- [x] `backend/app/routers/tone.py` — GET /api/tone/{id}
+- [x] `backend/app/data/tone_descriptions.py` — 13개 톤별 설명 + worst_colors 정적 데이터
+- [x] `backend/app/schemas/tone.py` — ToneColor, ToneDetailResponse Pydantic 모델
+- [ ] 취향 관리 (Style Seed 시각화, 초기화) ⚠️ 별도 Task로 분리 필요
 
 ### 🅑 내 옷장 분석 (Task 3.5~3.11, 🅐와 동시 실행 가능) ⭐ v1.5
 
@@ -467,11 +469,12 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 18개 테스트 통과 (순수 함수 12 + DB 통합 6)
 - [x] 참조: 기획서 F-39 (보유 옷 역방향 추천)
 
-**Task 3.7 — 옷장 관리 API**
-- [ ] `backend/app/models/closet_item.py` — closet_items 테이블
-- [ ] `backend/app/routers/closet.py` — GET /api/closet (내 옷장 목록)
-- [ ] 옷장 전체 퍼스널컬러 적합도 통계 (%) 계산
-- [ ] pytest 테스트
+**Task 3.7 — 옷장 관리 API** ✅
+- [x] `backend/app/models/closet_item.py` — closet_items 테이블
+- [x] `backend/app/routers/closet.py` — GET /api/closet (내 옷장 목록)
+- [x] 옷장 전체 퍼스널컬러 적합도 통계 (%) 계산
+- [x] `backend/app/schemas/closet.py` — ClosetItemResponse, ClosetStats, ClosetListResponse 추가
+- [ ] pytest 테스트 ⚠️ 다음 세션에서 추가
 
 **Task 3.8 — 옷 분석 결과 화면**
 - [ ] `frontend/app/closet/analyze/page.tsx`
@@ -510,7 +513,7 @@ W5 ─── 단독 실행 (통합 작업)
 - [ ] 가격 비교 테이블 동작 (Task 3.3)
 - [ ] 옷 사진 분석 → 점수 + 이유 동작 (Task 3.5, 3.8)
 - [ ] 내 옷장 화면 동작 (Task 3.9)
-- [ ] 마이페이지 동작 (Task 3.4)
+- [x] 마이페이지 동작 (Task 3.4)
 
 ---
 

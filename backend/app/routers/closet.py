@@ -1,20 +1,30 @@
-"""내 옷장 분석 + 역방향 추천 API.
+"""내 옷장 분석 + 역방향 추천 + 옷장 목록 API.
 
 옷 사진 업로드 → 퍼스널컬러 점수 + 이유.
 보유 옷 기반 → TPO별 어울리는 아이템 추천.
+옷장 전체 아이템 목록 + 퍼스널컬러 적합도 통계.
 기획서 섹션 5.5.1, F-39 구현.
 """
 
 from __future__ import annotations
 
 import logging
+import uuid
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
-from app.schemas.closet import ClosetAnalyzeRequest, ClosetAnalyzeResponse
+from app.models.closet_item import ClosetItem
+from app.schemas.closet import (
+    ClosetAnalyzeRequest,
+    ClosetAnalyzeResponse,
+    ClosetItemResponse,
+    ClosetListResponse,
+    ClosetStats,
+)
 from app.schemas.closet_recommendation import (
     ClosetRecommendationResponse,
     RecommendedProduct,
@@ -26,6 +36,51 @@ from app.services.closet_recommender import recommend_for_closet_item
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/closet", tags=["closet"])
+
+
+@router.get("", response_model=ClosetListResponse)
+async def get_closet(
+    user_id: Annotated[uuid.UUID, Query()],
+    db: AsyncSession = Depends(get_db),
+) -> ClosetListResponse:
+    """사용자 옷장 목록 + 퍼스널컬러 적합도 통계."""
+    stmt = (
+        select(ClosetItem)
+        .where(ClosetItem.user_id == user_id)
+        .order_by(ClosetItem.created_at.desc())
+    )
+    result = await db.execute(stmt)
+    rows = result.scalars().all()
+
+    items = [
+        ClosetItemResponse(
+            id=str(row.id),
+            image_url=row.image_url,
+            category=row.category,
+            dominant_color_hex=row.dominant_color_hex,
+            matched_tone_id=row.matched_tone_id,
+            pcf_score=row.pcf_score,
+            overall_score=row.overall_score,
+            reasons=row.reasons,
+            created_at=str(row.created_at) if row.created_at else None,
+        )
+        for row in rows
+    ]
+
+    total_count = len(items)
+    pcf_scores = [i.pcf_score for i in items if i.pcf_score is not None]
+    average_pcf = sum(pcf_scores) / len(pcf_scores) if pcf_scores else 0.0
+    good_count = sum(1 for s in pcf_scores if s >= 70)
+    good_ratio = (good_count / total_count * 100) if total_count > 0 else 0.0
+
+    stats = ClosetStats(
+        total_count=total_count,
+        average_pcf=round(average_pcf, 1),
+        good_count=good_count,
+        good_ratio=round(good_ratio, 1),
+    )
+
+    return ClosetListResponse(items=items, stats=stats)
 
 
 @router.post("/analyze", response_model=ClosetAnalyzeResponse)

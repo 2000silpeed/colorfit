@@ -162,6 +162,67 @@ export async function fetchSimilarItems(
   return res.json();
 }
 
+/* ── 톤 상세 ── */
+
+export interface ToneColor {
+  hex: string;
+  name_ko: string;
+}
+
+export interface ToneDetailResponse {
+  tone_id: string;
+  tone_name_ko: string;
+  season: string;
+  temperature: string;
+  depth: string;
+  description: string;
+  best_colors: ToneColor[];
+  worst_colors: ToneColor[];
+  all_colors: ToneColor[];
+}
+
+export async function fetchToneDetail(toneId: string): Promise<ToneDetailResponse> {
+  const res = await fetch(`${API_BASE}/api/tone/${toneId}`);
+  if (!res.ok) {
+    throw new Error(`Tone API error: ${res.status}`);
+  }
+  return res.json();
+}
+
+/* ── 옷장 ── */
+
+export interface ClosetItemData {
+  id: string;
+  image_url: string;
+  category: string | null;
+  dominant_color_hex: string | null;
+  matched_tone_id: string | null;
+  pcf_score: number | null;
+  overall_score: number | null;
+  reasons: string[] | null;
+  created_at: string | null;
+}
+
+export interface ClosetStats {
+  total_count: number;
+  average_pcf: number;
+  good_count: number;
+  good_ratio: number;
+}
+
+export interface ClosetListResponse {
+  items: ClosetItemData[];
+  stats: ClosetStats;
+}
+
+export async function fetchCloset(userId: string): Promise<ClosetListResponse> {
+  const res = await fetch(`${API_BASE}/api/closet?user_id=${userId}`);
+  if (!res.ok) {
+    throw new Error(`Closet API error: ${res.status}`);
+  }
+  return res.json();
+}
+
 /* ── 피드 ── */
 
 export async function fetchFeed(params: FeedParams): Promise<FeedResponse> {
