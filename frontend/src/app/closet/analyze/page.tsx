@@ -3,14 +3,18 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   analyzeClosetItem,
   fetchClosetRecommendations,
+  generateTryon,
+  fetchTryonUsage,
+  TryonLimitError,
   type ClosetAnalyzeResponse,
   type ClosetRecommendationResponse,
   type TpoOutfitSuggestion,
   type RecommendedProduct,
+  type TryonUsageResponse,
 } from "@/lib/api";
 
 type PageState = "loading" | "success" | "error";
@@ -134,15 +138,209 @@ function RecommendedItemCard({ item }: { item: RecommendedProduct }) {
   );
 }
 
+/* ── Try-On 로딩 애니메이션 (아이템 이미지 회전) ── */
+function TryOnLoadingSpinner({ itemUrls }: { itemUrls: string[] }) {
+  const count = Math.min(itemUrls.length, 4);
+  return (
+    <div className="flex flex-col items-center gap-[16px] py-[32px]">
+      <div className="relative w-[80px] h-[80px]">
+        {itemUrls.slice(0, count).map((url, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-[36px] h-[36px] rounded-full overflow-hidden border-2 border-bg-primary"
+            style={{
+              top: "50%",
+              left: "50%",
+              marginTop: "-18px",
+              marginLeft: "-18px",
+            }}
+            animate={{
+              rotate: 360,
+              x: Math.cos((i / count) * Math.PI * 2) * 24,
+              y: Math.sin((i / count) * Math.PI * 2) * 24,
+            }}
+            transition={{
+              rotate: { repeat: Infinity, duration: 2, ease: "linear" },
+              x: { repeat: Infinity, duration: 2, ease: "linear" },
+              y: { repeat: Infinity, duration: 2, ease: "linear" },
+            }}
+          >
+            <Image src={url} alt="" width={36} height={36} className="object-cover w-full h-full" />
+          </motion.div>
+        ))}
+      </div>
+      <p className="font-body text-[14px] text-text-secondary">
+        착장 이미지를 생성하고 있어요...
+      </p>
+    </div>
+  );
+}
+
+/* ── Try-On 바텀시트 ── */
+type TryOnState = "idle" | "loading" | "success" | "error" | "limit";
+
+function TryOnBottomSheet({
+  isOpen,
+  onClose,
+  tryonState,
+  tryonImageUrl,
+  itemUrls,
+  onRetry,
+  onUpgrade,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  tryonState: TryOnState;
+  tryonImageUrl: string;
+  itemUrls: string[];
+  onRetry: () => void;
+  onUpgrade: () => void;
+}) {
+  const prefersReducedMotion = useReducedMotion();
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* 오버레이 */}
+          <motion.div
+            className="fixed inset-0 bg-black/40 z-40"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+          />
+          {/* 시트 */}
+          <motion.div
+            className="fixed bottom-0 left-0 right-0 z-50 bg-bg-primary rounded-t-[var(--radius-xl)] px-[20px] pt-[16px] pb-[32px] safe-area-bottom"
+            initial={prefersReducedMotion ? false : { y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={
+              prefersReducedMotion
+                ? { duration: 0 }
+                : { type: "spring", stiffness: 300, damping: 30 }
+            }
+          >
+            {/* 핸들 */}
+            <div className="flex justify-center mb-[16px]">
+              <div className="w-[36px] h-[4px] rounded-full bg-border" />
+            </div>
+
+            {tryonState === "loading" && (
+              <TryOnLoadingSpinner itemUrls={itemUrls} />
+            )}
+
+            {tryonState === "success" && tryonImageUrl && (
+              <motion.div
+                className="flex flex-col items-center"
+                initial={prefersReducedMotion ? false : { y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              >
+                <div
+                  className="w-full max-w-[320px] rounded-[var(--radius-lg)] overflow-hidden"
+                  style={{ aspectRatio: "3/4" }}
+                >
+                  <Image
+                    src={tryonImageUrl}
+                    alt="AI 착장 이미지"
+                    width={320}
+                    height={427}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex gap-[12px] mt-[20px] w-full max-w-[320px]">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="flex-1 py-[14px] border border-accent text-accent font-body text-[15px] font-medium rounded-[var(--radius-full)]"
+                  >
+                    닫기
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (navigator.share) {
+                        navigator.share({ title: "ColorFit 착장", url: tryonImageUrl });
+                      }
+                    }}
+                    className="flex-1 py-[14px] bg-accent text-white font-body text-[15px] font-medium rounded-[var(--radius-full)]"
+                  >
+                    공유
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {tryonState === "error" && (
+              <div className="flex flex-col items-center py-[24px]">
+                <div className="w-[48px] h-[48px] rounded-full bg-error-bg flex items-center justify-center mb-[12px]">
+                  <span className="text-[24px]">{"\uD83D\uDE1E"}</span>
+                </div>
+                <p className="font-body text-[15px] text-text-primary mb-[4px]">
+                  이미지를 생성하지 못했어요
+                </p>
+                <p className="font-body text-[13px] text-text-secondary mb-[20px]">
+                  네트워크를 확인하고 다시 시도해주세요
+                </p>
+                <button
+                  type="button"
+                  onClick={onRetry}
+                  className="px-[24px] py-[12px] bg-accent text-white font-body text-[15px] font-medium rounded-[var(--radius-full)]"
+                >
+                  다시 시도
+                </button>
+              </div>
+            )}
+
+            {tryonState === "limit" && (
+              <div className="flex flex-col items-center py-[24px]">
+                <div className="w-[48px] h-[48px] rounded-full bg-warning-bg flex items-center justify-center mb-[12px]">
+                  <span className="text-[24px]">{"\uD83D\uDD12"}</span>
+                </div>
+                <p className="font-display text-[18px] text-text-primary mb-[4px]">
+                  무료 착장 생성 완료
+                </p>
+                <p className="font-body text-[14px] text-text-secondary text-center mb-[20px]">
+                  무료 착장 3회를 모두 사용했어요.
+                  <br />
+                  프리미엄으로 업그레이드하면 무제한 이용 가능해요.
+                </p>
+                <button
+                  type="button"
+                  onClick={onUpgrade}
+                  className="w-full max-w-[280px] py-[14px] bg-accent text-white font-body text-[15px] font-medium rounded-[var(--radius-full)]"
+                >
+                  프리미엄으로 업그레이드
+                </button>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="mt-[12px] font-body text-[14px] text-text-tertiary"
+                >
+                  나중에 할게요
+                </button>
+              </div>
+            )}
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+}
+
 /* ── TPO 코디 카드 ── */
 function TpoCodiCard({
   suggestion,
   sourceImageUrl,
   index,
+  onTryOn,
 }: {
   suggestion: TpoOutfitSuggestion;
   sourceImageUrl: string;
   index: number;
+  onTryOn?: (itemUrls: string[]) => void;
 }) {
   const prefersReducedMotion = useReducedMotion();
   const emoji = TPO_EMOJI[suggestion.tpo] ?? "\uD83D\uDC57";
@@ -204,6 +402,22 @@ function TpoCodiCard({
           </div>
         )}
       </div>
+
+      {/* 착장으로 보기 버튼 */}
+      {suggestion.items.length > 0 && onTryOn && (
+        <button
+          type="button"
+          onClick={() => {
+            const urls = suggestion.items
+              .map((item) => item.image_url)
+              .filter((u): u is string => u != null);
+            onTryOn(urls);
+          }}
+          className="mt-[8px] w-full py-[10px] border border-accent text-accent font-body text-[13px] font-medium rounded-[var(--radius-full)] hover:bg-accent/5 transition-colors"
+        >
+          착장으로 보기
+        </button>
+      )}
     </motion.section>
   );
 }
@@ -222,6 +436,13 @@ export default function ClosetAnalyzeResultPage() {
   const [analyzeResult, setAnalyzeResult] = useState<ClosetAnalyzeResponse | null>(null);
   const [recommendations, setRecommendations] = useState<ClosetRecommendationResponse | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
+
+  /* Try-On 상태 */
+  const [tryonOpen, setTryonOpen] = useState(false);
+  const [tryonState, setTryonState] = useState<TryOnState>("idle");
+  const [tryonImageUrl, setTryonImageUrl] = useState("");
+  const [tryonItemUrls, setTryonItemUrls] = useState<string[]>([]);
+  const [tryonRemaining, setTryonRemaining] = useState<number | null>(null);
 
   useEffect(() => {
     if (!imageUrl || !userToneId) {
@@ -265,6 +486,57 @@ export default function ClosetAnalyzeResultPage() {
     load();
     return () => { cancelled = true; };
   }, [imageUrl, userToneId, category]);
+
+  /* Try-On 잔여 횟수 로드 */
+  useEffect(() => {
+    const userId = localStorage.getItem("colorfit_user_id");
+    if (!userId) return;
+    fetchTryonUsage(userId)
+      .then((usage) => setTryonRemaining(usage.remaining))
+      .catch(() => {});
+  }, []);
+
+  /* 착장 생성 핸들러 */
+  const handleTryOn = useCallback(async (itemUrls: string[]) => {
+    const userId = localStorage.getItem("colorfit_user_id");
+    if (!userId) return;
+
+    setTryonItemUrls([imageUrl, ...itemUrls]);
+    setTryonOpen(true);
+    setTryonState("loading");
+    setTryonImageUrl("");
+
+    try {
+      const result = await generateTryon(
+        "closet_tryon",
+        userId,
+        undefined,
+        undefined,
+      );
+      setTryonImageUrl(result.image_url);
+      setTryonState("success");
+      setTryonRemaining(result.remaining);
+    } catch (err) {
+      if (err instanceof TryonLimitError) {
+        setTryonState("limit");
+      } else {
+        setTryonState("error");
+      }
+    }
+  }, [imageUrl]);
+
+  const handleTryOnRetry = useCallback(() => {
+    handleTryOn(tryonItemUrls.slice(1));
+  }, [handleTryOn, tryonItemUrls]);
+
+  const handleTryOnClose = useCallback(() => {
+    setTryonOpen(false);
+    setTryonState("idle");
+  }, []);
+
+  const handleUpgrade = useCallback(() => {
+    router.push("/premium");
+  }, [router]);
 
   const handleAddToCloset = useCallback(() => {
     // TODO: POST /api/closet (옷장에 추가 API 연동)
@@ -448,6 +720,18 @@ export default function ClosetAnalyzeResultPage() {
             <h2 className="font-display text-[24px] text-text-primary mb-[16px] leading-[1.25]">
               이 옷으로 완성하는 코디
             </h2>
+            {/* 잔여 횟수 */}
+            {tryonRemaining != null && tryonRemaining > 0 && (
+              <p className="font-body text-[13px] text-text-tertiary mb-[12px]">
+                무료 착장 {tryonRemaining}회 남음
+              </p>
+            )}
+            {tryonRemaining === 0 && (
+              <p className="font-body text-[13px] text-warning-text mb-[12px]">
+                무료 착장 소진 — 프리미엄으로 업그레이드
+              </p>
+            )}
+
             {recommendations.recommendations.map(
               (suggestion: TpoOutfitSuggestion, idx: number) => (
                 <TpoCodiCard
@@ -455,6 +739,7 @@ export default function ClosetAnalyzeResultPage() {
                   suggestion={suggestion}
                   sourceImageUrl={imageUrl}
                   index={idx}
+                  onTryOn={handleTryOn}
                 />
               ),
             )}
@@ -484,6 +769,17 @@ export default function ClosetAnalyzeResultPage() {
           </div>
         )}
       </div>
+
+      {/* ── Try-On 바텀시트 ── */}
+      <TryOnBottomSheet
+        isOpen={tryonOpen}
+        onClose={handleTryOnClose}
+        tryonState={tryonState}
+        tryonImageUrl={tryonImageUrl}
+        itemUrls={tryonItemUrls}
+        onRetry={handleTryOnRetry}
+        onUpgrade={handleUpgrade}
+      />
 
       {/* ── 하단 CTA 고정 ── */}
       <div className="fixed bottom-0 left-0 right-0 bg-bg-primary border-t border-border px-[20px] py-[12px] flex gap-[12px] safe-area-bottom">

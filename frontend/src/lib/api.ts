@@ -386,6 +386,64 @@ export async function uploadClosetImage(
   });
 }
 
+/* ── Virtual Try-On ── */
+
+export interface TryonGenerateResponse {
+  image_url: string;
+  outfit_id: string;
+  cached: boolean;
+  remaining: number | null;
+}
+
+export interface TryonUsageResponse {
+  is_premium: boolean;
+  usage_count: number;
+  remaining: number | null;
+}
+
+export async function generateTryon(
+  outfitId: string,
+  userId: string,
+  closetItemId?: string,
+  modelImageUrl?: string,
+): Promise<TryonGenerateResponse> {
+  const body: Record<string, string> = {
+    outfit_id: outfitId,
+    user_id: userId,
+  };
+  if (closetItemId) body.closet_item_id = closetItemId;
+  if (modelImageUrl) body.model_image_url = modelImageUrl;
+
+  const res = await fetch(`${API_BASE}/api/tryon/generate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (res.status === 403) {
+    const data = await res.json();
+    throw new TryonLimitError(data.detail);
+  }
+  if (!res.ok) {
+    throw new Error(`Try-On API error: ${res.status}`);
+  }
+  return res.json();
+}
+
+export class TryonLimitError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "TryonLimitError";
+  }
+}
+
+export async function fetchTryonUsage(userId: string): Promise<TryonUsageResponse> {
+  const res = await fetch(`${API_BASE}/api/tryon/usage?user_id=${userId}`);
+  if (!res.ok) {
+    throw new Error(`Try-On usage API error: ${res.status}`);
+  }
+  return res.json();
+}
+
 /* ── 피드 ── */
 
 export async function fetchFeed(params: FeedParams): Promise<FeedResponse> {

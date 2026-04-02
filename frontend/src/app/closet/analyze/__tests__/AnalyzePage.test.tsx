@@ -24,7 +24,11 @@ vi.mock("framer-motion", () => ({
     section: ({ children, ...rest }: Record<string, unknown>) => (
       <section {...pickHtmlProps(rest)}>{children as React.ReactNode}</section>
     ),
+    svg: ({ children, ...rest }: Record<string, unknown>) => (
+      <svg {...pickHtmlProps(rest)}>{children as React.ReactNode}</svg>
+    ),
   },
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useReducedMotion: () => false,
 }));
 
@@ -50,9 +54,20 @@ vi.mock("next/navigation", () => ({
 const mockAnalyze = vi.fn();
 const mockRecommend = vi.fn();
 
+const mockGenerateTryon = vi.fn();
+const mockFetchTryonUsage = vi.fn();
+
 vi.mock("@/lib/api", () => ({
   analyzeClosetItem: (...args: unknown[]) => mockAnalyze(...args),
   fetchClosetRecommendations: (...args: unknown[]) => mockRecommend(...args),
+  generateTryon: (...args: unknown[]) => mockGenerateTryon(...args),
+  fetchTryonUsage: (...args: unknown[]) => mockFetchTryonUsage(...args),
+  TryonLimitError: class TryonLimitError extends Error {
+    constructor(message: string) {
+      super(message);
+      this.name = "TryonLimitError";
+    }
+  },
 }));
 
 const MOCK_ANALYSIS = {
@@ -126,11 +141,24 @@ const MOCK_RECOMMENDATIONS = {
   total_count: 3,
 };
 
+const localStorageMock = (() => {
+  const store: Record<string, string> = {};
+  return {
+    getItem: vi.fn((key: string) => store[key] ?? null),
+    setItem: vi.fn((key: string, val: string) => { store[key] = val; }),
+    removeItem: vi.fn((key: string) => { delete store[key]; }),
+    clear: vi.fn(() => { Object.keys(store).forEach((k) => delete store[k]); }),
+  };
+})();
+
 beforeEach(() => {
   vi.clearAllMocks();
   mockSearchParams.delete("image_url");
   mockSearchParams.delete("user_tone_id");
   mockSearchParams.delete("category");
+  Object.defineProperty(globalThis, "localStorage", { value: localStorageMock, writable: true });
+  localStorageMock.clear();
+  mockFetchTryonUsage.mockResolvedValue({ is_premium: false, usage_count: 0, remaining: 3 });
 });
 
 function setParams(imageUrl: string, toneId: string, category = "top") {
