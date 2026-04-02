@@ -267,6 +267,89 @@ export async function resetPreference(
   return res.json();
 }
 
+/* ── 옷 분석 ── */
+
+export interface ColorDetail {
+  hex: string;
+  ratio: number;
+}
+
+export interface ClosetAnalyzeResponse {
+  dominant_colors: ColorDetail[];
+  matched_tone_id: string;
+  matched_tone_name: string;
+  pcf_score: number;
+  saturation_score: number;
+  lightness_score: number;
+  overall_score: number;
+  reasons: string[];
+}
+
+export async function analyzeClosetItem(
+  imageUrl: string,
+  userToneId: string,
+): Promise<ClosetAnalyzeResponse> {
+  const res = await fetch(`${API_BASE}/api/closet/analyze`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image_url: imageUrl, user_tone_id: userToneId }),
+  });
+  if (!res.ok) {
+    throw new Error(`Closet analyze error: ${res.status}`);
+  }
+  return res.json();
+}
+
+/* ── 역방향 추천 ── */
+
+export interface RecommendedProduct {
+  id: string;
+  name: string | null;
+  brand: string | null;
+  category: string | null;
+  price: number | null;
+  image_url: string | null;
+  mall_url: string | null;
+  color_hex: string | null;
+  similarity: number;
+  match_reason: string;
+}
+
+export interface TpoOutfitSuggestion {
+  tpo: string;
+  tpo_label: string;
+  items: RecommendedProduct[];
+}
+
+export interface ClosetRecommendationResponse {
+  source_color_hex: string;
+  source_category: string;
+  user_tone_id: string;
+  recommendations: TpoOutfitSuggestion[];
+  total_count: number;
+}
+
+export async function fetchClosetRecommendations(
+  colorHex: string,
+  category: string,
+  userToneId: string,
+  tpo?: string,
+  limit: number = 3,
+): Promise<ClosetRecommendationResponse> {
+  const q = new URLSearchParams({
+    color_hex: colorHex,
+    category,
+    user_tone_id: userToneId,
+    limit: String(limit),
+  });
+  if (tpo) q.set("tpo", tpo);
+  const res = await fetch(`${API_BASE}/api/closet/recommendations?${q.toString()}`);
+  if (!res.ok) {
+    throw new Error(`Closet recommendations error: ${res.status}`);
+  }
+  return res.json();
+}
+
 /* ── 피드 ── */
 
 export async function fetchFeed(params: FeedParams): Promise<FeedResponse> {
