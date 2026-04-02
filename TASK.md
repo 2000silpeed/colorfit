@@ -430,14 +430,15 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] Pydantic 스키마 정의
 - 🔧 codex 리뷰 반영: 동일 판매처 중복 시 최저가 유지, limit Query 검증(ge=1, le=20)
 
-**Task 3.3 — 아이템 상세 화면**
-- [ ] `frontend/app/item/[id]/page.tsx`
-- [ ] 아이템 이미지 (1:1) + 브랜드 + 상품명 + 가격
-- [ ] 가격 비교 테이블 (판매처, 가격, 유형, 바로가기)
-- [ ] 최저가 행 하이라이트 (#F0EDE8 + Marsala 뱃지)
-- [ ] 유사 상품 섹션 (2열 그리드 + 유사도 % 뱃지)
-- [ ] 하단 CTA "최저가 쇼핑몰에서 보기"
-- [ ] 외부 쇼핑몰 링크 (새 탭)
+**Task 3.3 — 아이템 상세 화면** ✅
+- [x] `frontend/app/item/[id]/page.tsx`
+- [x] 아이템 이미지 (1:1) + 브랜드 + 상품명 + 가격
+- [x] 가격 비교 테이블 (판매처, 가격, 유형, 바로가기)
+- [x] 최저가 행 하이라이트 (#F0EDE8 + Marsala 뱃지)
+- [x] 유사 상품 섹션 (2열 그리드 + 유사도 % 뱃지)
+- [x] 하단 CTA "쇼핑몰에서 구매하기" (새 탭)
+- [x] 외부 쇼핑몰 링크 (새 탭)
+- [x] `frontend/src/lib/api.ts` — fetchItemDetail, fetchSimilarItems 추가
 
 **Task 3.4 — 프로필/마이페이지 + 톤 설명**
 - [ ] `frontend/app/profile/page.tsx` — 톤 카드, 대표색 스와치, 내 정보 변경
@@ -457,11 +458,14 @@ W5 ─── 단독 실행 (통합 작업)
 - 🔧 codex 리뷰 반영: SSRF 방지(HttpUrl+https 제한), per-color 개별 톤 매핑(PCF 과대평가 수정), 비율 주석 정정
 - [x] 참조: 기획서 섹션 5.5.1 (PCF 계산 로직 재사용)
 
-**Task 3.6 — 어울리는 아이템 추천 API (역방향 추천)**
-- [ ] 사용자 옷의 색상/카테고리 → Similar Finder로 어울리는 상품 검색
-- [ ] TPO별로 추천 코디 구성 (데이트 코디, 출근 코디 등)
-- [ ] `backend/app/routers/closet.py` — GET /api/closet/{item_id}/recommendations
-- [ ] 참조: 기획서 F-39 (보유 옷 역방향 추천)
+**Task 3.6 — 어울리는 아이템 추천 API (역방향 추천)** ✅
+- [x] 사용자 옷의 색상/카테고리 → 보완 카테고리 자동 매칭 + 톤 호환/색상 조화 스코어링
+- [x] TPO별로 추천 코디 구성 (출근/데이트/주말/캠퍼스/면접/여행/행사/운동)
+- [x] `backend/app/routers/closet.py` — GET /api/closet/recommendations ⚠️ 경로를 query param 방식으로 변경 (path param 대신)
+- [x] `backend/app/services/closet_recommender.py` — 추천 서비스
+- [x] `backend/app/schemas/closet_recommendation.py` — 응답 스키마
+- [x] 18개 테스트 통과 (순수 함수 12 + DB 통합 6)
+- [x] 참조: 기획서 F-39 (보유 옷 역방향 추천)
 
 **Task 3.7 — 옷장 관리 API**
 - [ ] `backend/app/models/closet_item.py` — closet_items 테이블
