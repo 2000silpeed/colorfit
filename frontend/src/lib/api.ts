@@ -475,6 +475,47 @@ export async function fetchSaved(
   return res.json();
 }
 
+/* ── Top Pick ── */
+
+export interface TopPickResponse {
+  id: string;
+  gender: string | null;
+  designed_tpo: string | null;
+  total_price: number | null;
+  tags: string[] | null;
+  scores: ScoresResponse | null;
+  soft_score: number;
+  final_score: number;
+  reasons: string[];
+  highlight_reason: string;
+  source: string;
+  image_url: string | null;
+  items: ProductBrief[];
+}
+
+export async function fetchTopPick(
+  toneId: string,
+  opts?: {
+    gender?: string;
+    tpo?: string;
+    budgetMin?: number;
+    budgetMax?: number;
+    userId?: string;
+  },
+): Promise<TopPickResponse> {
+  const q = new URLSearchParams({ tone_id: toneId });
+  if (opts?.gender) q.set("gender", opts.gender);
+  if (opts?.tpo) q.set("tpo", opts.tpo);
+  if (opts?.budgetMin != null) q.set("budget_min", String(opts.budgetMin));
+  if (opts?.budgetMax != null) q.set("budget_max", String(opts.budgetMax));
+  if (opts?.userId) q.set("user_id", opts.userId);
+  const res = await fetch(`${API_BASE}/api/top-pick?${q.toString()}`);
+  if (!res.ok) {
+    throw new Error(`Top Pick API error: ${res.status}`);
+  }
+  return res.json();
+}
+
 /* ── 피드 ── */
 
 export async function fetchFeed(params: FeedParams): Promise<FeedResponse> {

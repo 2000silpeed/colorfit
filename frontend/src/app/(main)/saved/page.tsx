@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { fetchSaved, postReaction, type SavedOutfit } from "@/lib/api";
+import { fetchSaved, postReaction, fetchTopPick, type SavedOutfit, type TopPickResponse } from "@/lib/api";
 
 type PageState = "loading" | "empty" | "success" | "error";
 type SortBy = "recent" | "score" | "price";
@@ -245,6 +245,246 @@ function DeleteBottomSheet({ outfitId, onConfirm, onCancel }: DeleteSheetProps) 
   );
 }
 
+/* -- 5축 바 차트 -- */
+const SCORE_AXES: { key: keyof NonNullable<TopPickResponse["scores"]>; label: string; color: string }[] = [
+  { key: "pcf", label: "퍼스널컬러", color: "var(--color-score-pcf, #964F4C)" },
+  { key: "of", label: "TPO 적합", color: "var(--color-score-of, #4F97A3)" },
+  { key: "ch", label: "색상 조화", color: "var(--color-score-ch, #DDB67D)" },
+  { key: "pe", label: "가격 효율", color: "var(--color-score-pe, #D1933F)" },
+  { key: "sf", label: "스타일 핏", color: "var(--color-score-sf, #6B5876)" },
+];
+
+/* -- Top Pick 모달 -- */
+interface TopPickModalProps {
+  data: TopPickResponse;
+  onClose: () => void;
+  onViewOutfit: (id: string) => void;
+}
+
+function TopPickModal({ data, onClose, onViewOutfit }: TopPickModalProps) {
+  const prefersReducedMotion = useReducedMotion();
+  const reasons = data.reasons.slice(0, 3);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [onClose]);
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[70] flex flex-col"
+      style={{ backgroundColor: "var(--color-bg-primary)" }}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Top Pick 추천"
+      initial={prefersReducedMotion ? false : { opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.2 }}
+    >
+      {/* 상단 바 */}
+      <div className="flex items-center justify-between px-[20px] pt-[16px] pb-[8px]">
+        <span
+          className="text-[13px]"
+          style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-body)" }}
+        >
+          Top Pick
+        </span>
+        <button
+          onClick={onClose}
+          className="w-[36px] h-[36px] flex items-center justify-center rounded-full"
+          style={{ backgroundColor: "var(--color-bg-secondary)" }}
+          aria-label="닫기"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-primary)" strokeWidth="2" strokeLinecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      {/* 스크롤 영역 */}
+      <div className="flex-1 overflow-y-auto px-[20px] pb-[120px]">
+        {/* 헤드라인 */}
+        <h2
+          className="text-[24px] leading-[1.25] mt-[16px] mb-[24px]"
+          style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--color-text-primary)" }}
+        >
+          이 코디가 가장<br />잘 어울려요
+        </h2>
+
+        {/* 코디 이미지 확대 */}
+        <div
+          className="relative w-full overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-bg-secondary)]"
+          style={{ aspectRatio: "3/4" }}
+        >
+          {data.image_url ? (
+            <Image
+              src={data.image_url}
+              alt="Top Pick 코디"
+              fill
+              sizes="(max-width: 430px) 100vw, 430px"
+              className="object-cover"
+              priority
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-tertiary)" strokeWidth="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <circle cx="8.5" cy="8.5" r="1.5" />
+                <path d="m21 15-5-5L5 21" />
+              </svg>
+            </div>
+          )}
+
+          {/* TPO 뱃지 */}
+          {data.designed_tpo && (
+            <div
+              className="absolute bottom-[12px] left-[12px] px-[10px] py-[4px] rounded-full text-[12px]"
+              style={{ backgroundColor: "rgba(0,0,0,0.5)", color: "#FFFFFF", fontFamily: "var(--font-body)" }}
+            >
+              {data.designed_tpo}
+            </div>
+          )}
+
+          {/* 가격 */}
+          {data.total_price != null && (
+            <div
+              className="absolute bottom-[12px] right-[12px] px-[10px] py-[4px] rounded-full text-[12px] font-medium"
+              style={{ backgroundColor: "rgba(0,0,0,0.5)", color: "#FFFFFF", fontFamily: "var(--font-body)" }}
+            >
+              ₩{formatPrice(data.total_price)}
+            </div>
+          )}
+        </div>
+
+        {/* 하이라이트 이유 */}
+        {data.highlight_reason && (
+          <p
+            className="mt-[20px] text-[15px] leading-[1.6] font-medium"
+            style={{ color: "var(--color-accent)", fontFamily: "var(--font-body)" }}
+          >
+            {data.highlight_reason}
+          </p>
+        )}
+
+        {/* 추천 이유 3줄 */}
+        {reasons.length > 0 && (
+          <div className="mt-[12px] flex flex-col gap-[8px]">
+            {reasons.map((reason, i) => (
+              <div key={i} className="flex items-start gap-[8px]">
+                <span
+                  className="mt-[2px] w-[6px] h-[6px] rounded-full flex-shrink-0"
+                  style={{ backgroundColor: "var(--color-accent)" }}
+                />
+                <p
+                  className="text-[14px] leading-[1.5]"
+                  style={{ color: "var(--color-text-primary)", fontFamily: "var(--font-body)" }}
+                >
+                  {reason}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* 5축 바 차트 */}
+        {data.scores && (
+          <div className="mt-[28px]">
+            <h3
+              className="text-[14px] font-medium mb-[16px]"
+              style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-body)" }}
+            >
+              스타일 분석
+            </h3>
+            <div className="flex flex-col gap-[12px]">
+              {SCORE_AXES.map(({ key, label, color }, axisIdx) => {
+                const scores = data.scores!;
+                const value = scores[key] ?? 0;
+                return (
+                  <div key={key}>
+                    <div className="flex items-center justify-between mb-[4px]">
+                      <span
+                        className="text-[13px]"
+                        style={{ color: "var(--color-text-primary)", fontFamily: "var(--font-body)" }}
+                      >
+                        {label}
+                      </span>
+                      <span
+                        className="text-[13px] font-medium"
+                        style={{ color, fontFamily: "var(--font-body)" }}
+                      >
+                        {Math.round(value)}
+                      </span>
+                    </div>
+                    <div
+                      className="h-[6px] rounded-full overflow-hidden"
+                      style={{ backgroundColor: "var(--color-border, #E5E1DA)" }}
+                    >
+                      <motion.div
+                        className="h-full rounded-full"
+                        style={{ backgroundColor: color }}
+                        initial={prefersReducedMotion ? { width: `${value}%` } : { width: 0 }}
+                        animate={{ width: `${value}%` }}
+                        transition={
+                          prefersReducedMotion
+                            ? { duration: 0 }
+                            : { duration: 0.8, delay: axisIdx * 0.15, ease: "easeOut" }
+                        }
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* 하단 CTA */}
+      <div
+        className="fixed bottom-0 left-0 right-0 px-[20px] pt-[12px]"
+        style={{
+          backgroundColor: "var(--color-bg-primary)",
+          paddingBottom: "calc(16px + env(safe-area-inset-bottom, 0px))",
+        }}
+      >
+        <div className="flex gap-[12px] max-w-[430px] mx-auto">
+          <button
+            onClick={onClose}
+            className="flex-1 py-[14px] rounded-[var(--radius-md)] text-[15px] font-medium"
+            style={{
+              backgroundColor: "var(--color-bg-secondary)",
+              color: "var(--color-text-primary)",
+              fontFamily: "var(--font-body)",
+            }}
+          >
+            닫기
+          </button>
+          <button
+            onClick={() => onViewOutfit(data.id)}
+            className="flex-1 py-[14px] rounded-[var(--radius-md)] text-[15px] font-medium"
+            style={{
+              backgroundColor: "var(--color-accent)",
+              color: "#FFFFFF",
+              fontFamily: "var(--font-body)",
+            }}
+          >
+            코디 상세 보기
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 /* ── 메인 페이지 ── */
 export default function SavedPage() {
   const router = useRouter();
@@ -254,6 +494,10 @@ export default function SavedPage() {
   const [outfits, setOutfits] = useState<SavedOutfit[]>([]);
   const [sortBy, setSortBy] = useState<SortBy>("recent");
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [topPick, setTopPick] = useState<TopPickResponse | null>(null);
+  const [showTopPick, setShowTopPick] = useState(false);
+  const [topPickLoading, setTopPickLoading] = useState(false);
+  const [topPickError, setTopPickError] = useState(false);
 
   const getUserId = useCallback(() => {
     if (typeof window === "undefined") return FALLBACK_USER_ID;
@@ -312,6 +556,39 @@ export default function SavedPage() {
     setSortBy(newSort);
   }, []);
 
+  const handleTopPick = useCallback(async () => {
+    if (topPickLoading) return;
+    setTopPickLoading(true);
+    setTopPickError(false);
+    try {
+      const toneId = typeof window !== "undefined"
+        ? localStorage.getItem("colorfit_tone") ?? "summer_cool_mute"
+        : "summer_cool_mute";
+      const gender = typeof window !== "undefined"
+        ? localStorage.getItem("colorfit_gender") ?? undefined
+        : undefined;
+      const data = await fetchTopPick(toneId, {
+        userId: getUserId(),
+        gender,
+      });
+      setTopPick(data);
+      setShowTopPick(true);
+    } catch {
+      setTopPickError(true);
+    } finally {
+      setTopPickLoading(false);
+    }
+  }, [topPickLoading, getUserId]);
+
+  const handleTopPickClose = useCallback(() => {
+    setShowTopPick(false);
+  }, []);
+
+  const handleTopPickViewOutfit = useCallback((id: string) => {
+    setShowTopPick(false);
+    router.push(`/outfit/${id}`);
+  }, [router]);
+
   return (
     <div
       className="min-h-screen"
@@ -357,6 +634,34 @@ export default function SavedPage() {
           </div>
         )}
       </header>
+
+      {/* Top Pick 버튼 */}
+      {pageState === "success" && (
+        <div className="px-[20px] pt-[8px] pb-[4px]">
+          <button
+            onClick={handleTopPick}
+            disabled={topPickLoading}
+            className="w-full py-[12px] rounded-[var(--radius-md)] text-[15px] font-medium transition-opacity"
+            style={{
+              backgroundColor: "transparent",
+              color: "var(--color-accent)",
+              border: "1.5px solid var(--color-accent)",
+              fontFamily: "var(--font-body)",
+              opacity: topPickLoading ? 0.6 : 1,
+            }}
+          >
+            {topPickLoading ? "분석 중..." : "Top Pick 보기"}
+          </button>
+          {topPickError && (
+            <p
+              className="mt-[8px] text-[13px] text-center"
+              style={{ color: "var(--color-accent)", fontFamily: "var(--font-body)" }}
+            >
+              Top Pick을 불러오지 못했어요. 다시 시도해주세요.
+            </p>
+          )}
+        </div>
+      )}
 
       {/* 로딩 */}
       {pageState === "loading" && (
@@ -451,6 +756,17 @@ export default function SavedPage() {
             outfitId={deleteTarget}
             onConfirm={handleDelete}
             onCancel={() => setDeleteTarget(null)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Top Pick 모달 */}
+      <AnimatePresence>
+        {showTopPick && topPick && (
+          <TopPickModal
+            data={topPick}
+            onClose={handleTopPickClose}
+            onViewOutfit={handleTopPickViewOutfit}
           />
         )}
       </AnimatePresence>

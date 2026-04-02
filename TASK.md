@@ -601,10 +601,11 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] GET /api/saved 연동 (backend/app/routers/saved.py 신규)
 - 🔧 codex 리뷰 반영: userId localStorage 동기화 + price null 정렬 수정
 
-**Task 4.8.1 — Top Pick 모달**
-- [ ] "Top Pick 보기" 버튼 (저장 목록 상단)
-- [ ] 풀스크린 모달: 1위 코디 확대 + 추천 이유 3줄 + 5축 바 차트
-- [ ] GET /api/top-pick 연동
+**Task 4.8.1 — Top Pick 모달** ✅
+- [x] "Top Pick 보기" 버튼 (저장 목록 상단)
+- [x] 풀스크린 모달: 1위 코디 확대 + 추천 이유 3줄 + 5축 바 차트
+- [x] GET /api/top-pick 연동
+- 🔧 codex 리뷰 반영: localStorage 키 colorfit_tone_id → colorfit_tone 수정(P1), 스코어 바 애니메이션 0.8s+stagger, API 에러 피드백, 모달 접근성(role/aria/ESC/body scroll lock)
 
 **Task 4.8.2 — A vs B 비교 화면**
 - [ ] 좌우 분할 (50:50), 각 코디 이미지 + 정보
