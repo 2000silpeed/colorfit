@@ -1,7 +1,7 @@
 # ColorFit Task Tracker
 
 **프로젝트 기간:** 5주 (W1: 3/24~3/28 ~ W5: 4/21~4/25)
-**현재 상태:** W4 진행 중 (4.1~4.8.1 + Task S 완료). Supabase 연결 복구 + 데이터 파이프라인 정상화 완료
+**현재 상태:** W4 진행 중 (Task S + Task AG 완료, 4.1~4.8.1 완료). 연령대 기능 추가 + 데이터 품질 대폭 개선
 **Fallback 기준:** W3 금요일에 가격비교 미완이면 Fallback 발동
 
 **사용법:** Claude Code에게 `"Task 1.3을 진행해줘"` 처럼 번호로 지시하세요.
@@ -617,6 +617,25 @@ W5 ─── 단독 실행 (통합 작업)
 - ⚠️ 데이터 파이프라인 복구: Task 1.8 분류 결과가 normalized JSON에 미반영 → `scripts/classify_products.py` 작성하여 category/gender/formality 채움 (94.7% 분류, 비패션 5,667건 제거)
 - ⚠️ H5(브랜드) 필터 완화: brand null이면 통과 허용. H8(스타일) 필터 완화: category null이면 통과 허용
 - ⚠️ outfits.id VARCHAR(50→100): 톤별 유니크 ID 생성으로 중복 해소 (714→1,790건)
+
+**Task AG — 연령대(age_group) 기능 추가 + 데이터 품질 개선** ✅
+- [x] AG1: 상품 연령대 분류 (키워드+브랜드매핑+가격 휴리스틱 → 20s 53k/30s 73k/40plus 40k)
+- [x] AG2: DB 스키마 변경 (products/outfits/users에 age_group 컬럼)
+- [x] AG3: 코디 재생성 (1,790개→5,031개, 톤×성별×TPO×계절×연령대 3구간)
+- [x] AG4: 스코어 프리컴퓨팅 + DB import
+- [x] AG5: 백엔드 API (feed age_group 필터, onboarding age_group 저장)
+- [x] AG6: 프론트엔드 (step1 연령대 선택, feed age_group 전달, 예산 50만 확대)
+- ⚠️ `brand_age_map.json` 신규: 브랜드별 연령대 매핑 사전
+- ⚠️ 비일상복 키워드 필터 추가 (무용/연습복/초등/아동 등 1,295건 제거)
+- ⚠️ `raw_category3` 매핑 대폭 추가 (가방/신발/악세서리 오분류 195건→0건, 분류율 94.7%→99.8%)
+- ⚠️ OF 스코어: TPO 유사도 매트릭스 기반 (정확100/유사65~93/무관30) + 런타임 재계산
+- ⚠️ CH 스코어: 동일색 감점 강화 + 코디 생성 시 색상 다양성 검증 (max_dist≥40)
+- ⚠️ 추천 문구 73개 템플릿 (기존 2~3종→코디별 고유 문구)
+- ⚠️ 예산 필터: budget_min 하한 적용 + 1.5배 허용 제거
+- ⚠️ OutfitCard: 콜라주형 레이아웃 (메인이미지+하단 둥근 썸네일)
+- ⚠️ 앱 레이아웃 max-w-430px 중앙 고정 (데스크탑 대응)
+- ⚠️ 온보딩 ORM 전환 (SQLAlchemy text SQL → 모델 직접 사용)
+- 🔧 H2 예산 필터 수정: budget_min 하한 + 1.5배 허용 제거
 
 **Task 4.8.2 — A vs B 비교 화면**
 - [ ] 좌우 분할 (50:50), 각 코디 이미지 + 정보

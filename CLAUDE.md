@@ -30,10 +30,23 @@ DESIGN.md를 반드시 읽고 UI 구현할 것.
 - 모든 시맨틱 컬러는 웜 톤 (표준 초록/빨강/파랑 아님)
 
 ## 아키텍처 핵심
-- 추천 파이프라인: Profile → Filter → StyleFilter → Score(5축) → Rerank → Gemini(선택) → Reason
+- 추천 파이프라인: Profile → Filter → StyleFilter → Score(5축) → Rerank → Reason
 - Hard Filter(탈락) vs Soft Score(순위) 분리
-- 코디 스코어는 프리컴퓨팅 (outfits.scores JSONB)
+- 코디 스코어는 프리컴퓨팅 (outfits.scores JSONB), OF는 런타임 재계산
 - P1 우선 원칙: 퍼스널컬러는 가이드, 제한 아님. H7 필터율 30% 상한
+- 연령대 3구간: 20s(10~20대), 30s(30대), 40plus(40대+) — 온보딩에서 수집, 피드 필터에 적용
+
+## 데이터 현황 (2026-04-03 기준)
+- 상품: 167,391건 (13톤, category 99.8% 분류, age_group 100%)
+- 코디: 5,031건 (12톤 × 2성별 × 8TPO × 4계절 × 3연령대)
+- Supabase: Session 모드 pooler (포트 5432), asyncpg + NullPool 불필요
+
+## 스코어링
+- PCF: 톤 팔레트 RGB 거리 기반 (프리컴퓨팅)
+- OF: TPO 유사도 매트릭스 (런타임, 정확100/유사65~93/무관30)
+- CH: RGB 거리 + 채도 분산 (동일색 d<15 → 35점 감점)
+- PE: 예산 범위 내 위치 (프리컴퓨팅)
+- SF: 카테고리 궁합 + 실루엣 + 포멀도 (프리컴퓨팅)
 
 ## Fallback 전략
 W3에서 밀리면 순서대로 2차로 미룬다:
