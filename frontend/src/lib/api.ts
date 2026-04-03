@@ -524,6 +524,58 @@ export async function fetchTopPick(
   return res.json();
 }
 
+/* ── A vs B 비교 ── */
+
+export interface OutfitBrief {
+  id: string;
+  gender: string | null;
+  designed_tpo: string | null;
+  total_price: number | null;
+  scores: ScoresResponse | null;
+  image_url: string | null;
+}
+
+export interface AxisComparison {
+  axis: string;
+  axis_name: string;
+  score_a: number;
+  score_b: number;
+  diff: number;
+  winner: string;
+}
+
+export interface DecisiveFactor {
+  axis: string | null;
+  axis_name: string | null;
+  diff: number;
+  winner: string | null;
+  explanation: string;
+}
+
+export interface CompareResponse {
+  outfit_a: OutfitBrief;
+  outfit_b: OutfitBrief;
+  axis_comparison: AxisComparison[];
+  total_a: number;
+  total_b: number;
+  winner: string;
+  decisive_factor: DecisiveFactor;
+}
+
+export async function fetchCompare(
+  idA: string,
+  idB: string,
+  toneId?: string,
+): Promise<CompareResponse> {
+  const q = new URLSearchParams({ ids: `${idA},${idB}` });
+  if (toneId) q.set("tone_id", toneId);
+  const res = await fetch(`${API_BASE}/api/compare?${q.toString()}`);
+  if (!res.ok) {
+    throw new Error(`Compare API error: ${res.status}`);
+  }
+  return res.json();
+}
+
 /* ── 피드 ── */
 
 export async function fetchFeed(params: FeedParams): Promise<FeedResponse> {

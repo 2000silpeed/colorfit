@@ -3,12 +3,14 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import {
   fetchOutfitDetail,
+  fetchSaved,
   postReaction,
   type OutfitDetailResponse,
   type ScoresResponse,
+  type SavedOutfit,
 } from "@/lib/api";
 
 /* ── 스코어 축 설정 ── */
@@ -99,6 +101,149 @@ function DetailSkeleton() {
   );
 }
 
+/* ── 비교 대상 선택 바텀시트 ── */
+interface ComparePickerSheetProps {
+  currentOutfitId: string;
+  onSelect: (id: string) => void;
+  onClose: () => void;
+}
+
+function ComparePickerSheet({ currentOutfitId, onSelect, onClose }: ComparePickerSheetProps) {
+  const prefersReducedMotion = useReducedMotion();
+  const [savedOutfits, setSavedOutfits] = useState<SavedOutfit[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const userId = localStorage.getItem("colorfit_user_id") ?? "";
+        if (!userId) {
+          setLoading(false);
+          return;
+        }
+        const data = await fetchSaved(userId);
+        setSavedOutfits(data.outfits.filter((o) => o.id !== currentOutfitId));
+      } catch {
+        // ignore
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, [currentOutfitId]);
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[60] flex items-end justify-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <motion.div
+        className="relative w-full max-w-[430px] rounded-t-[var(--radius-xl)] px-[20px] pt-[20px]"
+        style={{
+          backgroundColor: "var(--color-bg-primary)",
+          paddingBottom: "calc(24px + env(safe-area-inset-bottom, 0px))",
+          maxHeight: "70vh",
+        }}
+        initial={prefersReducedMotion ? false : { y: "100%" }}
+        animate={{ y: 0 }}
+        exit={{ y: "100%" }}
+        transition={
+          prefersReducedMotion
+            ? { duration: 0 }
+            : { type: "spring", stiffness: 300, damping: 30 }
+        }
+      >
+        <div className="flex items-center justify-between mb-[16px]">
+          <h3
+            className="text-[16px] font-medium"
+            style={{ fontFamily: "var(--font-display)", color: "var(--color-text-primary)" }}
+          >
+            비교할 코디 선택
+          </h3>
+          <button
+            onClick={onClose}
+            className="w-[32px] h-[32px] flex items-center justify-center rounded-full"
+            style={{ backgroundColor: "var(--color-bg-secondary)" }}
+            aria-label="닫기"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-primary)" strokeWidth="2" strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="overflow-y-auto" style={{ maxHeight: "calc(70vh - 80px)" }}>
+          {loading && (
+            <div className="flex gap-[12px] overflow-x-auto py-[8px]">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="shrink-0 w-[100px]">
+                  <div className="w-[100px] h-[133px] rounded-[var(--radius-md)] bg-[#E0DCD7] animate-pulse" />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {!loading && savedOutfits.length === 0 && (
+            <p
+              className="text-[14px] text-center py-[32px]"
+              style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-body)" }}
+            >
+              저장한 코디가 없어요.{"\n"}피드에서 코디를 저장해보세요.
+            </p>
+          )}
+
+          {!loading && savedOutfits.length > 0 && (
+            <div className="grid grid-cols-3 gap-[12px]">
+              {savedOutfits.map((outfit) => (
+                <button
+                  key={outfit.id}
+                  type="button"
+                  onClick={() => onSelect(outfit.id)}
+                  className="text-left"
+                >
+                  <div
+                    className="relative w-full overflow-hidden rounded-[var(--radius-md)]"
+                    style={{ aspectRatio: "3/4", backgroundColor: "var(--color-bg-secondary)" }}
+                  >
+                    {outfit.image_url ? (
+                      <Image
+                        src={outfit.image_url}
+                        alt={`코디 ${outfit.id}`}
+                        fill
+                        sizes="33vw"
+                        className="object-cover"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-tertiary)" strokeWidth="1.5">
+                          <rect x="3" y="3" width="18" height="18" rx="2" />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                  <p
+                    className="mt-[4px] text-[11px] line-clamp-1"
+                    style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-body)" }}
+                  >
+                    {outfit.reasons?.[0] ?? outfit.designed_tpo ?? "코디"}
+                  </p>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export default function OutfitDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -163,6 +308,13 @@ export default function OutfitDetailPage() {
       postReaction(userId, outfitId, "save").catch(() => {});
     }
   }, [outfitId, userId]);
+
+  const [showComparePicker, setShowComparePicker] = useState(false);
+
+  const handleCompareSelect = useCallback((targetId: string) => {
+    setShowComparePicker(false);
+    router.push(`/compare?a=${outfitId}&b=${targetId}`);
+  }, [outfitId, router]);
 
   const handleBack = useCallback(() => {
     router.back();
@@ -450,14 +602,24 @@ export default function OutfitDetailPage() {
           </button>
           <button
             type="button"
-            className="flex-1 py-[14px] rounded-full bg-accent text-white text-[15px] font-body font-medium opacity-40 cursor-not-allowed"
-            disabled
-            title="준비 중"
+            onClick={() => setShowComparePicker(true)}
+            className="flex-1 py-[14px] rounded-full bg-accent text-white text-[15px] font-body font-medium"
           >
             A vs B 비교
           </button>
         </div>
       </div>
+
+      {/* ── 비교 대상 선택 바텀시트 ── */}
+      <AnimatePresence>
+        {showComparePicker && (
+          <ComparePickerSheet
+            currentOutfitId={outfitId}
+            onSelect={handleCompareSelect}
+            onClose={() => setShowComparePicker(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

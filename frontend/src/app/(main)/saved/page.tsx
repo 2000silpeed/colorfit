@@ -47,9 +47,11 @@ interface SavedCardProps {
   index: number;
   onTap: (id: string) => void;
   onLongPress: (id: string) => void;
+  compareMode?: boolean;
+  compareSelected?: boolean;
 }
 
-function SavedCard({ outfit, index, onTap, onLongPress }: SavedCardProps) {
+function SavedCard({ outfit, index, onTap, onLongPress, compareMode, compareSelected }: SavedCardProps) {
   const prefersReducedMotion = useReducedMotion();
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isLongPress = useRef(false);
@@ -145,6 +147,20 @@ function SavedCard({ outfit, index, onTap, onLongPress }: SavedCardProps) {
             }}
           >
             {tpoLabel}
+          </div>
+        )}
+
+        {/* 비교 모드 선택 표시 */}
+        {compareMode && (
+          <div
+            className="absolute top-[8px] left-[8px] w-[24px] h-[24px] rounded-full flex items-center justify-center text-[12px] font-bold"
+            style={{
+              backgroundColor: compareSelected ? "var(--color-accent)" : "rgba(255,255,255,0.8)",
+              color: compareSelected ? "#FFFFFF" : "var(--color-text-tertiary)",
+              border: compareSelected ? "none" : "2px solid var(--color-border)",
+            }}
+          >
+            {compareSelected ? "✓" : ""}
           </div>
         )}
       </div>
@@ -498,6 +514,8 @@ export default function SavedPage() {
   const [showTopPick, setShowTopPick] = useState(false);
   const [topPickLoading, setTopPickLoading] = useState(false);
   const [topPickError, setTopPickError] = useState(false);
+  const [compareMode, setCompareMode] = useState(false);
+  const [compareSelected, setCompareSelected] = useState<string[]>([]);
 
   const getUserId = useCallback(() => {
     if (typeof window === "undefined") return FALLBACK_USER_ID;
@@ -585,6 +603,27 @@ export default function SavedPage() {
     }
   }, [topPickLoading, getUserId]);
 
+  const handleToggleCompareMode = useCallback(() => {
+    setCompareMode((prev) => {
+      if (prev) setCompareSelected([]);
+      return !prev;
+    });
+  }, []);
+
+  const handleCompareToggle = useCallback((id: string) => {
+    setCompareSelected((prev) => {
+      if (prev.includes(id)) return prev.filter((x) => x !== id);
+      if (prev.length >= 2) return prev;
+      return [...prev, id];
+    });
+  }, []);
+
+  const handleCompareGo = useCallback(() => {
+    if (compareSelected.length === 2) {
+      router.push(`/compare?a=${compareSelected[0]}&b=${compareSelected[1]}`);
+    }
+  }, [compareSelected, router]);
+
   const handleTopPickClose = useCallback(() => {
     setShowTopPick(false);
   }, []);
@@ -640,13 +679,13 @@ export default function SavedPage() {
         )}
       </header>
 
-      {/* Top Pick 버튼 */}
+      {/* Top Pick + 비교 버튼 */}
       {pageState === "success" && (
-        <div className="px-[20px] pt-[8px] pb-[4px]">
+        <div className="px-[20px] pt-[8px] pb-[4px] flex gap-[8px]">
           <button
             onClick={handleTopPick}
             disabled={topPickLoading}
-            className="w-full py-[12px] rounded-[var(--radius-md)] text-[15px] font-medium transition-opacity"
+            className="flex-1 py-[12px] rounded-[var(--radius-md)] text-[14px] font-medium transition-opacity"
             style={{
               backgroundColor: "transparent",
               color: "var(--color-accent)",
@@ -655,11 +694,23 @@ export default function SavedPage() {
               opacity: topPickLoading ? 0.6 : 1,
             }}
           >
-            {topPickLoading ? "분석 중..." : "Top Pick 보기"}
+            {topPickLoading ? "분석 중..." : "Top Pick"}
+          </button>
+          <button
+            onClick={handleToggleCompareMode}
+            className="flex-1 py-[12px] rounded-[var(--radius-md)] text-[14px] font-medium"
+            style={{
+              backgroundColor: compareMode ? "var(--color-accent)" : "transparent",
+              color: compareMode ? "#FFFFFF" : "var(--color-accent)",
+              border: "1.5px solid var(--color-accent)",
+              fontFamily: "var(--font-body)",
+            }}
+          >
+            {compareMode ? "비교 취소" : "A vs B 비교"}
           </button>
           {topPickError && (
             <p
-              className="mt-[8px] text-[13px] text-center"
+              className="mt-[8px] text-[13px] text-center col-span-2"
               style={{ color: "var(--color-accent)", fontFamily: "var(--font-body)" }}
             >
               Top Pick을 불러오지 못했어요. 다시 시도해주세요.
@@ -737,6 +788,18 @@ export default function SavedPage() {
         </div>
       )}
 
+      {/* 비교 모드 안내 */}
+      {compareMode && (
+        <div className="px-[20px] pt-[8px]">
+          <p
+            className="text-[13px] text-center"
+            style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-body)" }}
+          >
+            비교할 코디 2개를 선택하세요 ({compareSelected.length}/2)
+          </p>
+        </div>
+      )}
+
       {/* 성공: 2열 그리드 */}
       {pageState === "success" && (
         <div className="grid grid-cols-2 gap-[12px] px-[20px] pt-[8px]">
@@ -746,13 +809,40 @@ export default function SavedPage() {
                 key={outfit.id}
                 outfit={outfit}
                 index={i}
-                onTap={handleTap}
-                onLongPress={handleLongPress}
+                onTap={compareMode ? handleCompareToggle : handleTap}
+                onLongPress={compareMode ? handleCompareToggle : handleLongPress}
+                compareMode={compareMode}
+                compareSelected={compareSelected.includes(outfit.id)}
               />
             ))}
           </AnimatePresence>
         </div>
       )}
+
+      {/* 비교 모드 CTA */}
+      <AnimatePresence>
+        {compareMode && compareSelected.length === 2 && (
+          <motion.div
+            className="fixed bottom-[80px] left-0 right-0 z-20 px-[20px]"
+            initial={prefersReducedMotion ? false : { y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 20, opacity: 0 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.2 }}
+          >
+            <button
+              onClick={handleCompareGo}
+              className="w-full max-w-[430px] mx-auto block py-[14px] rounded-[var(--radius-md)] text-[15px] font-medium"
+              style={{
+                backgroundColor: "var(--color-accent)",
+                color: "#FFFFFF",
+                fontFamily: "var(--font-body)",
+              }}
+            >
+              비교하기
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* 삭제 확인 바텀시트 */}
       <AnimatePresence>
