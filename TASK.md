@@ -1,7 +1,7 @@
 # ColorFit Task Tracker
 
 **프로젝트 기간:** 5주 (W1: 3/24~3/28 ~ W5: 4/21~4/25)
-**현재 상태:** W2 완료, W3 시작 대기 (4/2~)
+**현재 상태:** W4 진행 중 (4.1~4.8.1 + Task S 완료). Supabase 연결 복구 + 데이터 파이프라인 정상화 완료
 **Fallback 기준:** W3 금요일에 가격비교 미완이면 Fallback 발동
 
 **사용법:** Claude Code에게 `"Task 1.3을 진행해줘"` 처럼 번호로 지시하세요.
@@ -606,6 +606,17 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 풀스크린 모달: 1위 코디 확대 + 추천 이유 3줄 + 5축 바 차트
 - [x] GET /api/top-pick 연동
 - 🔧 codex 리뷰 반영: localStorage 키 colorfit_tone_id → colorfit_tone 수정(P1), 스코어 바 애니메이션 0.8s+stagger, API 에러 피드백, 모달 접근성(role/aria/ESC/body scroll lock)
+
+**Task S — Supabase DB 연결 복구 + 데이터 Import** (긴급, W4 블로커) ✅
+- [x] S1: Supabase 프로젝트 연결 복구 (새 프로젝트 생성, Session 모드 pooler 포트 5432)
+- [x] S2: DB 테이블 생성 스크립트 (`scripts/create_tables.py` — asyncpg 직접 DDL)
+- [x] S3: 데이터 Import 스크립트 (`scripts/import_data.py` — 174,353 products + 1,790 outfits)
+- [x] S4: SQLite 임시 코드 정리 (init_local.py 삭제, main.py lifespan 제거, config.py SQLite 기본값 제거)
+- [x] S5: 스코어 키 매핑 검증 (DB/서비스/라우터 모두 pcf,of,ch,pe,sf로 통일 확인)
+- [x] S6: 전체 API 동작 검증 (피드 + 저장 + Top Pick + 코디 상세 정상)
+- ⚠️ 데이터 파이프라인 복구: Task 1.8 분류 결과가 normalized JSON에 미반영 → `scripts/classify_products.py` 작성하여 category/gender/formality 채움 (94.7% 분류, 비패션 5,667건 제거)
+- ⚠️ H5(브랜드) 필터 완화: brand null이면 통과 허용. H8(스타일) 필터 완화: category null이면 통과 허용
+- ⚠️ outfits.id VARCHAR(50→100): 톤별 유니크 ID 생성으로 중복 해소 (714→1,790건)
 
 **Task 4.8.2 — A vs B 비교 화면**
 - [ ] 좌우 분할 (50:50), 각 코디 이미지 + 정보

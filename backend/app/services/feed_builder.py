@@ -93,10 +93,13 @@ def h4_tpo(
 
 
 def h5_brand(item_brands: list[str | None]) -> bool:
-    """H5: 브랜드 화이트리스트 필터. 1개 이상 화이트리스트 브랜드면 통과."""
+    """H5: 브랜드 화이트리스트 필터. 브랜드 정보가 있는 아이템 중 1개 이상 화이트리스트면 통과. 브랜드 정보가 전혀 없으면 통과."""
     whitelist = _load_brand_whitelist()
-    for brand in item_brands:
-        if brand and brand.lower() in whitelist:
+    known_brands = [b for b in item_brands if b]
+    if not known_brands:
+        return True
+    for brand in known_brands:
+        if brand.lower() in whitelist:
             return True
     return False
 

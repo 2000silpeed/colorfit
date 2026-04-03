@@ -116,7 +116,7 @@ def filter_outfit(items: list[dict]) -> tuple[bool, float]:
 
     categories = [item["category"] for item in items if item.get("category")]
     if not categories:
-        return False, 0.0
+        return True, STYLE_FILTER_THRESHOLD
 
     # 상의/하의 실루엣 추출
     top_silhouette = None

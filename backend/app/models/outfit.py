@@ -12,7 +12,7 @@ class Outfit(Base):
         Index("ix_outfits_gender", "gender"),
     )
 
-    id: Mapped[str] = mapped_column(String(50), primary_key=True)
+    id: Mapped[str] = mapped_column(String(100), primary_key=True)
     item_ids: Mapped[list[str] | None] = mapped_column(ARRAY(String))
     gender: Mapped[str | None] = mapped_column(String(10))
     designed_tpo: Mapped[str | None] = mapped_column(String(20))

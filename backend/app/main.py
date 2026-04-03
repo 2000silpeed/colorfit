@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routers import closet, compare, feed, item, onboarding, outfit, preference, reaction, saved, subscription, tone, top_pick, tryon
 
+
 app = FastAPI(
     title=settings.app_name,
     version="0.1.0",
