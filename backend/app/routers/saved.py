@@ -91,11 +91,11 @@ async def get_saved(
         scores_resp = None
         if scores:
             scores_resp = {
-                "pcf": scores.get("pcf", 0),
-                "of": scores.get("of", 0),
-                "ch": scores.get("ch", 0),
-                "pe": scores.get("pe", 0),
-                "sf": scores.get("sf", 0),
+                "pcf": scores.get("pcf", 0) or scores.get("personal_color_fit", 0),
+                "of": scores.get("of", 0) or scores.get("occasion_fit", 0),
+                "ch": scores.get("ch", 0) or scores.get("color_harmony", 0),
+                "pe": scores.get("pe", 0) or scores.get("price_efficiency", 0),
+                "sf": scores.get("sf", 0) or scores.get("style_fit", 0),
             }
 
         items.append({

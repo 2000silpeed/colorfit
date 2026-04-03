@@ -187,7 +187,27 @@ export default function OutfitDetailPage() {
     );
   }
 
-  const heroImage = outfit.items[0]?.image_url ?? "/placeholder-outfit.png";
+  const GROUP_ORDER: Record<string, number> = {
+    top: 0, onepiece: 1, outer: 2, bottom: 3, shoes: 4, bag: 5, acc: 6,
+  };
+  const CATEGORY_GROUP: Record<string, string> = {
+    "티셔츠": "top", "셔츠": "top", "블라우스": "top", "니트": "top",
+    "맨투맨": "top", "후드": "top", "탱크탑": "top", "크롭탑": "top", "폴로": "top",
+    "원피스": "onepiece", "점프수트": "onepiece",
+    "자켓": "outer", "코트": "outer", "패딩": "outer", "가디건": "outer",
+    "점퍼": "outer", "조끼": "outer",
+    "슬랙스": "bottom", "청바지": "bottom", "스커트": "bottom", "와이드팬츠": "bottom",
+    "조거팬츠": "bottom", "숏팬츠": "bottom", "레깅스": "bottom", "치노": "bottom",
+    "스니커즈": "shoes", "로퍼": "shoes", "힐": "shoes", "부츠": "shoes",
+    "샌들": "shoes", "더비": "shoes",
+    "가방": "bag", "액세서리": "acc",
+  };
+  const sortedItems = [...outfit.items].sort((a, b) => {
+    const ga = GROUP_ORDER[CATEGORY_GROUP[a.category ?? ""] ?? ""] ?? 99;
+    const gb = GROUP_ORDER[CATEGORY_GROUP[b.category ?? ""] ?? ""] ?? 99;
+    return ga - gb;
+  });
+  const heroImage = sortedItems[0]?.image_url ?? "/placeholder-outfit.png";
   const hasSavings =
     outfit.lowest_total_price != null &&
     outfit.total_price != null &&
@@ -365,7 +385,7 @@ export default function OutfitDetailPage() {
               className="flex gap-[12px] overflow-x-auto pb-[8px]"
               style={{ scrollbarWidth: "none" }}
             >
-              {outfit.items.map((item) => (
+              {sortedItems.map((item) => (
                 <a
                   key={item.id}
                   href={item.mall_url ?? "#"}

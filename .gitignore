@@ -35,3 +35,4 @@ build/
 backend/data/raw/
 backend/data/normalized/
 backend/data/tryon_test/
+backend/colorfit.db

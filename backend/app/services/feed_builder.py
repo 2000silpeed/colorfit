@@ -52,11 +52,15 @@ def h1_gender(outfit_gender: str | None, user_gender: str | None) -> bool:
     return outfit_gender == user_gender
 
 
-def h2_budget(total_price: int | None, budget_max: int | None) -> bool:
-    """H2: 예산 초과 필터. 코디 총액 > 예산상한 × 1.5 이면 탈락."""
-    if total_price is None or budget_max is None or budget_max <= 0:
+def h2_budget(total_price: int | None, budget_min: int | None, budget_max: int | None) -> bool:
+    """H2: 예산 필터. 코디 총액이 예산 범위 밖이면 탈락."""
+    if total_price is None:
         return True
-    return total_price <= budget_max * 1.5
+    if budget_min is not None and budget_min > 0 and total_price < budget_min:
+        return False
+    if budget_max is not None and budget_max > 0 and total_price > budget_max:
+        return False
+    return True
 
 
 def h3_season(
@@ -159,7 +163,7 @@ def apply_hard_filters(
     if not h1_gender(outfit.get("gender"), user.get("gender")):
         return False, "H1_gender"
 
-    if not h2_budget(outfit.get("total_price"), user.get("budget_max")):
+    if not h2_budget(outfit.get("total_price"), user.get("budget_min"), user.get("budget_max")):
         return False, "H2_budget"
 
     if not h3_season(

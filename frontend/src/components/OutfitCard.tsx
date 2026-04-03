@@ -176,58 +176,50 @@ export default function OutfitCard({
     >
       {/* Image Container */}
       <div className="relative w-full rounded-[var(--radius-lg)] overflow-hidden bg-[#F0EDE8]"
-        style={{ aspectRatio: "4/5" }}
+        style={{ aspectRatio: "3/4" }}
       >
-        {useGrid ? (
-          <div className="absolute inset-0 flex gap-[2px]">
-            {/* 메인 이미지 (상의/원피스) - 좌측 60% */}
-            <div className="relative flex-[6] min-w-0 bg-[#F0EDE8]">
-              <Image
-                src={displayItems[0].image_url!}
-                alt={displayItems[0].category ?? "메인 아이템"}
-                fill
-                sizes="60vw"
-                className="object-contain"
-                loading="lazy"
-              />
-              <span className="absolute bottom-[6px] left-[6px] bg-black/40 text-white text-[10px] font-body rounded-full px-[6px] py-[2px]">
-                {displayItems[0].category}
-              </span>
-            </div>
-            {/* 우측 40% - 세로 2분할 */}
-            <div className="flex-[4] min-w-0 flex flex-col gap-[2px]">
-              {displayItems.slice(1, 3).map((item, i) => (
-                <div key={i} className="relative flex-1 min-h-0 bg-[#F0EDE8]">
-                  <Image
-                    src={item.image_url!}
-                    alt={item.category ?? "서브 아이템"}
-                    fill
-                    sizes="40vw"
-                    className="object-contain"
-                    loading="lazy"
-                  />
-                  <span className="absolute bottom-[4px] left-[4px] bg-black/40 text-white text-[9px] font-body rounded-full px-[5px] py-[1px]">
-                    {item.category}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <Image
-            src={imageUrl}
-            alt={title}
-            fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-contain"
-            loading="lazy"
-          />
+        {/* 메인 이미지 (항상 전체 배경) */}
+        <Image
+          src={displayItems[0]?.image_url ?? imageUrl}
+          alt={displayItems[0]?.category ?? title}
+          fill
+          sizes="(max-width: 768px) 100vw, 430px"
+          className="object-contain"
+          loading="lazy"
+        />
+
+        {/* 하단 그라데이션 */}
+        {useGrid && (
+          <div className="absolute bottom-0 left-0 right-0 h-[80px] bg-gradient-to-t from-black/30 to-transparent" />
         )}
 
-        {/* Item Count Badge - bottom left */}
-        <span className="absolute bottom-[10px] left-[10px] bg-black/50 text-white text-[11px] font-body rounded-full px-[10px] py-[4px] z-10">
-          {itemCount}pcs
-        </span>
+        {/* 서브 아이템 썸네일 - 하단 우측 */}
+        {useGrid && (
+          <div className="absolute bottom-[10px] right-[10px] flex gap-[8px] z-10">
+            {displayItems.slice(1, 3).map((item, i) => (
+              <div
+                key={i}
+                className="relative w-[76px] h-[76px] rounded-[12px] overflow-hidden bg-white/90 shadow-[0_2px_8px_rgba(0,0,0,0.15)] ring-1 ring-white/50"
+              >
+                <Image
+                  src={item.image_url!}
+                  alt={item.category ?? "서브 아이템"}
+                  fill
+                  sizes="76px"
+                  className="object-contain p-[2px]"
+                  loading="lazy"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* 메인 카테고리 라벨 */}
+        {useGrid && displayItems[0]?.category && (
+          <span className="absolute bottom-[12px] left-[12px] bg-white/80 text-text-primary text-[11px] font-body rounded-full px-[8px] py-[3px] z-10 backdrop-blur-sm">
+            {displayItems[0].category} +{displayItems.length - 1}
+          </span>
+        )}
 
         {/* Save Heart - top right */}
         <button

@@ -126,7 +126,15 @@ async def get_feed(
         if not passed:
             continue
 
-        soft_score = calculate_soft_score(ensure_dict(o.scores))
+        # OF를 사용자 TPO 기준으로 런타임 재계산
+        from app.services.scoring import calculate_of
+        scores_dict = ensure_dict(o.scores)
+        user_tpo_for_of = [tpo] if tpo else (user_profile.get("tpo_list") or [])
+        if user_tpo_for_of:
+            runtime_of = calculate_of(ensure_list(o.tags), user_tpo_for_of)
+            scores_dict = {**scores_dict, "of": runtime_of}
+
+        soft_score = calculate_soft_score(scores_dict)
 
         # 대표 이미지: 첫 번째 아이템 이미지
         image_url = items[0]["image_url"] if items else None
@@ -146,6 +154,7 @@ async def get_feed(
         scored.append({
             "id": o.id,
             "soft_score": soft_score,
+            "runtime_scores": scores_dict,
             "is_complete_outfit": o.is_complete_outfit,
             "dominant_tone": dominant_tone,
             "main_item_id": main_item_id,
@@ -166,13 +175,14 @@ async def get_feed(
     feed_items: list[OutfitFeedItem] = []
     for entry in page_items:
         o: Outfit = entry["outfit"]
-        scores = ensure_dict(o.scores)
+        scores = entry.get("runtime_scores") or ensure_dict(o.scores)
 
         precomputed_reasons = ensure_list(o.reasons)
         reasons = precomputed_reasons if precomputed_reasons else generate_reasons(
             scores,
             user_tone_id=tone_id,
             outfit_tpo=o.designed_tpo,
+            outfit_id=o.id,
         )
 
         scores_resp = ScoresResponse(

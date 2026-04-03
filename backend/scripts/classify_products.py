@@ -43,6 +43,18 @@ FASHION_CATEGORIES = {
     "시계", "양말",
 }
 
+# 비일상복 키워드 — 이 키워드가 상품명에 포함되면 제외
+EXCLUDE_KEYWORDS = [
+    "무용", "연습복", "공연", "무대 의상", "노래교실", "난타복", "트로트",
+    "한복", "코스프레", "코스튬", "할로윈", "유니폼", "단체복",
+    "잠옷", "파자마", "수영복", "비키니", "래시가드",
+    "등산복", "낚시", "작업복", "안전화", "스키복",
+    "입시복", "한국무용", "발레복", "체조복",
+    "초등", "유아", "아동", "키즈", "아기", "돌잔치",
+    "반려동물", "애완", "강아지", "고양이",
+    "커플티", "단체티", "사은품", "판촉",
+]
+
 # ── 연령대 분류 ──
 
 AGE_KEYWORDS: dict[str, list[str]] = {
@@ -174,6 +186,11 @@ def process_normalized_files() -> dict:
             raw_cat2 = item.get("raw_category2", "")
 
             if raw_cat2 and raw_cat2 not in FASHION_CATEGORIES:
+                stats["non_fashion"] += 1
+                continue
+
+            name_lower = item.get("name", "").lower()
+            if any(kw in name_lower for kw in EXCLUDE_KEYWORDS):
                 stats["non_fashion"] += 1
                 continue
 

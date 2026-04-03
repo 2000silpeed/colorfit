@@ -160,17 +160,51 @@ def calculate_of(
     if not outfit_tags or not user_tpo_list:
         return 30.0
 
-    expanded_tpos = _expand_tpos(user_tpo_list)
-    outfit_tag_set = set(outfit_tags)
-    match_count = len(outfit_tag_set & expanded_tpos)
-    total_tags = len(outfit_tag_set)
+    all_known_tpos = set()
+    for syns in TPO_SYNONYMS.values():
+        all_known_tpos.update(syns)
 
-    if match_count >= 2:
-        return min(100.0, round(80.0 + (match_count / total_tags) * 20.0, 2))
-    elif match_count == 1:
-        return round(60.0 + (1.0 / total_tags) * 20.0, 2)
-    else:
+    outfit_tpos = set(outfit_tags) & all_known_tpos
+    if not outfit_tpos:
         return 30.0
+
+    user_set = set(user_tpo_list)
+
+    # TPO 간 유사도 매트릭스 (0~1, 높을수록 유사)
+    TPO_SIMILARITY: dict[tuple[str, str], float] = {
+        ("commute", "office"): 0.9,
+        ("commute", "interview"): 0.7,
+        ("office", "interview"): 0.8,
+        ("weekend", "casual"): 0.9,
+        ("weekend", "campus"): 0.7,
+        ("casual", "campus"): 0.8,
+        ("casual", "date"): 0.5,
+        ("date", "event"): 0.4,
+        ("event", "wedding"): 0.8,
+        ("event", "party"): 0.9,
+        ("campus", "date"): 0.5,
+        ("travel", "casual"): 0.6,
+        ("travel", "weekend"): 0.6,
+        ("workout", "casual"): 0.3,
+    }
+
+    def _tpo_similarity(a: str, b: str) -> float:
+        if a == b:
+            return 1.0
+        key = (min(a, b), max(a, b))
+        rev_key = (max(a, b), min(a, b))
+        return TPO_SIMILARITY.get(key, TPO_SIMILARITY.get(rev_key, 0.0))
+
+    best_sim = 0.0
+    for o_tpo in outfit_tpos:
+        for u_tpo in user_set:
+            sim = _tpo_similarity(o_tpo, u_tpo)
+            if sim > best_sim:
+                best_sim = sim
+
+    # 유사도 → 점수 변환 (30~100 범위)
+    # 1.0 → 100, 0.9 → 95, 0.7 → 79, 0.5 → 65, 0.3 → 51, 0.0 → 30
+    return round(30.0 + best_sim * 70.0, 1)
 
 
 # ---------------------------------------------------------------------------

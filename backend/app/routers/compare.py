@@ -34,11 +34,11 @@ def _build_scores_response(scores: dict) -> ScoresResponse | None:
     if not scores:
         return None
     return ScoresResponse(
-        pcf=scores.get("pcf", 0),
-        of_=scores.get("of", 0),
-        ch=scores.get("ch", 0),
-        pe=scores.get("pe", 0),
-        sf=scores.get("sf", 0),
+        pcf=scores.get("pcf", 0) or scores.get("personal_color_fit", 0),
+        of_=scores.get("of", 0) or scores.get("occasion_fit", 0),
+        ch=scores.get("ch", 0) or scores.get("color_harmony", 0),
+        pe=scores.get("pe", 0) or scores.get("price_efficiency", 0),
+        sf=scores.get("sf", 0) or scores.get("style_fit", 0),
     )
 
 
