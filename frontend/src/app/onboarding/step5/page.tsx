@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import Image from "next/image";
 
 interface RoundOption {
   id: string;
@@ -226,14 +227,21 @@ export default function Step5Page() {
                   aria-label={`${round.title} 선택: ${option.label}`}
                   aria-pressed={isSelected}
                 >
-                  {/* 플레이스홀더 이미지 영역 */}
-                  <div
-                    className="absolute inset-0 flex items-center justify-center"
-                    style={{ backgroundColor: option.color }}
-                  >
-                    <span className="font-body text-[16px] font-semibold text-white drop-shadow-sm">
-                      {option.label}
-                    </span>
+                  {/* 이미지 영역 */}
+                  <div className="absolute inset-0">
+                    <Image
+                      src={`/images/onboarding/${round.seedKey.replace('_seed', '')}_${option.id}.png`}
+                      alt={option.label}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 50vw, 33vw"
+                    />
+                    {/* 오버레이 (텍스트 가독성) */}
+                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center transition-colors hover:bg-black/10">
+                      <span className="font-body text-[16px] font-semibold text-white drop-shadow-md shadow-black">
+                        {option.label}
+                      </span>
+                    </div>
                   </div>
                 </motion.button>
               );

@@ -91,8 +91,20 @@ export default function FeedPage() {
 
   /* 필터 상태 */
   const [activeTpo, setActiveTpo] = useState("all");
-  const [budgetMin, setBudgetMin] = useState(BUDGET_MIN_DEFAULT);
-  const [budgetMax, setBudgetMax] = useState(BUDGET_MAX_DEFAULT);
+  const [budgetMin, setBudgetMin] = useState(() => {
+    if (typeof window === "undefined") return BUDGET_MIN_DEFAULT;
+    try {
+      const stored = JSON.parse(localStorage.getItem("colorfit_budget") || "null");
+      return stored?.[0] ?? BUDGET_MIN_DEFAULT;
+    } catch { return BUDGET_MIN_DEFAULT; }
+  });
+  const [budgetMax, setBudgetMax] = useState(() => {
+    if (typeof window === "undefined") return BUDGET_MAX_DEFAULT;
+    try {
+      const stored = JSON.parse(localStorage.getItem("colorfit_budget") || "null");
+      return stored?.[1] ?? BUDGET_MAX_DEFAULT;
+    } catch { return BUDGET_MAX_DEFAULT; }
+  });
   const [budgetOpen, setBudgetOpen] = useState(false);
 
   /* 토스트 */
@@ -133,7 +145,7 @@ export default function FeedPage() {
   const loadFeed = useCallback(
     async (pageNum: number, append: boolean) => {
       if (!toneId) {
-        setStatus("empty");
+        router.push("/onboarding/step1");
         return;
       }
 
