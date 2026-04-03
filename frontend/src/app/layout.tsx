@@ -33,7 +33,11 @@ export default function RootLayout({
       className={`${nanumMyeongjo.variable} ${pretendard.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col items-center bg-[#E8E4DF]">
+        <div className="w-full max-w-[430px] min-h-full bg-[var(--color-bg)] shadow-[0_0_40px_rgba(0,0,0,0.08)]">
+          {children}
+        </div>
+      </body>
     </html>
   );
 }

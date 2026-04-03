@@ -501,7 +501,12 @@ export default function SavedPage() {
 
   const getUserId = useCallback(() => {
     if (typeof window === "undefined") return FALLBACK_USER_ID;
-    return localStorage.getItem("colorfit_user_id") ?? FALLBACK_USER_ID;
+    let id = localStorage.getItem("colorfit_user_id");
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem("colorfit_user_id", id);
+    }
+    return id;
   }, []);
 
   const loadSaved = useCallback(async (sort: SortBy) => {

@@ -23,6 +23,12 @@ class ProductBrief(BaseModel):
     mall_url: str | None = None
 
 
+class FeedItemBrief(BaseModel):
+    image_url: str | None = None
+    category: str | None = None
+    group: str | None = None
+
+
 class OutfitFeedItem(BaseModel):
     id: str
     gender: str | None = None
@@ -34,6 +40,7 @@ class OutfitFeedItem(BaseModel):
     final_score: float = 0.0
     reasons: list[str] = []
     image_url: str | None = None
+    items: list[FeedItemBrief] = []
 
 
 class FeedResponse(BaseModel):

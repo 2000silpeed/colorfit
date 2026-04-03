@@ -3,6 +3,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 interface FeedParams {
   toneId: string;
   gender?: string;
+  ageGroup?: string;
   tpo?: string;
   budgetMin?: number;
   budgetMax?: number;
@@ -18,6 +19,12 @@ export interface ScoresResponse {
   sf: number;
 }
 
+export interface FeedItemBrief {
+  image_url: string | null;
+  category: string | null;
+  group: string | null;
+}
+
 export interface OutfitFeedItem {
   id: string;
   gender: string | null;
@@ -29,6 +36,7 @@ export interface OutfitFeedItem {
   final_score: number;
   reasons: string[];
   image_url: string | null;
+  items: FeedItemBrief[];
 }
 
 export interface FeedResponse {
@@ -522,6 +530,7 @@ export async function fetchFeed(params: FeedParams): Promise<FeedResponse> {
   const q = new URLSearchParams();
   q.set("tone_id", params.toneId);
   if (params.gender) q.set("gender", params.gender);
+  if (params.ageGroup) q.set("age_group", params.ageGroup);
   if (params.tpo) q.set("tpo", params.tpo);
   if (params.budgetMin != null) q.set("budget_min", String(params.budgetMin));
   if (params.budgetMax != null) q.set("budget_max", String(params.budgetMax));

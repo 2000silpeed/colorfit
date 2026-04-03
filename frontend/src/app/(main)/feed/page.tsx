@@ -24,7 +24,7 @@ const BUDGET_MIN_DEFAULT = 30000;
 const BUDGET_MAX_DEFAULT = 100000;
 const BUDGET_STEP = 10000;
 const BUDGET_ABSOLUTE_MIN = 0;
-const BUDGET_ABSOLUTE_MAX = 300000;
+const BUDGET_ABSOLUTE_MAX = 500000;
 
 function formatBudgetLabel(min: number, max: number): string {
   const fmtMin = min >= 10000 ? `${Math.floor(min / 10000)}만` : `${min.toLocaleString("ko-KR")}`;
@@ -47,29 +47,35 @@ function SkeletonCard() {
 }
 
 /* ── 오늘의 컬러핏 특별 카드 ── */
-function TodayColorFitCard({ outfit }: { outfit: OutfitFeedItem }) {
+interface TodayColorFitCardProps {
+  outfit: OutfitFeedItem;
+  isSaved: boolean;
+  onTap: (id: string) => void;
+  onSaveToggle: (id: string) => void;
+}
+
+function TodayColorFitCard({ outfit, isSaved, onTap, onSaveToggle }: TodayColorFitCardProps) {
   return (
     <div className="mx-[20px] mb-[24px] bg-bg-secondary rounded-[var(--radius-xl)] p-[24px]">
       <span className="font-display text-[18px] text-accent">
         오늘의 컬러핏
       </span>
-      <div className="mt-[12px]" style={{ transform: "scale(1.1)", transformOrigin: "top center" }}>
+      <div className="mt-[12px]">
         <OutfitCard
           id={outfit.id}
           imageUrl={outfit.image_url ?? "/placeholder-outfit.png"}
+          items={outfit.items ?? []}
           title={outfit.reasons[0] ?? "오늘의 추천 코디"}
           totalPrice={outfit.total_price ?? 0}
           reason={outfit.reasons[1] ?? ""}
           scores={{ pcf: outfit.scores?.pcf ?? 0, of: outfit.scores?.of ?? 0 }}
-          itemCount={outfit.tags?.length ?? 3}
+          itemCount={outfit.items?.length ?? 0}
+          isSaved={isSaved}
           index={0}
+          onTap={onTap}
+          onSaveToggle={onSaveToggle}
         />
       </div>
-      {outfit.reasons.length >= 2 && (
-        <p className="font-body text-[13px] text-text-secondary mt-[12px] line-clamp-2">
-          {outfit.reasons.slice(0, 2).join(" · ")}
-        </p>
-      )}
     </div>
   );
 }
@@ -81,6 +87,7 @@ export default function FeedPage() {
   /* 사용자 프로필 (localStorage에서 로드) */
   const [toneId, setToneId] = useState<string>("");
   const [gender, setGender] = useState<string>("");
+  const [ageGroup, setAgeGroup] = useState<string>("");
 
   /* 필터 상태 */
   const [activeTpo, setActiveTpo] = useState("all");
@@ -116,8 +123,10 @@ export default function FeedPage() {
   useEffect(() => {
     const storedTone = localStorage.getItem("colorfit_tone") ?? "";
     const storedGender = localStorage.getItem("colorfit_gender") ?? "";
+    const storedAge = localStorage.getItem("colorfit_age_group") ?? "";
     setToneId(storedTone);
     setGender(storedGender);
+    setAgeGroup(storedAge);
   }, []);
 
   /* 피드 로드 */
@@ -135,6 +144,7 @@ export default function FeedPage() {
         const data = await fetchFeed({
           toneId,
           gender: gender || undefined,
+          ageGroup: ageGroup || undefined,
           tpo: activeTpo === "all" ? undefined : activeTpo,
           budgetMin,
           budgetMax,
@@ -154,7 +164,7 @@ export default function FeedPage() {
         setLoadingMore(false);
       }
     },
-    [toneId, gender, activeTpo, budgetMin, budgetMax],
+    [toneId, gender, ageGroup, activeTpo, budgetMin, budgetMax],
   );
 
   /* 필터 변경 시 리로드 */
@@ -163,7 +173,7 @@ export default function FeedPage() {
       loadFeed(1, false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toneId, gender, activeTpo, budgetMin, budgetMax]);
+  }, [toneId, gender, ageGroup, activeTpo, budgetMin, budgetMax]);
 
   /* 무한 스크롤 (IntersectionObserver) */
   useEffect(() => {
@@ -191,9 +201,15 @@ export default function FeedPage() {
   }, []);
 
   /* save/dislike 핸들러 */
-  const userId = typeof window !== "undefined"
-    ? localStorage.getItem("colorfit_user_id") ?? ""
-    : "";
+  const userId = (() => {
+    if (typeof window === "undefined") return "";
+    let id = localStorage.getItem("colorfit_user_id");
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem("colorfit_user_id", id);
+    }
+    return id;
+  })();
 
   const handleSaveToggle = useCallback((id: string) => {
     const wasSaved = savedIds.has(id);
@@ -399,7 +415,14 @@ export default function FeedPage() {
         {status === "success" && (
           <>
             {/* 오늘의 컬러핏 */}
-            {todayPick && <TodayColorFitCard outfit={todayPick} />}
+            {todayPick && (
+              <TodayColorFitCard
+                outfit={todayPick}
+                isSaved={savedIds.has(todayPick.id)}
+                onTap={handleCardTap}
+                onSaveToggle={handleSaveToggle}
+              />
+            )}
 
             {/* 코디 카드 리스트 */}
             {feedOutfits.map((outfit, i) => (
@@ -407,6 +430,7 @@ export default function FeedPage() {
                 key={outfit.id}
                 id={outfit.id}
                 imageUrl={outfit.image_url ?? "/placeholder-outfit.png"}
+                items={outfit.items ?? []}
                 title={outfit.reasons[0] ?? "코디 추천"}
                 totalPrice={outfit.total_price ?? 0}
                 reason={outfit.reasons[1] ?? ""}
@@ -414,7 +438,7 @@ export default function FeedPage() {
                   pcf: outfit.scores?.pcf ?? 0,
                   of: outfit.scores?.of ?? 0,
                 }}
-                itemCount={outfit.tags?.length ?? 3}
+                itemCount={outfit.items?.length ?? 0}
                 isSaved={savedIds.has(outfit.id)}
                 index={i}
                 onTap={handleCardTap}

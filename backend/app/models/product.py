@@ -21,4 +21,5 @@ class Product(Base):
     gender: Mapped[str | None] = mapped_column(String(10), index=True)
     silhouette: Mapped[str | None] = mapped_column(String(20))
     formality: Mapped[int | None] = mapped_column(SmallInteger)
+    age_group: Mapped[str | None] = mapped_column(String(10), index=True)
     last_observed_at: Mapped[str | None] = mapped_column(TIMESTAMP(timezone=True))

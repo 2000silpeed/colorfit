@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
+import type { FeedItemBrief } from "@/lib/api";
 
 interface OutfitScores {
   pcf: number;
@@ -12,6 +13,7 @@ interface OutfitScores {
 interface OutfitCardProps {
   id: string;
   imageUrl: string;
+  items: FeedItemBrief[];
   title: string;
   totalPrice: number;
   originalPrice?: number;
@@ -35,12 +37,31 @@ function formatPrice(price: number): string {
   return `${price.toLocaleString("ko-KR")}`;
 }
 
+const GROUP_ORDER: Record<string, number> = {
+  top: 0,
+  onepiece: 1,
+  outer: 2,
+  bottom: 3,
+  shoes: 4,
+  bag: 5,
+  acc: 6,
+};
+
+function sortItemsByGroup(items: FeedItemBrief[]): FeedItemBrief[] {
+  return [...items].sort((a, b) => {
+    const orderA = GROUP_ORDER[a.group ?? ""] ?? 99;
+    const orderB = GROUP_ORDER[b.group ?? ""] ?? 99;
+    return orderA - orderB;
+  });
+}
+
 const SWIPE_THRESHOLD = 100;
 const DOUBLE_TAP_DELAY = 250;
 
 export default function OutfitCard({
   id,
   imageUrl,
+  items,
   title,
   totalPrice,
   originalPrice,
@@ -129,6 +150,10 @@ export default function OutfitCard({
     ? Math.round((1 - totalPrice / originalPrice) * 100)
     : 0;
 
+  const sortedItems = sortItemsByGroup(items).filter((it) => it.image_url);
+  const displayItems = sortedItems.slice(0, 3);
+  const useGrid = displayItems.length >= 2;
+
   return (
     <motion.article
       className="px-[20px] mb-[20px] cursor-pointer"
@@ -150,20 +175,57 @@ export default function OutfitCard({
       whileDrag={{ cursor: "grabbing" }}
     >
       {/* Image Container */}
-      <div className="relative w-full rounded-[var(--radius-lg)] overflow-hidden"
-        style={{ aspectRatio: "3/4" }}
+      <div className="relative w-full rounded-[var(--radius-lg)] overflow-hidden bg-[#F0EDE8]"
+        style={{ aspectRatio: "4/5" }}
       >
-        <Image
-          src={imageUrl}
-          alt={title}
-          fill
-          sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-cover"
-          loading="lazy"
-        />
+        {useGrid ? (
+          <div className="absolute inset-0 flex gap-[2px]">
+            {/* 메인 이미지 (상의/원피스) - 좌측 60% */}
+            <div className="relative flex-[6] min-w-0 bg-[#F0EDE8]">
+              <Image
+                src={displayItems[0].image_url!}
+                alt={displayItems[0].category ?? "메인 아이템"}
+                fill
+                sizes="60vw"
+                className="object-contain"
+                loading="lazy"
+              />
+              <span className="absolute bottom-[6px] left-[6px] bg-black/40 text-white text-[10px] font-body rounded-full px-[6px] py-[2px]">
+                {displayItems[0].category}
+              </span>
+            </div>
+            {/* 우측 40% - 세로 2분할 */}
+            <div className="flex-[4] min-w-0 flex flex-col gap-[2px]">
+              {displayItems.slice(1, 3).map((item, i) => (
+                <div key={i} className="relative flex-1 min-h-0 bg-[#F0EDE8]">
+                  <Image
+                    src={item.image_url!}
+                    alt={item.category ?? "서브 아이템"}
+                    fill
+                    sizes="40vw"
+                    className="object-contain"
+                    loading="lazy"
+                  />
+                  <span className="absolute bottom-[4px] left-[4px] bg-black/40 text-white text-[9px] font-body rounded-full px-[5px] py-[1px]">
+                    {item.category}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <Image
+            src={imageUrl}
+            alt={title}
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-contain"
+            loading="lazy"
+          />
+        )}
 
         {/* Item Count Badge - bottom left */}
-        <span className="absolute bottom-[10px] left-[10px] bg-black/50 text-white text-[11px] font-body rounded-full px-[10px] py-[4px]">
+        <span className="absolute bottom-[10px] left-[10px] bg-black/50 text-white text-[11px] font-body rounded-full px-[10px] py-[4px] z-10">
           {itemCount}pcs
         </span>
 
@@ -171,7 +233,7 @@ export default function OutfitCard({
         <button
           type="button"
           onClick={handleSaveToggle}
-          className="absolute top-[10px] right-[10px] w-[36px] h-[36px] flex items-center justify-center"
+          className="absolute top-[10px] right-[10px] w-[36px] h-[36px] flex items-center justify-center z-10"
           aria-label={saved ? "저장 취소" : "저장"}
           aria-pressed={saved}
         >
@@ -198,7 +260,7 @@ export default function OutfitCard({
         {/* Double-tap heart pop animation */}
         {showHeartPop && (
           <motion.div
-            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            className="absolute inset-0 flex items-center justify-center pointer-events-none z-10"
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: [0.8, 1.4, 1.0], opacity: [0, 1, 0] }}
             transition={{ duration: 0.6 }}

@@ -12,6 +12,7 @@ class StyleSeedRequest(BaseModel):
 
 class OnboardingRequest(BaseModel):
     gender: str = Field(..., pattern="^(male|female)$")
+    age_group: str | None = Field(None, pattern="^(20s|30s|40plus)$")
     tone_id: str = Field(..., min_length=1, max_length=30)
     tpo_list: list[str] = Field(default_factory=list, max_length=3)
     style_moods: list[str] = Field(default_factory=list, max_length=6)

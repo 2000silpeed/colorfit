@@ -15,7 +15,7 @@ from app.models.outfit import Outfit
 from app.models.product import Product
 from app.models.reaction import Reaction
 from app.utils import ensure_list, ensure_dict
-from app.schemas.outfit import FeedResponse, OutfitFeedItem, ScoresResponse
+from app.schemas.outfit import FeedResponse, FeedItemBrief, OutfitFeedItem, ScoresResponse
 from app.services.feed_builder import apply_hard_filters, calculate_soft_score, rerank
 from app.services.reason_generator import generate_reasons
 
@@ -28,6 +28,7 @@ PAGE_SIZE = 20
 async def get_feed(
     tone_id: str = Query(..., description="사용자 퍼스널컬러 톤 ID"),
     gender: str | None = Query(None, description="성별 (male/female)"),
+    age_group: str | None = Query(None, description="연령대 (20s/30s/40plus)"),
     tpo: str | None = Query(None, description="TPO 필터 (commute, casual 등)"),
     budget_min: int | None = Query(None, ge=0, description="최소 예산"),
     budget_max: int | None = Query(None, ge=0, description="최대 예산"),
@@ -49,9 +50,15 @@ async def get_feed(
         stmt = stmt.where(
             (Outfit.gender == gender) | (Outfit.gender == "unisex") | (Outfit.gender.is_(None))
         )
-    if tpo:
+    if age_group:
         stmt = stmt.where(
-            (Outfit.designed_tpo == tpo) | (Outfit.designed_tpo.is_(None))
+            (Outfit.age_group == age_group) | (Outfit.age_group.is_(None))
+        )
+    if tpo:
+        from app.services.scoring import TPO_SYNONYMS
+        tpo_expanded = list(TPO_SYNONYMS.get(tpo, {tpo}))
+        stmt = stmt.where(
+            Outfit.designed_tpo.in_(tpo_expanded) | Outfit.designed_tpo.is_(None)
         )
 
     result = await db.execute(stmt)
@@ -169,12 +176,22 @@ async def get_feed(
         )
 
         scores_resp = ScoresResponse(
-            pcf=scores.get("pcf", 0),
-            of_=scores.get("of", 0),
-            ch=scores.get("ch", 0),
-            pe=scores.get("pe", 0),
-            sf=scores.get("sf", 0),
+            pcf=scores.get("pcf", 0) or scores.get("personal_color_fit", 0),
+            of_=scores.get("of", 0) or scores.get("occasion_fit", 0),
+            ch=scores.get("ch", 0) or scores.get("color_harmony", 0),
+            pe=scores.get("pe", 0) or scores.get("price_efficiency", 0),
+            sf=scores.get("sf", 0) or scores.get("style_fit", 0),
         ) if scores else None
+
+        outfit_items = item_map.get(o.id, [])
+        feed_item_briefs = [
+            FeedItemBrief(
+                image_url=it.get("image_url"),
+                category=it.get("category"),
+                group=it.get("group"),
+            )
+            for it in outfit_items
+        ]
 
         feed_items.append(OutfitFeedItem(
             id=o.id,
@@ -187,6 +204,7 @@ async def get_feed(
             final_score=entry.get("final_score", 0.0),
             reasons=reasons,
             image_url=entry.get("image_url"),
+            items=feed_item_briefs,
         ))
 
     return FeedResponse(

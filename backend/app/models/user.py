@@ -23,6 +23,7 @@ class User(Base):
     style_moods: Mapped[list[str] | None] = mapped_column(ARRAY(String))
     budget_min: Mapped[int | None] = mapped_column(Integer)
     budget_max: Mapped[int | None] = mapped_column(Integer)
+    age_group: Mapped[str | None] = mapped_column(String(10), index=True)
     is_premium: Mapped[bool] = mapped_column(Boolean, server_default=text("false"), default=False)
     created_at: Mapped[str | None] = mapped_column(
         TIMESTAMP(timezone=True), server_default=text("NOW()")

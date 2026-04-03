@@ -81,6 +81,11 @@ def load_and_classify_items(tone_id: str) -> list[dict]:
 
     classified = []
     for item in data["items"]:
+        # category가 이미 채워진 경우 (classify_products.py 실행 후)
+        if item.get("category"):
+            classified.append(item)
+            continue
+
         result = classify_by_keyword(
             item.get("name", ""),
             item.get("raw_category3"),
@@ -96,18 +101,18 @@ def load_and_classify_items(tone_id: str) -> list[dict]:
         raw_cat2 = item.get("raw_category2", "")
         item["gender"] = RAW_GENDER_MAP.get(raw_cat2, "unisex")
 
+        if not item.get("age_group"):
+            item["age_group"] = "30s"
+
         classified.append(item)
 
     return classified
 
 
 def build_item_pool(
-    items: list[dict], gender: str
+    items: list[dict], gender: str, age_group: str | None = None
 ) -> dict[str, list[dict]]:
-    """성별 필터링 후 카테고리별 아이템 풀을 만든다.
-
-    raw_category2 기반 성별 + 상품명 키워드 교차 검증.
-    """
+    """성별 + 연령대 필터링 후 카테고리별 아이템 풀을 만든다."""
     opposite_keywords = FEMALE_KEYWORDS if gender == "male" else MALE_KEYWORDS
     pool: dict[str, list[dict]] = {}
     for item in items:
@@ -117,6 +122,10 @@ def build_item_pool(
         name_lower = item.get("name", "").lower()
         if any(kw in name_lower for kw in opposite_keywords):
             continue
+        if age_group:
+            item_age = item.get("age_group")
+            if item_age and item_age != age_group:
+                continue
         cat = item["category"]
         pool.setdefault(cat, []).append(item)
     return pool
@@ -192,11 +201,12 @@ def validate_price_ratio(items: list[dict]) -> bool:
 
 
 def make_outfit_id(
-    gender: str, tone_id: str, tpo: str, season: str, idx: int
+    gender: str, tone_id: str, tpo: str, season: str, age_group: str, idx: int
 ) -> str:
     tone_short = tone_id.replace("_", "")[:8]
     season_short = season[:2]
-    return f"outfit_{gender[0]}_{tone_short}_{tpo}_{season_short}_{idx:03d}"
+    age_short = age_group[:2] if age_group else "al"
+    return f"outfit_{gender[0]}_{tone_short}_{tpo}_{season_short}_{age_short}_{idx:03d}"
 
 
 def generate_outfits_for_slot(
@@ -204,6 +214,7 @@ def generate_outfits_for_slot(
     pool: dict[str, list[dict]],
     tone_id: str,
     season: str,
+    age_group: str,
     forbidden_extra: list[str],
     seen_combos: set[frozenset[str]],
     target_count: int = TARGET_OUTFITS_PER_SLOT,
@@ -257,19 +268,20 @@ def generate_outfits_for_slot(
 
         total_price = sum(item.get("price", 0) for item in items)
         idx = len(outfits) + 1
-        outfit_id = make_outfit_id(gender, tone_id, tpo, season, idx)
+        outfit_id = make_outfit_id(gender, tone_id, tpo, season, age_group, idx)
 
         outfit = {
             "id": outfit_id,
             "item_ids": sorted(item["product_id"] for item in items),
             "gender": gender,
+            "age_group": age_group,
             "designed_tpo": tpo,
             "designed_moods": moods,
             "designed_season": season,
             "total_price": total_price,
             "lowest_total_price": total_price,
             "is_complete_outfit": is_complete,
-            "tags": [tone_id, tpo, gender, season],
+            "tags": [tone_id, tpo, gender, season, age_group],
             "scores": None,
             "style_details": None,
             "reasons": None,
@@ -291,6 +303,9 @@ def generate_outfits_for_slot(
     return outfits
 
 
+AGE_GROUPS = ["20s", "30s", "40plus"]
+
+
 def generate_all(seed: int = 42, target_per_slot: int = TARGET_OUTFITS_PER_SLOT) -> list[dict]:
     random.seed(seed)
     recipes, season_forbidden = load_recipes()
@@ -302,15 +317,14 @@ def generate_all(seed: int = 42, target_per_slot: int = TARGET_OUTFITS_PER_SLOT)
         "by_tpo": {},
         "by_tone": {},
         "by_season": {},
+        "by_age": {"20s": 0, "30s": 0, "40plus": 0},
         "incomplete": 0,
         "skipped_slots": 0,
     }
 
-    total_slots = sum(len(r.get("seasons", [])) for r in recipes) * len(TONES_12)
-    logger.info("레시피 %d개, 계절 슬롯 %d개 로드", len(recipes), total_slots)
-    logger.info("목표: %d톤 x %d슬롯 x %d개 = ~%d개",
-                len(TONES_12), total_slots // len(TONES_12),
-                target_per_slot, total_slots * target_per_slot)
+    total_slots = sum(len(r.get("seasons", [])) for r in recipes) * len(TONES_12) * len(AGE_GROUPS)
+    logger.info("레시피 %d개, 연령대 %d개, 슬롯 %d개", len(recipes), len(AGE_GROUPS), total_slots)
+    logger.info("목표: ~%d개 (target_per_slot=%d)", total_slots * target_per_slot, target_per_slot)
 
     start = time.time()
 
@@ -323,38 +337,39 @@ def generate_all(seed: int = 42, target_per_slot: int = TARGET_OUTFITS_PER_SLOT)
             gender = recipe["gender"]
             tpo = recipe["tpo"]
             seasons = recipe.get("seasons", ["spring", "summer", "fall", "winter"])
-            pool = build_item_pool(items, gender)
 
-            for season in seasons:
-                forbidden_extra = season_forbidden.get(season, [])
+            for age_group in AGE_GROUPS:
+                pool = build_item_pool(items, gender, age_group)
 
-                outfits = generate_outfits_for_slot(
-                    recipe, pool, tone_id, season, forbidden_extra,
-                    seen_combos, target_count=target_per_slot,
-                )
+                for season in seasons:
+                    forbidden_extra = season_forbidden.get(season, [])
 
-                if not outfits:
-                    stats["skipped_slots"] += 1
-                    continue
+                    outfits = generate_outfits_for_slot(
+                        recipe, pool, tone_id, season, age_group, forbidden_extra,
+                        seen_combos, target_count=target_per_slot,
+                    )
 
-                all_outfits.extend(outfits)
-                stats["by_gender"][gender] += len(outfits)
-                stats["by_tpo"][tpo] = stats["by_tpo"].get(tpo, 0) + len(outfits)
-                stats["by_tone"][tone_id] = stats["by_tone"].get(tone_id, 0) + len(outfits)
-                stats["by_season"][season] = stats["by_season"].get(season, 0) + len(outfits)
-                stats["incomplete"] += sum(1 for o in outfits if not o["is_complete_outfit"])
+                    if not outfits:
+                        stats["skipped_slots"] += 1
+                        continue
 
-            logger.info("  [%s/%s] %s — %d개",
-                        gender, tpo, "/".join(seasons),
-                        sum(1 for o in all_outfits
-                            if o["designed_tpo"] == tpo and o["gender"] == gender
-                            and tone_id in o["tags"]))
+                    all_outfits.extend(outfits)
+                    stats["by_gender"][gender] += len(outfits)
+                    stats["by_tpo"][tpo] = stats["by_tpo"].get(tpo, 0) + len(outfits)
+                    stats["by_tone"][tone_id] = stats["by_tone"].get(tone_id, 0) + len(outfits)
+                    stats["by_season"][season] = stats["by_season"].get(season, 0) + len(outfits)
+                    stats["by_age"][age_group] = stats["by_age"].get(age_group, 0) + len(outfits)
+                    stats["incomplete"] += sum(1 for o in outfits if not o["is_complete_outfit"])
+
+        logger.info("  톤 완료: %d개 (누적 %d개)",
+                    stats["by_tone"].get(tone_id, 0), len(all_outfits))
 
     elapsed = time.time() - start
 
     logger.info("=" * 60)
     logger.info("총 생성: %d개 (%.1f초)", len(all_outfits), elapsed)
     logger.info("성별: %s", stats["by_gender"])
+    logger.info("연령대: %s", stats["by_age"])
     logger.info("TPO별: %s", stats["by_tpo"])
     logger.info("계절별: %s", stats["by_season"])
     logger.info("미완성 코디: %d개", stats["incomplete"])

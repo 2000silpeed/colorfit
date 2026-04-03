@@ -68,14 +68,19 @@ async def import_outfits(conn: asyncpg.Connection):
 
     outfits = data["outfits"]
     rows = []
+    seen_ids = set()
     for o in outfits:
         tags = o.get("tags", [])
         tone = tags[0] if tags else "unknown"
         unique_id = f"{o['id']}_{tone}"
+        if unique_id in seen_ids:
+            continue
+        seen_ids.add(unique_id)
         rows.append((
             unique_id,
             o.get("item_ids"),
             o.get("gender"),
+            o.get("age_group"),
             o.get("designed_tpo"),
             o.get("designed_season"),
             o.get("designed_moods"),
@@ -92,10 +97,10 @@ async def import_outfits(conn: asyncpg.Connection):
     for i in range(0, len(rows), BATCH_SIZE):
         batch = rows[i:i + BATCH_SIZE]
         await conn.executemany(
-            """INSERT INTO outfits (id, item_ids, gender, designed_tpo, designed_season,
+            """INSERT INTO outfits (id, item_ids, gender, age_group, designed_tpo, designed_season,
                designed_moods, total_price, lowest_total_price, is_complete_outfit,
                tags, scores, style_details, reasons, llm_quality_score)
-               VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::jsonb,$12::jsonb,$13,$14)
+               VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12::jsonb,$13::jsonb,$14,$15)
                ON CONFLICT (id) DO NOTHING""",
             batch,
         )
