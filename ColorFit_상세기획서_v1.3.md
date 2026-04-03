@@ -1118,24 +1118,42 @@ Output: 0~100 (연속값)
 - **interview → office (단방향 확장):** 면접은 오피스 복장의 부분 집합이지만, 오피스가 항상 면접에 적합하진 않음. 양방향으로 확장하지 않는다
 - **workout:** 운동복은 다른 TPO와 교집합이 없으므로 동의어 없음
 
-**계산 로직:**
+**계산 로직 (v2 — TPO 유사도 매트릭스 기반):**
 
 ```
 Input:
-  - outfit_tags: 코디에 부여된 TPO 태그 리스트
+  - outfit_tags: 코디에 부여된 태그 리스트 (톤, TPO, 성별, 계절, 연령대 혼합)
   - user_tpo_list: 사용자가 설정한 TPO 리스트
 
 계산:
-  1. 사용자 TPO를 동의어 확장하여 expanded_tpos 집합 생성
-     expanded_tpos = union(synonym_map[tpo] for tpo in user_tpo_list)
-  2. outfit_tags와 expanded_tpos의 교집합 크기(match_count) 산출
-  3. 매칭 비율 → 점수 변환:
-     match_count >= 2  → 80 + (match_count / total_tags) × 20  (최대 100)
-     match_count == 1  → 60 + (1 / total_tags) × 20
-     match_count == 0  → 30점 (기본점, 완전 미매칭)
+  1. outfit_tags에서 알려진 TPO 태그만 추출 (톤/성별/계절/연령 제외)
+  2. TPO 유사도 매트릭스로 최고 유사도 산출:
+     - 정확 일치 (commute↔commute)     → 1.0
+     - 높은 유사 (commute↔office)       → 0.9
+     - 중간 유사 (interview↔commute)    → 0.7
+     - 낮은 유사 (campus↔date)          → 0.5
+     - 무관 (interview↔workout)         → 0.0
+  3. 유사도 → 점수 변환: score = 30 + best_similarity × 70
+     - 정확 일치 → 100점
+     - 높은 유사 → 93점
+     - 중간 유사 → 79점
+     - 무관 → 30점
 
-Output: 0~100 (30점 하한)
+  TPO 유사도 매트릭스:
+    commute ↔ office: 0.9    |  commute ↔ interview: 0.7
+    office ↔ interview: 0.8  |  weekend ↔ casual: 0.9
+    weekend ↔ campus: 0.7    |  casual ↔ campus: 0.8
+    casual ↔ date: 0.5       |  date ↔ event: 0.4
+    event ↔ wedding: 0.8     |  event ↔ party: 0.9
+    campus ↔ date: 0.5       |  travel ↔ casual: 0.6
+    travel ↔ weekend: 0.6    |  workout ↔ casual: 0.3
+
+Output: 30~100 (30점 하한)
 ```
+
+**v2 변경 이유:** 기존 로직은 outfit_tags에 TPO 외 정보(톤/성별/계절)가 섞여 분모가 커져 점수가 왜곡됨 (동일 TPO인데 64점). 유사도 매트릭스 방식으로 TPO 간 관계를 세밀하게 반영.
+
+**런타임 재계산:** OF는 사용자의 TPO에 따라 달라지므로, 프리컴퓨팅 값 대신 피드 API에서 런타임으로 재계산한다.
 
 **왜 0이 아닌 30점 하한인가:**
 - TPO 태그가 불완전할 수 있다(태깅 누락). 완전 미매칭이라고 0점을 주면 태깅 품질에 따라 점수 변동이 과도해진다.
@@ -1165,8 +1183,9 @@ Input: item_hex_colors (코디 아이템들의 HEX 색상 리스트)
   1. 모든 아이템 쌍의 RGB 유클리드 거리(d) 계산
   2. 평균 거리(d_avg)를 기반으로 구간별 점수 산출:
 
-     d_avg < 30         → 60점 (너무 유사, 단조로움)
-     30 ≤ d_avg < 80   → 80 + (d_avg - 30) / 50 × 20 (유사색 조화, 80~100점)
+     d_avg < 15         → 35점 (거의 동일색, 강한 감점)
+     15 ≤ d_avg < 30   → 35 + (d_avg - 15) / 15 × 25 (35~60점, 단조로움)
+     30 ≤ d_avg < 80   → 60 + (d_avg - 30) / 50 × 40 (유사색 조화, 60~100점)
      80 ≤ d_avg < 150  → 100 - (d_avg - 80) / 70 × 21 (적절한 대비, 79~100점)
      d_avg ≥ 150       → max(30, 79 - (d_avg - 150) / 290 × 49) (과도한 대비, 30~79점)
 
@@ -1181,7 +1200,8 @@ Output: 0~100
 
 | 거리 구간 | 색상 관계 | 점수 범위 | 패션 해석 |
 |----------|----------|----------|----------|
-| 0~30 | 거의 동일색 | 60점 | 올 블랙/올 화이트는 의도적 선택일 수 있으나, 일반적으로 단조로움 |
+| 0~15 | 거의 동일색 | 35점 | 상하의가 동일 색상이면 코디로서 의미 없음, 강한 감점 |
+| 15~30 | 매우 유사 | 35~60점 | 톤온톤이지만 구분이 약함, 약한 감점 |
 | 30~80 | 유사색(Analogous) | 80~100점 | 톤온톤, 그라데이션 코디. 안정감 있고 세련된 조합 |
 | 80~150 | 보색에 가까운 대비 | 79~100점 | 포인트 컬러 활용. 60-30-10 법칙에 가장 부합 |
 | 150+ | 극단적 대비 | 30~79점 | 형광 + 파스텔 등 부자연스러운 조합. 거리가 클수록 감점 |
@@ -2676,10 +2696,12 @@ D. 결정피로 (최수빈)   → F-26 F-27 F-28 F-17                     "1개 
 
 온보딩은 5 Step으로 구성한다. 성별 선택을 최초 단계로 배치하고, 마지막에 **비주얼 취향 분석**을 추가하여 콜드스타트 없이 첫 피드부터 개인화된 추천을 제공한다.
 
-**Step 1: 성별 선택 (~3초)**
-- [여성] [남성] 2개 버튼. 텍스트 입력 없음.
-- 선택에 따라 이후 Step 3의 TPO·무드 옵션, 수집 상품 필터, 코디 레시피가 분화된다.
-- "선택하지 않기" 옵션 없음 — 패션 추천의 필수 맥락이므로 반드시 선택.
+**Step 1: 성별 + 연령대 선택 (~5초)**
+- 1단계: [여성] [남성] 2개 카드. 선택 시 연령대 UI로 전환.
+- 2단계: [10~20대] [30대] [40대+] 3개 카드. 연령대별 서브텍스트(트렌디/모던/클래식).
+- 선택에 따라 이후 Step 3의 TPO·무드 옵션, 수집 상품 필터, 코디 레시피, **피드 연령대 필터**가 분화된다.
+- "건너뛰기" 시 기본값 여성/30대 적용.
+- 연령대 3구간: `20s`(10~20대), `30s`(30대), `40plus`(40대+). 상품/코디 모두 연령대별로 분류되어 있어 자연스러운 스타일 매칭 보장.
 
 **Step 2: 퍼스널컬러 설정 (~30초)**
 - 이미 아는 사람 → 12-tone 스와치 그리드에서 1탭 선택
@@ -3096,8 +3118,8 @@ CODE PATH COVERAGE TARGET
 
 | Method | Endpoint | 설명 | 주요 파라미터 | 응답 |
 |--------|----------|------|-------------|------|
-| POST | `/api/onboarding` | 온보딩 프로필 저장 | tone_id, tpo_list, budget | 사용자 프로필 |
-| GET | `/api/feed` | 코디 피드 조회 | tone_id, tpo, tpo_list, budget_min, budget_max, style_scoring, page | 코디 리스트 + 5축 스코어 + 이유 |
+| POST | `/api/onboarding` | 온보딩 프로필 저장 | gender, age_group, tone_id, tpo_list, budget | 사용자 프로필 |
+| GET | `/api/feed` | 코디 피드 조회 | tone_id, gender, age_group, tpo, budget_min, budget_max, page | 코디 리스트 + 5축 스코어 + 이유 + 아이템 이미지 |
 | GET | `/api/outfit/{outfit_id}` | 코디 상세 (실시간 5축 스코어링) | tone_id, tpo_list | 코디 + 아이템 + 5축 점수 상세 |
 | GET | `/api/item/{id}` | 아이템 상세 | — | 아이템 + 판매처 가격 |
 | GET | `/api/item/{id}/similar` | 유사 상품 | — | Similar 리스트 |
@@ -3118,6 +3140,7 @@ CREATE TABLE users (
     email VARCHAR(255),
     provider VARCHAR(20),          -- kakao, google
     gender VARCHAR(10),            -- female, male (v1.3.1 추가)
+    age_group VARCHAR(10),         -- 20s, 30s, 40plus (v1.6 추가)
     tone_id VARCHAR(30),           -- summer_cool_soft
     tpo_primary VARCHAR(20),
     tpo_secondary VARCHAR(20),
@@ -3125,6 +3148,7 @@ CREATE TABLE users (
     style_moods TEXT[],            -- {casual, minimal}
     budget_min INT,
     budget_max INT,
+    is_premium BOOLEAN DEFAULT false,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -3153,12 +3177,12 @@ CREATE TABLE user_preferences (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 상품
+-- 상품 (167k건, 99.8% 분류)
 CREATE TABLE products (
     id VARCHAR(50) PRIMARY KEY,
     name VARCHAR(500),
     brand VARCHAR(100),
-    category VARCHAR(20),          -- top, bottom, outer, onepiece, shoes, bag
+    category VARCHAR(20),          -- 31종 세부 카테고리 (니트, 셔츠, 슬랙스 등)
     color_hex VARCHAR(7),
     tone_id VARCHAR(30),
     price INT,
@@ -3169,14 +3193,16 @@ CREATE TABLE products (
     gender VARCHAR(10),            -- female, male, unisex (v1.3.1 추가)
     silhouette VARCHAR(20),        -- oversized, slim, fitted, wide, regular (v1.3.1 추가)
     formality SMALLINT,            -- 1~5 (v1.3.1 추가)
+    age_group VARCHAR(10),         -- 20s, 30s, 40plus (v1.6 추가)
     last_observed_at TIMESTAMPTZ
 );
 
--- 코디
+-- 코디 (5,031건, 12톤×2성별×8TPO×4계절×3연령대)
 CREATE TABLE outfits (
-    id VARCHAR(50) PRIMARY KEY,
+    id VARCHAR(100) PRIMARY KEY,   -- v1.6: 50→100 (톤+연령대 포함 유니크 ID)
     item_ids TEXT[],               -- product IDs
     gender VARCHAR(10),            -- female, male (v1.3.1 추가)
+    age_group VARCHAR(10),         -- 20s, 30s, 40plus (v1.6 추가)
     designed_tpo VARCHAR(20),      -- 레시피 기반 설계 TPO (v1.3.1 추가)
     designed_moods TEXT[],         -- 레시피 기반 설계 무드 (v1.3.1 추가)
     total_price INT,
@@ -3490,4 +3516,5 @@ colorfit/
 | v1.3.1 | 2026-03-28 | /office-hours 디자인 리뷰 반영: P1 우선 원칙(H7 최소 안전망으로 운용, 필터율 30% 상한), 초기 전략 사용자 획득 우선(12.0 추가, MVP 지표 3개), Fallback 전략(13.2.1 추가, 4단계 축소 순서), Gemini API 비용 추산(14.5 갱신) |
 | v1.4 | 2026-03-28 | /design-consultation + /plan-eng-review 반영. **서체:** Noto Serif KR → Nanum Myeongjo 700/800 (한국 패션 매거진 실제 서체). **인프라:** Redis MVP 제거, 스코어 프리컴퓨팅 + PostgreSQL 인덱스로 대체. **DB 스키마 보강:** users(gender, tpo_list), products(gender, silhouette, formality), outfits(designed_tpo, designed_moods, gender, style_details, llm_quality_score), style_seeds 테이블, user_preferences 테이블 추가. **병렬화 전략(13.4):** 4 Lane worktree 병렬 실행 계획. **테스트 전략(13.5):** scoring/style_filter/feed_builder 100% 커버리지 목표, pytest + vitest 프레임워크. 별도 DESIGN.md 파일 생성(Nanum Myeongjo + Pretendard + Marsala 웜 팔레트 + 웜 톤 시맨틱 컬러) |
 | **v1.5** | **2026-03-30** | **/office-hours 전략 피벗 반영 — "내 옷장 분석" 진입점 + 프리미엄 모델.** **진입 전략 이원화:** 경로 A(내 옷장 분석, 메인) + 경로 B(기존 온보딩, 대안) (섹션 3.3 개편). **Must 승격:** F-39(보유 옷 역방향 추천), F-41(AI 가상 피팅 → 전용 Virtual Try-On API). **신규 Must:** F-52(내 옷 사진 분석), F-53(내 옷장 관리), F-54(AI 착장 샘플), F-55(프리미엄 구독). **기능 51→56개.** **프리미엄 모델:** 월 4,900원/연 39,000원. 무료=옷장+점수+추천 무제한+착장 3회, 프리미엄=착장 무제한+쿠폰+알림 (섹션 15.1 개편). **시스템 아키텍처:** Closet Analyzer + Virtual Try-On API 추가 (섹션 4.1). **하단 탭바:** Top Pick → 옷장으로 변경 (섹션 8.4.9). **비용 추산:** Try-On API ~$0.045/회 추가 (섹션 14.5). |
+| **v1.6** | **2026-04-03** | **연령대(age_group) 기능 + 데이터 품질 대폭 개선.** 온보딩 Step 1에 연령대 3구간(20s/30s/40plus) 선택 추가. 상품 167k건에 연령대 분류(키워드+브랜드매핑+가격 휴리스틱). 코디 1,790→5,031개 재생성(톤×성별×TPO×계절×연령대). OF 스코어: TPO 유사도 매트릭스 기반 런타임 재계산(기존 태그 비율 방식 폐기). CH 스코어: 동일색 감점 강화(d<15→35점) + 코디 생성 시 색상 다양성 검증(max_dist≥40). raw_category3 매핑 대폭 추가(가방/신발 오분류 해결). 비일상복 키워드 필터(무용/연습복/초등/아동 등). 추천 문구 73개 템플릿. 예산 필터 budget_min 하한 적용. OutfitCard 콜라주 레이아웃. 앱 max-w-430px 중앙 고정. DB: Supabase Session 모드 pooler(포트 5432). |
 | **v1.5.1** | **2026-03-31** | **Task 1.17 Try-On API 선정 반영.** Fashn.ai/Kolors/OOTDiffusion/Gemini 나노바나나 비교 조사 후 **Gemini 나노바나나(gemini-2.5-flash-image) 최종 선정**. 전용 VTON API(Fashn/Kolors)는 단일 아이템만 지원하여 멀티 아이템 코디 시나리오에 부적합. 나노바나나는 멀티 아이템 동시 합성 + 퍼스널컬러 스타일링 프롬프트 제어 가능. 단가 $0.039/회(Fashn $0.075 대비 48% 절감), 기존 GEMINI_API_KEY 활용으로 추가 인프라 불필요. F-41/F-54 기술 스택, 비용 추산(14.5), 비즈니스 모델(15.1) 갱신. |
