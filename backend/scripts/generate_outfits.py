@@ -200,6 +200,32 @@ def validate_price_ratio(items: list[dict]) -> bool:
     return max(prices) / min(prices) <= 3.0
 
 
+MIN_COLOR_DISTANCE = 25  # RGB 유클리드 거리 최소값
+
+
+def _hex_to_rgb(hex_color: str) -> tuple[int, int, int]:
+    h = hex_color.lstrip("#")
+    return int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+
+
+def validate_color_diversity(items: list[dict]) -> bool:
+    """코디 내 색상 다양성 검증. 최대 거리가 40 미만이면 탈락 (전체가 너무 유사)."""
+    colors = []
+    for item in items:
+        hex_color = item.get("color_hex")
+        if hex_color and len(hex_color) == 7:
+            colors.append(_hex_to_rgb(hex_color))
+    if len(colors) < 2:
+        return True
+    from itertools import combinations
+    max_dist = 0.0
+    for a, b in combinations(colors, 2):
+        dist = ((a[0]-b[0])**2 + (a[1]-b[1])**2 + (a[2]-b[2])**2) ** 0.5
+        if dist > max_dist:
+            max_dist = dist
+    return max_dist >= 40  # 가장 다른 쌍이 최소 40 이상 차이
+
+
 def make_outfit_id(
     gender: str, tone_id: str, tpo: str, season: str, age_group: str, idx: int
 ) -> str:
@@ -239,6 +265,8 @@ def generate_outfits_for_slot(
         items = required + optional
 
         if not validate_forbidden(items, forbidden):
+            continue
+        if not validate_color_diversity(items):
             continue
         if not validate_formality(items, formality_range):
             continue

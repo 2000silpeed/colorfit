@@ -221,12 +221,14 @@ def _saturation(hex_color: str) -> float:
 
 def _distance_score(d_avg: float) -> float:
     """평균 RGB 거리를 기반으로 구간별 점수를 산출한다."""
-    if d_avg < 30:
-        return 60.0
+    if d_avg < 15:
+        return 35.0  # 거의 동일색 — 강한 감점
+    elif d_avg < 30:
+        return 35.0 + (d_avg - 15) / 15 * 25.0  # 35~60
     elif d_avg < 80:
-        return 80.0 + (d_avg - 30) / 50 * 20.0
+        return 60.0 + (d_avg - 30) / 50 * 40.0  # 60~100 (최적 구간)
     elif d_avg < 150:
-        return 100.0 - (d_avg - 80) / 70 * 21.0
+        return 100.0 - (d_avg - 80) / 70 * 21.0  # 100~79
     else:
         return max(30.0, 79.0 - (d_avg - 150) / 290 * 49.0)
 
