@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 
 const BUDGET_MIN = 0;
-const BUDGET_MAX = 300000;
+const BUDGET_MAX = 500000;
 const BUDGET_STEP = 10000;
 
 interface Preset {
@@ -15,10 +15,10 @@ interface Preset {
 }
 
 const PRESETS: Preset[] = [
-  { label: "~3만", min: 0, max: 30000 },
-  { label: "3~7만", min: 30000, max: 70000 },
-  { label: "7~15만", min: 70000, max: 150000 },
-  { label: "15만~", min: 150000, max: 300000 },
+  { label: "~5만", min: 0, max: 50000 },
+  { label: "5~15만", min: 50000, max: 150000 },
+  { label: "15~30만", min: 150000, max: 300000 },
+  { label: "30만~", min: 300000, max: 500000 },
 ];
 
 function formatPrice(value: number): string {
