@@ -1,8 +1,19 @@
 # ColorFit Task Tracker
 
 **프로젝트 기간:** 5주 (W1: 3/24~3/28 ~ W5: 4/21~4/25)
-**현재 상태:** W4 완료 ✅ → W5 진입. 미동작 기능 연결(프로필/로그인 전환/옷장 저장/프리미엄) + 폴리싱 + 배포 남음
-**미동작 기능:** OAuth 로그인 전체(GET redirect+콜백 미구현) ❌, 프로필 변경/로그아웃 ❌, 게스트→로그인 전환 ❌, 옷장 저장 API ❌, 프리미엄 구독 API ❌, 코디 상세 착장 버튼 ❌
+**현재 상태:** W4 완료 ✅ → W5 진입. 사용자 여정 끊김 11건 수정 + 폴리싱 + 배포 남음
+**끊어진 연결 (사용자 여정 추적 결과):**
+1. 🔗 로그인 진입 경로 없음 (루트→온보딩 직행, /login 접근 불가)
+2. ❌ OAuth GET redirect 백엔드 없음 (POST만 존재)
+3. ❌ OAuth 콜백 페이지 프론트 없음
+4. ❌ 온보딩 뒤로가기 버튼 없음 (건너뛰기만)
+5. ❌ 옷장 저장 API 미연동 (TODO 주석)
+6. ❌ 프로필 로그아웃 onClick 없음
+7. ❌ 프로필 계정 삭제 미구현
+8. ❌ 톤 변경 버튼 onClick 없음
+9. ❌ 프리미엄 구독 더미 (API 미호출)
+10. ❌ 코디 상세 착장 버튼 없음 (분석 페이지에만)
+11. ⚠️ 게스트 저장 시 로그인 강제 없음 (조용히 무시)
 
 **사용법:** Claude Code에게 `"Task 1.3을 진행해줘"` 처럼 번호로 지시하세요.
 
@@ -740,80 +751,101 @@ W5 ─── 단독 실행 (통합 작업)
 
 ---
 
-## W5: 기능 완성 + 폴리싱 + 배포 (4/21~4/25)
+## W5: 사용자 여정 완성 + 폴리싱 + 배포 (4/21~4/25)
 
-### 🅐 미동작 기능 연결 (Task 5.1~5.4) ⭐ 필수
+> 사용자 여정 추적(2026-04-04)으로 발견된 11개 끊김을 수정하고 배포한다.
+> 🅐 인증/진입(우선) → 🅑 기능 연결 → 🅒 폴리싱 → 🅓 배포+데모
 
-**Task 5.1 — 프로필 기능 완성**
-- [ ] 프로필 "변경" → 온보딩 Step 바텀시트 재진입 (톤/TPO/예산 각각)
-- [ ] 로그아웃 기능 구현 (localStorage 초기화 + 로그인 페이지 이동)
-- [ ] 계정 삭제 기능 구현 (확인 다이얼로그 + API 호출 + 로그인 페이지 이동)
-- `frontend/src/app/(main)/profile/page.tsx`
+### 🅐 인증 + 진입 흐름 (Task 5.1~5.2) ⭐ 최우선
 
-**Task 5.2 — 로그인/회원가입 흐름 완성** ⭐ 현재 전혀 동작하지 않음
-- [ ] 루트(/) → 로그인 페이지로 진입 경로 추가 (현재 온보딩으로만 redirect)
-- [ ] **백엔드 GET /api/auth/kakao → 카카오 인가 페이지 redirect** (현재 POST만 있어서 프론트 버튼 클릭 시 에러)
-- [ ] **백엔드 GET /api/auth/google → 구글 인가 페이지 redirect**
-- [ ] **프론트 콜백 페이지 생성** — `frontend/src/app/auth/kakao/callback/page.tsx`, `auth/google/callback/page.tsx`
-- [ ] 콜백 페이지: URL에서 code 파라미터 추출 → POST /api/auth/{provider} 호출 → JWT 저장 → 피드 이동
-- [ ] 저장/TopPick/A vs B 시 비로그인 상태면 로그인 페이지로 이동 (returnUrl 전달)
-- [ ] 로그인 완료 후 returnUrl로 복귀 → 저장 자동 실행
-- [ ] 피드 카드의 저장 실패 시 조용히 무시(현재) → 로그인 유도 토스트로 변경
-- `backend/app/routers/auth.py`, `frontend/src/app/login/page.tsx`, `frontend/src/app/auth/*/callback/page.tsx`
+**Task 5.1 — OAuth 로그인 E2E 완성** ⭐ 현재 전혀 동작 안 함
+- [ ] 루트(/) 분기: 로그인 상태 → `/feed`, 미로그인+톤 미설정 → `/login` (현재: 온보딩 직행)
+- [ ] 백엔드 **GET /api/auth/kakao** → 카카오 인가 페이지 redirect (현재 POST만 존재)
+- [ ] 백엔드 **GET /api/auth/google** → 구글 인가 페이지 redirect
+- [ ] 프론트 콜백 페이지 생성: `app/auth/kakao/callback/page.tsx`, `app/auth/google/callback/page.tsx`
+- [ ] 콜백 흐름: URL ?code= 추출 → POST /api/auth/{provider} → JWT+user_id localStorage 저장 → 온보딩 or 피드 이동
+- [ ] 게스트 모드: 로그인 페이지 "게스트로 둘러보기" → 온보딩 → 피드 (현재 동작 확인)
+- `backend/app/routers/auth.py`, `frontend/src/app/page.tsx`, `frontend/src/app/login/page.tsx`, `frontend/src/app/auth/*/callback/page.tsx`
+- 해결하는 끊김: #1, #2, #3
 
-**Task 5.3 — 옷장 저장 API 연동**
-- [ ] 옷 분석 결과 → "내 옷장에 추가" 버튼이 실제 POST /api/closet 호출
-- [ ] 저장 성공 시 토스트 + 옷장 페이지 이동 선택지
+**Task 5.2 — 게스트→로그인 강제 전환**
+- [ ] 저장/TopPick/A vs B 시 비로그인 → 로그인 페이지 이동 (returnUrl 쿼리 전달)
+- [ ] 로그인 완료 후 returnUrl 복귀 → 저장 자동 실행
+- [ ] 피드 저장 버튼: 조용히 무시(현재) → "로그인이 필요해요" 토스트 + 로그인 유도
+- `frontend/src/app/(main)/feed/page.tsx`, `frontend/src/app/(main)/outfit/[id]/page.tsx`, `frontend/src/app/(main)/saved/page.tsx`
+- 해결하는 끊김: #11
+
+### 🅑 기능 연결 (Task 5.3~5.6) ⭐ 필수
+
+**Task 5.3 — 온보딩 뒤로가기**
+- [ ] 각 Step에 뒤로가기 버튼 추가 (Step1 제외 — Step1에서는 로그인 페이지로)
+- [ ] 진행 바에 현재 단계 시각 표시 (현재도 있지만 뒤로 가능함을 알려야)
+- `frontend/src/app/onboarding/step*/page.tsx`
+- 해결하는 끊김: #4
+
+**Task 5.4 — 옷장 저장 API 연동**
+- [ ] "내 옷장에 추가" → POST /api/closet 실제 호출 (현재 TODO 주석만)
+- [ ] 백엔드 POST /api/closet 엔드포인트 추가
 - [ ] api.ts에 `addClosetItem()` 함수 추가
-- `frontend/src/app/closet/analyze/page.tsx`, `frontend/src/lib/api.ts`
-- `backend/app/routers/closet.py` — POST /api/closet 엔드포인트 추가
+- [ ] 저장 성공 시 토스트 + 옷장 이동 선택지
+- `frontend/src/app/closet/analyze/page.tsx`, `frontend/src/lib/api.ts`, `backend/app/routers/closet.py`
+- 해결하는 끊김: #5
 
-**Task 5.4 — 프리미엄 구독 API 연동**
-- [ ] 프리미엄 페이지 구독 버튼 → POST /api/subscribe 실제 호출
-- [ ] 구독 성공 시 "프리미엄 활성화!" 화면 + 잔여 횟수 업데이트
-- [ ] 코디 상세 페이지에 "착장으로 보기" 버튼 추가 (현재 분석 페이지에만 있음)
-- [ ] 무료 3회 소진 시 프리미엄 페이지로 유도하는 바텀시트
+**Task 5.5 — 프로필 기능 완성**
+- [ ] 로그아웃: localStorage 초기화 + 로그인 페이지 이동 (onClick 핸들러 연결)
+- [ ] 계정 삭제: 확인 다이얼로그 → DELETE /api/user → 로그인 페이지
+- [ ] 톤 변경: 톤 상세 페이지 "다른 톤으로 변경하기" → 온보딩 Step2 바텀시트 or 페이지 이동
+- `frontend/src/app/(main)/profile/page.tsx`, `frontend/src/app/tone/[id]/page.tsx`
+- 해결하는 끊김: #6, #7, #8
+
+**Task 5.6 — 프리미엄 + 착장 연동**
+- [ ] 프리미엄 구독 버튼 → POST /api/subscribe 실제 호출 (현재 더미 1초 딜레이)
+- [ ] 구독 성공 시 화면 업데이트 + 잔여 횟수 갱신
+- [ ] 코디 상세 페이지에 "착장으로 보기" 버튼 추가 (현재 옷 분석 페이지에만 있음)
+- [ ] 무료 3회 소진 시 프리미엄 유도 바텀시트
 - `frontend/src/app/premium/page.tsx`, `frontend/src/app/(main)/outfit/[id]/page.tsx`
+- 해결하는 끊김: #9, #10
 
-### 🅑 폴리싱 (Task 5.5~5.7)
+### 🅒 폴리싱 (Task 5.7~5.9)
 
-**Task 5.5 — 반응형 QA**
+**Task 5.7 — 반응형 QA**
 - [ ] 모바일 (375px): 전체 화면 확인
 - [ ] 태블릿 (768px): 레이아웃 확인
 - [ ] 데스크톱 (1280px): 최대 폭 제한 확인
-- [ ] 가로 스크롤 없는지 확인
 - [ ] 터치 타겟 44px 이상 확인
 
-**Task 5.6 — 버그 수정 + 크로스 브라우저**
+**Task 5.8 — 버그 수정 + 크로스 브라우저**
 - [ ] 발견된 버그 목록 정리 + 수정
-- [ ] 크로스 브라우저 테스트 (Chrome, Safari)
-- [ ] 에러 바운더리 추가 (전역 에러 핸들링)
+- [ ] Chrome + Safari 테스트
+- [ ] 에러 바운더리 추가
 
-**Task 5.7 — 성능 최적화**
-- [ ] 이미지 lazy loading + next/image 최적화
+**Task 5.9 — 성능 최적화**
+- [ ] next/image 최적화 + lazy loading
 - [ ] 피드 API 응답 800ms 이내 확인
-- [ ] Lighthouse 성능 점수 확인 (목표: 80+)
+- [ ] Lighthouse 80+ 목표
 
-### 🅒 배포 + 데모 (Task 5.8~5.9)
+### 🅓 배포 + 데모 (Task 5.10~5.11)
 
-**Task 5.8 — 프로덕션 배포**
-- [ ] 프론트엔드 프로덕션 빌드 + Vercel 배포
-- [ ] 백엔드 프로덕션 설정 + Railway 배포
-- [ ] 환경변수 세팅 (DATABASE_URL, GEMINI_API_KEY 등)
-- [ ] 프로덕션 URL 접속 + 스모크 테스트
+**Task 5.10 — 프로덕션 배포**
+- [ ] 프론트엔드 Vercel 배포
+- [ ] 백엔드 Railway 배포
+- [ ] 환경변수 세팅 + OAuth redirect URI 등록 (카카오/구글 콘솔)
+- [ ] 프로덕션 스모크 테스트
 
-**Task 5.9 — 데모 준비**
-- [ ] 데모 시나리오 작성 (페르소나 A 기준: 소개팅 룩 찾기)
+**Task 5.11 — 데모 준비**
+- [ ] 데모 시나리오 (페르소나 A: 소개팅 룩 찾기)
 - [ ] 데모용 샘플 데이터 확인
-- [ ] 발표 자료 작성
+- [ ] 발표 자료
 
 ### W5 완료 기준
-- [ ] 프로필 변경/로그아웃 동작 (Task 5.1)
-- [ ] 게스트 → 로그인 전환 동작 (Task 5.2)
-- [ ] 옷장 저장 + 프리미엄 구독 API 연동 (Task 5.3, 5.4)
-- [ ] 프로덕션 URL 접속 가능 (Task 5.8)
-- [ ] 주요 플로우 버그 없음 (Task 5.6)
-- [ ] 데모 준비 완료 (Task 5.9)
+- [ ] OAuth 로그인 동작 — 카카오/구글 (Task 5.1)
+- [ ] 게스트→로그인 전환 동작 (Task 5.2)
+- [ ] 온보딩 뒤로가기 동작 (Task 5.3)
+- [ ] 옷장 저장 API 동작 (Task 5.4)
+- [ ] 프로필 로그아웃/톤 변경 동작 (Task 5.5)
+- [ ] 프리미엄 구독 + 코디 상세 착장 동작 (Task 5.6)
+- [ ] 프로덕션 URL 접속 가능 (Task 5.10)
+- [ ] 데모 준비 완료 (Task 5.11)
 
 ---
 
