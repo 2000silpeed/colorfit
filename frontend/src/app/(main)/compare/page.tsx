@@ -133,11 +133,11 @@ function CompareSkeleton() {
       </div>
       <div className="flex gap-[12px] px-[20px] mt-[24px]">
         <div className="flex-1">
-          <div className="w-full rounded-[var(--radius-lg)] bg-[#E0DCD7] animate-pulse" style={{ aspectRatio: "3/4" }} />
+          <div className="w-full rounded-[var(--radius-lg)] bg-[#E0DCD7] animate-pulse" style={{ aspectRatio: "1/1" }} />
           <div className="mt-[8px] h-[14px] w-2/3 rounded bg-[#E0DCD7] animate-pulse" />
         </div>
         <div className="flex-1">
-          <div className="w-full rounded-[var(--radius-lg)] bg-[#E0DCD7] animate-pulse" style={{ aspectRatio: "3/4" }} />
+          <div className="w-full rounded-[var(--radius-lg)] bg-[#E0DCD7] animate-pulse" style={{ aspectRatio: "1/1" }} />
           <div className="mt-[8px] h-[14px] w-2/3 rounded bg-[#E0DCD7] animate-pulse" />
         </div>
       </div>
@@ -187,7 +187,11 @@ export default function ComparePage() {
   }, [idA, idB]);
 
   const handleBack = useCallback(() => {
-    router.back();
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/feed");
+    }
   }, [router]);
 
   const handleViewOutfit = useCallback((id: string) => {
@@ -276,7 +280,7 @@ export default function ComparePage() {
           <div
             className="relative w-full overflow-hidden rounded-[var(--radius-lg)]"
             style={{
-              aspectRatio: "3/4",
+              aspectRatio: "1/1",
               backgroundColor: "var(--color-bg-secondary)",
               border: winner === "A" ? `2px solid ${COLOR_A}` : "1px solid var(--color-border)",
             }}
@@ -360,7 +364,7 @@ export default function ComparePage() {
           <div
             className="relative w-full overflow-hidden rounded-[var(--radius-lg)]"
             style={{
-              aspectRatio: "3/4",
+              aspectRatio: "1/1",
               backgroundColor: "var(--color-bg-secondary)",
               border: winner === "B" ? `2px solid ${COLOR_B}` : "1px solid var(--color-border)",
             }}

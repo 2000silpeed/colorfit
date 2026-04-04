@@ -219,7 +219,9 @@ def _score_and_filter(
         if time_tpos:
             scores = _apply_time_tpo_bonus(scores, o.designed_tpo, time_tpos)
         soft_score = calculate_soft_score(scores)
-        image_url = items[0]["image_url"] if items else None
+        _GROUP_PRIO = {"top": 0, "onepiece": 1, "outer": 2, "bottom": 3, "shoes": 4, "bag": 5, "acc": 6}
+        sorted_items = sorted(items, key=lambda it: _GROUP_PRIO.get(it.get("group", ""), 99))
+        image_url = sorted_items[0]["image_url"] if sorted_items else None
 
         tone_counts: dict[str, int] = {}
         main_item_id: str | None = None

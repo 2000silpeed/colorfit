@@ -60,6 +60,38 @@ async def _count_users(db_session) -> int:
     return row.scalar()
 
 
+class TestOAuthRedirect:
+    @pytest.mark.asyncio
+    async def test_kakao_redirect(self, client):
+        resp = await client.get("/api/auth/kakao?state=test-state", follow_redirects=False)
+        assert resp.status_code == 307
+        location = resp.headers["location"]
+        assert "kauth.kakao.com/oauth/authorize" in location
+        assert "response_type=code" in location
+        assert "redirect_uri=" in location
+        assert "state=test-state" in location
+
+    @pytest.mark.asyncio
+    async def test_google_redirect(self, client):
+        resp = await client.get("/api/auth/google?state=test-state", follow_redirects=False)
+        assert resp.status_code == 307
+        location = resp.headers["location"]
+        assert "accounts.google.com/o/oauth2/v2/auth" in location
+        assert "response_type=code" in location
+        assert "scope=" in location
+        assert "state=test-state" in location
+
+    @pytest.mark.asyncio
+    async def test_kakao_redirect_requires_state(self, client):
+        resp = await client.get("/api/auth/kakao", follow_redirects=False)
+        assert resp.status_code == 422
+
+    @pytest.mark.asyncio
+    async def test_google_redirect_requires_state(self, client):
+        resp = await client.get("/api/auth/google", follow_redirects=False)
+        assert resp.status_code == 422
+
+
 class TestKakaoLogin:
     @pytest.mark.asyncio
     @patch("app.routers.auth._get_kakao_user", new_callable=AsyncMock, return_value=_mock_kakao_user())

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform, useMotionValueEvent, useReducedMotion } from "framer-motion";
 import {
   fetchOutfitDetail,
   fetchSaved,
@@ -210,7 +210,7 @@ function ComparePickerSheet({ currentOutfitId, onSelect, onClose }: ComparePicke
                 >
                   <div
                     className="relative w-full overflow-hidden rounded-[var(--radius-md)]"
-                    style={{ aspectRatio: "3/4", backgroundColor: "var(--color-bg-secondary)" }}
+                    style={{ aspectRatio: "1/1", backgroundColor: "var(--color-bg-secondary)" }}
                   >
                     {outfit.image_url ? (
                       <Image
@@ -218,7 +218,7 @@ function ComparePickerSheet({ currentOutfitId, onSelect, onClose }: ComparePicke
                         alt={`코디 ${outfit.id}`}
                         fill
                         sizes="33vw"
-                        className="object-cover"
+                        className="object-contain"
                         loading="lazy"
                       />
                     ) : (
@@ -265,6 +265,8 @@ export default function OutfitDetailPage() {
   const heroY = useTransform(scrollY, [0, 400], [0, 120]);
   const heroScale = useTransform(scrollY, [0, 400], [1, 1.1]);
   const headerOpacity = useTransform(scrollY, [200, 350], [0, 1]);
+  const [headerVisible, setHeaderVisible] = useState(false);
+  useMotionValueEvent(headerOpacity, "change", (v) => setHeaderVisible(v > 0.1));
 
   /* 데이터 로드 */
   useEffect(() => {
@@ -345,7 +347,11 @@ export default function OutfitDetailPage() {
   }, [outfitId, router]);
 
   const handleBack = useCallback(() => {
-    router.back();
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/feed");
+    }
   }, [router]);
 
   if (status === "loading") return <DetailSkeleton />;
@@ -398,7 +404,10 @@ export default function OutfitDetailPage() {
       {/* ── Sticky 헤더 (스크롤 시 노출) ── */}
       <motion.header
         className="fixed top-0 left-0 right-0 z-40 bg-bg-primary/95 backdrop-blur-sm border-b border-border"
-        style={{ opacity: prefersReducedMotion ? 1 : headerOpacity }}
+        style={{
+          opacity: prefersReducedMotion ? 1 : headerOpacity,
+          pointerEvents: headerVisible ? "auto" : "none",
+        }}
       >
         <div className="flex items-center justify-between px-[20px] h-[52px] max-w-[768px] mx-auto">
           <button type="button" onClick={handleBack} aria-label="뒤로가기">
@@ -418,7 +427,7 @@ export default function OutfitDetailPage() {
       </motion.header>
 
       {/* ── 히어로 이미지 (풀블리드 + Parallax) ── */}
-      <div ref={heroRef} className="relative w-full overflow-hidden" style={{ aspectRatio: "3/4" }}>
+      <div ref={heroRef} className="relative w-full overflow-hidden bg-[#F0EDE8]" style={{ aspectRatio: "1/1" }}>
         {/* 뒤로가기 버튼 (히어로 위) */}
         <button
           type="button"
@@ -467,7 +476,7 @@ export default function OutfitDetailPage() {
             alt={outfit.reasons?.[0] ?? "코디 이미지"}
             fill
             sizes="100vw"
-            className="object-cover"
+            className="object-contain"
             priority
           />
         </motion.div>

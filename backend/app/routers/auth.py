@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import logging
 import uuid
+from urllib.parse import urlencode
 from uuid import UUID
 
 import httpx
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import RedirectResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,24 +23,25 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
+KAKAO_AUTH_URL = "https://kauth.kakao.com/oauth/authorize"
 KAKAO_TOKEN_URL = "https://kauth.kakao.com/oauth/token"
 KAKAO_USER_URL = "https://kapi.kakao.com/v2/user/me"
+GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
 GOOGLE_USER_URL = "https://www.googleapis.com/oauth2/v2/userinfo"
 
 
 async def _get_kakao_user(code: str, redirect_uri: str) -> dict:
     async with httpx.AsyncClient() as client:
-        token_resp = await client.post(
-            KAKAO_TOKEN_URL,
-            data={
-                "grant_type": "authorization_code",
-                "client_id": settings.kakao_client_id,
-                "client_secret": settings.kakao_client_secret,
-                "code": code,
-                "redirect_uri": redirect_uri,
-            },
-        )
+        token_data: dict[str, str] = {
+            "grant_type": "authorization_code",
+            "client_id": settings.kakao_client_id,
+            "code": code,
+            "redirect_uri": redirect_uri,
+        }
+        if settings.kakao_client_secret:
+            token_data["client_secret"] = settings.kakao_client_secret
+        token_resp = await client.post(KAKAO_TOKEN_URL, data=token_data)
         if token_resp.status_code != 200:
             logger.error("kakao token error: %s", token_resp.text)
             raise HTTPException(status_code=401, detail="카카오 인증에 실패했습니다")
@@ -135,6 +138,31 @@ async def _find_or_create_user(
     await db.refresh(new_user)
     is_new = True
     return new_user, is_new
+
+
+@router.get("/kakao")
+async def kakao_login_redirect(state: str = Query(...)) -> RedirectResponse:
+    redirect_uri = f"{settings.frontend_url}/auth/kakao/callback"
+    params = urlencode({
+        "client_id": settings.kakao_client_id,
+        "redirect_uri": redirect_uri,
+        "response_type": "code",
+        "state": state,
+    })
+    return RedirectResponse(url=f"{KAKAO_AUTH_URL}?{params}")
+
+
+@router.get("/google")
+async def google_login_redirect(state: str = Query(...)) -> RedirectResponse:
+    redirect_uri = f"{settings.frontend_url}/auth/google/callback"
+    params = urlencode({
+        "client_id": settings.google_client_id,
+        "redirect_uri": redirect_uri,
+        "response_type": "code",
+        "scope": "email profile",
+        "state": state,
+    })
+    return RedirectResponse(url=f"{GOOGLE_AUTH_URL}?{params}")
 
 
 @router.post("/kakao", response_model=AuthTokenResponse)

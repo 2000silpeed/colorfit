@@ -630,7 +630,7 @@ export default function ClosetAnalyzeResultPage() {
         {/* 뒤로가기 */}
         <button
           type="button"
-          onClick={() => router.back()}
+          onClick={() => window.history.length > 1 ? router.back() : router.push("/closet")}
           className="absolute top-[16px] left-[16px] z-10 w-[36px] h-[36px] rounded-full bg-black/30 flex items-center justify-center"
           aria-label="뒤로가기"
         >
@@ -641,15 +641,15 @@ export default function ClosetAnalyzeResultPage() {
 
         {/* 내 옷 이미지 */}
         <div
-          className="w-full overflow-hidden"
+          className="relative w-full overflow-hidden"
           style={{ aspectRatio: "3/4", maxHeight: "420px" }}
         >
           <Image
             src={imageUrl}
             alt="내 옷"
-            width={768}
-            height={1024}
-            className="w-full h-full object-cover"
+            fill
+            sizes="(max-width: 768px) 100vw, 430px"
+            className="object-cover"
             priority
           />
         </div>

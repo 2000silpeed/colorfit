@@ -72,7 +72,7 @@ export default function ToneDetailPage() {
           {error ?? "톤 정보를 불러올 수 없습니다"}
         </p>
         <button
-          onClick={() => router.back()}
+          onClick={() => window.history.length > 1 ? router.back() : router.push("/feed")}
           className="px-[24px] py-[10px] rounded-full text-[14px] font-medium"
           style={{
             fontFamily: "var(--font-body)",
@@ -100,7 +100,7 @@ export default function ToneDetailPage() {
       >
         {/* 뒤로가기 */}
         <button
-          onClick={() => router.back()}
+          onClick={() => window.history.length > 1 ? router.back() : router.push("/feed")}
           className="absolute top-[12px] left-[16px] w-[36px] h-[36px] rounded-full bg-black/20 flex items-center justify-center"
         >
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">

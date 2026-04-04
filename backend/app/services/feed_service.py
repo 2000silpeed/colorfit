@@ -247,7 +247,9 @@ def _score_outfit(
         scores_dict = {**scores_dict, "of": runtime_of}
 
     soft_score = calculate_soft_score(scores_dict)
-    image_url = items[0]["image_url"] if items else None
+    _GROUP_PRIORITY = {"top": 0, "onepiece": 1, "outer": 2, "bottom": 3, "shoes": 4, "bag": 5, "acc": 6}
+    sorted_items = sorted(items, key=lambda it: _GROUP_PRIORITY.get(it.get("group", ""), 99))
+    image_url = sorted_items[0]["image_url"] if sorted_items else None
 
     meta = compute_outfit_metadata(items, user_preferred)
 

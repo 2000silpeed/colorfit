@@ -11,6 +11,13 @@ type SortBy = "recent" | "score" | "price";
 
 const FALLBACK_USER_ID = "00000000-0000-0000-0000-000000000001";
 
+const TOP_CATEGORIES = ["티셔츠", "셔츠", "블라우스", "니트", "가디건", "맨투맨", "후드", "원피스"];
+
+function pickHeroImage(items: { category: string | null; image_url: string | null }[], fallback: string | null): string | null {
+  const topItem = items.find((it) => it.image_url && TOP_CATEGORIES.includes(it.category ?? ""));
+  return topItem?.image_url ?? items.find((it) => it.image_url)?.image_url ?? fallback;
+}
+
 const SORT_OPTIONS: { value: SortBy; label: string }[] = [
   { value: "recent", label: "최근 저장" },
   { value: "score", label: "점수순" },
@@ -101,7 +108,7 @@ function SavedCard({ outfit, index, onTap, onLongPress, compareMode, compareSele
     >
       <div
         className="relative w-full overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-bg-secondary)]"
-        style={{ aspectRatio: "3/4" }}
+        style={{ aspectRatio: "1/1" }}
       >
         {outfit.image_url ? (
           <Image
@@ -109,7 +116,7 @@ function SavedCard({ outfit, index, onTap, onLongPress, compareMode, compareSele
             alt={`코디 ${outfit.id}`}
             fill
             sizes="(max-width: 430px) 50vw, 200px"
-            className="object-cover"
+            className="object-contain"
             loading="lazy"
           />
         ) : (
@@ -339,15 +346,15 @@ function TopPickModal({ data, onClose, onViewOutfit }: TopPickModalProps) {
         {/* 코디 이미지 확대 */}
         <div
           className="relative w-full overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-bg-secondary)]"
-          style={{ aspectRatio: "3/4" }}
+          style={{ aspectRatio: "1/1" }}
         >
-          {data.image_url ? (
+          {pickHeroImage(data.items, data.image_url) ? (
             <Image
-              src={data.image_url}
+              src={pickHeroImage(data.items, data.image_url)!}
               alt="Top Pick 코디"
               fill
               sizes="(max-width: 430px) 100vw, 430px"
-              className="object-cover"
+              className="object-contain"
               priority
             />
           ) : (

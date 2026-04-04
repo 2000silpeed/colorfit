@@ -666,3 +666,31 @@ export async function savePreferredBrands(userId: string, brands: string[]): Pro
   });
   if (!res.ok) throw new Error(`Save brands API error: ${res.status}`);
 }
+
+/* ── OAuth ── */
+
+export interface AuthTokenResponse {
+  access_token: string;
+  token_type: string;
+  user_id: string;
+  is_new_user: boolean;
+}
+
+export async function postOAuthCallback(
+  provider: "kakao" | "google",
+  code: string,
+  guestUserId?: string | null,
+): Promise<AuthTokenResponse> {
+  const body: Record<string, string> = { code };
+  if (guestUserId) body.guest_user_id = guestUserId;
+
+  const res = await fetch(`${API_BASE}/api/auth/${provider}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    throw new Error(`OAuth callback error: ${res.status}`);
+  }
+  return res.json();
+}

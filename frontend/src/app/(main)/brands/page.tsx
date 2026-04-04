@@ -128,7 +128,7 @@ export default function BrandsPage() {
         <div className="flex items-center justify-between px-[20px] h-[52px] max-w-[768px] mx-auto">
           <button
             type="button"
-            onClick={() => router.back()}
+            onClick={() => window.history.length > 1 ? router.back() : router.push("/feed")}
             className="w-[32px] h-[32px] flex items-center justify-center"
             aria-label="뒤로 가기"
           >

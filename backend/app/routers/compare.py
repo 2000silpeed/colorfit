@@ -42,14 +42,26 @@ def _build_scores_response(scores: dict) -> ScoresResponse | None:
     )
 
 
+_GROUP_MAP: dict[str, str] = {
+    "티셔츠": "top", "셔츠": "top", "블라우스": "top", "니트": "top",
+    "맨투맨": "top", "후드": "top", "탱크톱": "top", "크롭탑": "top",
+    "원피스": "onepiece", "점프수트": "onepiece",
+    "자켓": "outer", "코트": "outer", "패딩": "outer", "가디건": "outer",
+}
+_GROUP_PRIO: dict[str, int] = {"top": 0, "onepiece": 1, "outer": 2}
+
+
 async def _get_outfit_image(outfit: Outfit, db: AsyncSession) -> str | None:
     item_ids = ensure_list(outfit.item_ids)
     if not item_ids:
         return None
-    stmt = select(Product.image_url).where(Product.id == item_ids[0])
+    stmt = select(Product.image_url, Product.category).where(Product.id.in_(item_ids))
     result = await db.execute(stmt)
-    row = result.scalar_one_or_none()
-    return row
+    rows = result.all()
+    if not rows:
+        return None
+    best = min(rows, key=lambda r: _GROUP_PRIO.get(_GROUP_MAP.get(r[1] or "", ""), 99))
+    return best[0]
 
 
 @router.get("/compare", response_model=CompareResponse)

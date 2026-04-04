@@ -11,11 +11,15 @@ export default function LoginPage() {
   const prefersReducedMotion = useReducedMotion();
 
   const handleKakaoLogin = useCallback(() => {
-    window.location.href = `${API_BASE}/api/auth/kakao`;
+    const state = crypto.randomUUID();
+    sessionStorage.setItem("oauth_state", state);
+    window.location.href = `${API_BASE}/api/auth/kakao?state=${state}`;
   }, []);
 
   const handleGoogleLogin = useCallback(() => {
-    window.location.href = `${API_BASE}/api/auth/google`;
+    const state = crypto.randomUUID();
+    sessionStorage.setItem("oauth_state", state);
+    window.location.href = `${API_BASE}/api/auth/google?state=${state}`;
   }, []);
 
   const handleGuest = useCallback(() => {

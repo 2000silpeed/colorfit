@@ -185,7 +185,7 @@ export default function OutfitCard({
     >
       {/* Image Container */}
       <div className="relative w-full rounded-[var(--radius-lg)] overflow-hidden bg-[#F0EDE8]"
-        style={{ aspectRatio: "3/4" }}
+        style={{ aspectRatio: "1/1" }}
       >
         {/* 메인 이미지 (항상 전체 배경) */}
         <Image
@@ -215,7 +215,7 @@ export default function OutfitCard({
                   alt={item.category ?? "서브 아이템"}
                   fill
                   sizes="76px"
-                  className="object-contain p-[2px]"
+                  className="object-cover"
                   loading="lazy"
                 />
               </div>

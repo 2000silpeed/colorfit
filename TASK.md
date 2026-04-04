@@ -1,11 +1,11 @@
 # ColorFit Task Tracker
 
 **프로젝트 기간:** 5주 (W1: 3/24~3/28 ~ W5: 4/21~4/25)
-**현재 상태:** W4 완료 ✅ → W5 진입. 사용자 여정 끊김 11건 수정 + 폴리싱 + 배포 남음
+**현재 상태:** W5 진행 중. Task 5.1 완료 + 이미지/뒤로가기 버그 수정
 **끊어진 연결 (사용자 여정 추적 결과):**
-1. 🔗 로그인 진입 경로 없음 (루트→온보딩 직행, /login 접근 불가)
-2. ❌ OAuth GET redirect 백엔드 없음 (POST만 존재)
-3. ❌ OAuth 콜백 페이지 프론트 없음
+1. ✅ 로그인 진입 경로 없음 → 루트(/) 분기 구현 (Task 5.1)
+2. ✅ OAuth GET redirect 백엔드 없음 → GET /api/auth/kakao, /google 추가 (Task 5.1)
+3. ✅ OAuth 콜백 페이지 프론트 없음 → callback 페이지 생성 (Task 5.1)
 4. ❌ 온보딩 뒤로가기 버튼 없음 (건너뛰기만)
 5. ❌ 옷장 저장 API 미연동 (TODO 주석)
 6. ❌ 프로필 로그아웃 onClick 없음
@@ -758,13 +758,15 @@ W5 ─── 단독 실행 (통합 작업)
 
 ### 🅐 인증 + 진입 흐름 (Task 5.1~5.2) ⭐ 최우선
 
-**Task 5.1 — OAuth 로그인 E2E 완성** ⭐ 현재 전혀 동작 안 함
-- [ ] 루트(/) 분기: 로그인 상태 → `/feed`, 미로그인+톤 미설정 → `/login` (현재: 온보딩 직행)
-- [ ] 백엔드 **GET /api/auth/kakao** → 카카오 인가 페이지 redirect (현재 POST만 존재)
-- [ ] 백엔드 **GET /api/auth/google** → 구글 인가 페이지 redirect
-- [ ] 프론트 콜백 페이지 생성: `app/auth/kakao/callback/page.tsx`, `app/auth/google/callback/page.tsx`
-- [ ] 콜백 흐름: URL ?code= 추출 → POST /api/auth/{provider} → JWT+user_id localStorage 저장 → 온보딩 or 피드 이동
-- [ ] 게스트 모드: 로그인 페이지 "게스트로 둘러보기" → 온보딩 → 피드 (현재 동작 확인)
+**Task 5.1 — OAuth 로그인 E2E 완성** ✅
+- [x] 루트(/) 분기: 로그인 상태 → `/feed`, 미로그인+톤 미설정 → `/login` (현재: 온보딩 직행)
+- [x] 백엔드 **GET /api/auth/kakao** → 카카오 인가 페이지 redirect (현재 POST만 존재)
+- [x] 백엔드 **GET /api/auth/google** → 구글 인가 페이지 redirect
+- [x] 프론트 콜백 페이지 생성: `app/auth/kakao/callback/page.tsx`, `app/auth/google/callback/page.tsx`
+- [x] 콜백 흐름: URL ?code= 추출 → POST /api/auth/{provider} → JWT+user_id localStorage 저장 → 온보딩 or 피드 이동
+- [x] 게스트 모드: 로그인 페이지 "게스트로 둘러보기" → 온보딩 → 피드 (현재 동작 확인)
+- 🔧 codex 리뷰 반영: OAuth state 파라미터 CSRF 보호 추가 (프론트 sessionStorage 생성 → 백엔드 전달 → 콜백 검증), 루트 분기에 guest 경로 보존
+- 🔧 추가 수정: reaction/tryon_cache outfit_id VARCHAR(50)→100 (56자 ID 저장 실패 수정), 이미지 aspect-ratio 3:4→1:1 + object-contain (네이버 1:1 이미지 잘림 해결), 대표 이미지 상의 우선 선택 (백엔드 feed/top_pick/compare), 전 페이지 뒤로가기 fallback 추가, outfit detail 헤더 pointer-events 수정
 - `backend/app/routers/auth.py`, `frontend/src/app/page.tsx`, `frontend/src/app/login/page.tsx`, `frontend/src/app/auth/*/callback/page.tsx`
 - 해결하는 끊김: #1, #2, #3
 
@@ -838,7 +840,7 @@ W5 ─── 단독 실행 (통합 작업)
 - [ ] 발표 자료
 
 ### W5 완료 기준
-- [ ] OAuth 로그인 동작 — 카카오/구글 (Task 5.1)
+- [x] OAuth 로그인 동작 — 카카오/구글 (Task 5.1)
 - [ ] 게스트→로그인 전환 동작 (Task 5.2)
 - [ ] 온보딩 뒤로가기 동작 (Task 5.3)
 - [ ] 옷장 저장 API 동작 (Task 5.4)

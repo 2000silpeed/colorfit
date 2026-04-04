@@ -344,7 +344,7 @@ export default function PreferencePage() {
       {/* 헤더 */}
       <div className="sticky top-0 z-10 bg-bg-primary border-b" style={{ borderColor: "var(--color-border)" }}>
         <div className="flex items-center h-[56px] px-[20px]">
-          <button onClick={() => router.back()} className="mr-[12px]">
+          <button onClick={() => window.history.length > 1 ? router.back() : router.push("/feed")} className="mr-[12px]">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path d="M15 18l-6-6 6-6" stroke="var(--color-text-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>

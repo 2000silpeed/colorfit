@@ -13,7 +13,7 @@ class TryonCache(Base):
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
-    outfit_id: Mapped[str] = mapped_column(String(50), index=True, nullable=False)
+    outfit_id: Mapped[str] = mapped_column(String(100), index=True, nullable=False)
     closet_item_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True), nullable=True
     )

@@ -72,7 +72,7 @@ export default function ClosetUploadPage() {
       <div className="flex items-center px-[20px] pt-[16px] pb-[12px]">
         <button
           type="button"
-          onClick={() => router.back()}
+          onClick={() => window.history.length > 1 ? router.back() : router.push("/closet")}
           className="w-[36px] h-[36px] rounded-full flex items-center justify-center -ml-[8px]"
           aria-label="뒤로가기"
         >

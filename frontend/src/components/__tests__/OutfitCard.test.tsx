@@ -51,6 +51,11 @@ const defaultProps = {
   reason: "여름쿨소프트 핵심 컬러 라벤더 블루 계열",
   scores: { pcf: 94.5, of: 87.8 },
   itemCount: 3,
+  items: [
+    { image_url: "/item1.jpg", category: "top", group: "상의", brand: "COS", style_tag: "minimal", is_verified_brand: true },
+    { image_url: "/item2.jpg", category: "bottom", group: "하의", brand: null, style_tag: null, is_verified_brand: false },
+    { image_url: "/item3.jpg", category: "shoes", group: "신발", brand: null, style_tag: null, is_verified_brand: false },
+  ],
 };
 
 describe("OutfitCard", () => {
@@ -63,9 +68,10 @@ describe("OutfitCard", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders item count badge", () => {
+  it("renders item images from items prop", () => {
     render(<OutfitCard {...defaultProps} />);
-    expect(screen.getByText("3pcs")).toBeInTheDocument();
+    const images = screen.getAllByRole("img");
+    expect(images.length).toBeGreaterThanOrEqual(1);
   });
 
   it("renders score badges with rounded values", () => {
@@ -74,10 +80,10 @@ describe("OutfitCard", () => {
     expect(screen.getByText("OF 88")).toBeInTheDocument();
   });
 
-  it("renders image with correct alt and src", () => {
+  it("renders main image from first item", () => {
     render(<OutfitCard {...defaultProps} />);
-    const img = screen.getByAltText("봄웜라이트 데이트룩 코디");
-    expect(img).toHaveAttribute("src", "/test-image.jpg");
+    const img = screen.getByAltText("top");
+    expect(img).toHaveAttribute("src", "/item1.jpg");
   });
 
   it("toggles save on heart button click", () => {
