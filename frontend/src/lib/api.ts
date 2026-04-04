@@ -8,6 +8,7 @@ interface FeedParams {
   budgetMin?: number;
   budgetMax?: number;
   userId?: string;
+  verifiedOnly?: boolean;
   page?: number;
 }
 
@@ -592,6 +593,7 @@ export async function fetchFeed(params: FeedParams): Promise<FeedResponse> {
   if (params.budgetMin != null) q.set("budget_min", String(params.budgetMin));
   if (params.budgetMax != null) q.set("budget_max", String(params.budgetMax));
   if (params.userId) q.set("user_id", params.userId);
+  if (params.verifiedOnly) q.set("verified_only", "true");
   if (params.page != null) q.set("page", String(params.page));
 
   const res = await fetch(`${API_BASE}/api/feed?${q.toString()}`);

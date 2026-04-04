@@ -106,6 +106,7 @@ export default function FeedPage() {
     } catch { return BUDGET_MAX_DEFAULT; }
   });
   const [budgetOpen, setBudgetOpen] = useState(false);
+  const [verifiedOnly, setVerifiedOnly] = useState(false);
 
   /* 토스트 */
   const [toast, setToast] = useState<string | null>(null);
@@ -160,6 +161,7 @@ export default function FeedPage() {
           tpo: activeTpo === "all" ? undefined : activeTpo,
           budgetMin,
           budgetMax,
+          verifiedOnly: verifiedOnly || undefined,
           page: pageNum,
         });
 
@@ -176,7 +178,7 @@ export default function FeedPage() {
         setLoadingMore(false);
       }
     },
-    [toneId, gender, ageGroup, activeTpo, budgetMin, budgetMax],
+    [toneId, gender, ageGroup, activeTpo, budgetMin, budgetMax, verifiedOnly],
   );
 
   /* 필터 변경 시 리로드 */
@@ -185,7 +187,7 @@ export default function FeedPage() {
       loadFeed(1, false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toneId, gender, ageGroup, activeTpo, budgetMin, budgetMax]);
+  }, [toneId, gender, ageGroup, activeTpo, budgetMin, budgetMax, verifiedOnly]);
 
   /* 무한 스크롤 (IntersectionObserver) */
   useEffect(() => {
@@ -298,8 +300,8 @@ export default function FeedPage() {
           ))}
         </div>
 
-        {/* ── 예산 슬라이더 ── */}
-        <div className="px-[20px] pb-[12px] max-w-[768px] mx-auto">
+        {/* ── 필터 바 (예산 + 추천 브랜드) ── */}
+        <div className="px-[20px] pb-[12px] max-w-[768px] mx-auto flex items-center gap-[12px]">
           <button
             type="button"
             onClick={() => setBudgetOpen((prev) => !prev)}
@@ -326,6 +328,25 @@ export default function FeedPage() {
             </svg>
           </button>
 
+          {/* 추천 브랜드만 토글 */}
+          <button
+            type="button"
+            onClick={() => setVerifiedOnly((prev) => !prev)}
+            className={`shrink-0 inline-flex items-center gap-[4px] px-[12px] py-[6px] rounded-full text-[13px] font-body transition-colors ${
+              verifiedOnly
+                ? "bg-accent text-white"
+                : "bg-bg-secondary text-text-secondary border border-border"
+            }`}
+          >
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zm3.41 5.09L7.2 9.3 5.3 7.4a.75.75 0 0 0-1.1 1.02l.08.08 2.5 2.5a.75.75 0 0 0 1.02.08l.08-.08 4.8-4.8a.75.75 0 0 0-1.1-1.02l-.07.01z" />
+            </svg>
+            추천 브랜드
+          </button>
+        </div>
+
+        {/* ── 예산 슬라이더 (확장) ── */}
+        <div className="px-[20px] pb-[12px] max-w-[768px] mx-auto">
           <AnimatePresence>
             {budgetOpen && (
               <motion.div

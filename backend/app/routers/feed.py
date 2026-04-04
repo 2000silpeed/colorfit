@@ -33,6 +33,7 @@ async def get_feed(
     budget_min: int | None = Query(None, ge=0, description="최소 예산"),
     budget_max: int | None = Query(None, ge=0, description="최대 예산"),
     user_id: str | None = Query(None, description="사용자 ID (dislike 필터용)"),
+    verified_only: bool = Query(False, description="화이트리스트 브랜드만 포함된 코디"),
     page: int = Query(1, ge=1, description="페이지 번호"),
     db: AsyncSession = Depends(get_db),
 ) -> FeedResponse:
@@ -156,6 +157,9 @@ async def get_feed(
 
         dominant_tone = max(tone_counts, key=tone_counts.get) if tone_counts else None
         verified_brand_ratio = verified_count / len(items) if items else 0.0
+
+        if verified_only and verified_brand_ratio < 1.0:
+            continue
 
         scored.append({
             "id": o.id,
