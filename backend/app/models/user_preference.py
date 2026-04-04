@@ -12,7 +12,7 @@ class UserPreference(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE")
+        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), unique=True
     )
     tone_preferences: Mapped[dict | None] = mapped_column(JSONB, server_default=text("'{}'::jsonb"))
     category_preferences: Mapped[dict | None] = mapped_column(JSONB, server_default=text("'{}'::jsonb"))

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import closet, compare, feed, item, onboarding, outfit, preference, reaction, saved, subscription, tone, top_pick, tryon
+from app.routers import auth, closet, compare, feed, feedback, item, onboarding, outfit, preference, reaction, saved, subscription, tone, top_pick, tryon
 
 
 app = FastAPI(
@@ -22,9 +22,11 @@ app.add_middleware(
 )
 
 
+app.include_router(auth.router)
 app.include_router(closet.router)
 app.include_router(compare.router)
 app.include_router(feed.router)
+app.include_router(feedback.router)
 app.include_router(item.router)
 app.include_router(onboarding.router)
 app.include_router(outfit.router)

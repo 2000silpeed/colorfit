@@ -46,23 +46,28 @@ class TestH1Gender:
 
 class TestH2Budget:
     def test_within_budget_passes(self):
-        assert h2_budget(100_000, 100_000) is True
+        assert h2_budget(100_000, 50_000, 150_000) is True
 
-    def test_slightly_over_passes(self):
-        assert h2_budget(140_000, 100_000) is True
+    def test_at_max_passes(self):
+        assert h2_budget(100_000, None, 100_000) is True
 
-    def test_at_150_percent_passes(self):
-        assert h2_budget(150_000, 100_000) is True
+    def test_over_max_fails(self):
+        assert h2_budget(100_001, None, 100_000) is False
 
-    def test_over_150_percent_fails(self):
-        assert h2_budget(150_001, 100_000) is False
+    def test_under_min_fails(self):
+        assert h2_budget(30_000, 50_000, 150_000) is False
 
-    def test_none_values_pass(self):
-        assert h2_budget(None, 100_000) is True
-        assert h2_budget(100_000, None) is True
+    def test_at_min_passes(self):
+        assert h2_budget(50_000, 50_000, 150_000) is True
+
+    def test_none_total_price_passes(self):
+        assert h2_budget(None, 50_000, 100_000) is True
+
+    def test_none_budget_passes(self):
+        assert h2_budget(100_000, None, None) is True
 
     def test_zero_budget_passes(self):
-        assert h2_budget(100_000, 0) is True
+        assert h2_budget(100_000, 0, 0) is True
 
 
 # ---------------------------------------------------------------------------
@@ -130,11 +135,11 @@ class TestH5Brand:
         assert h5_brand(["COS"]) is True
         assert h5_brand(["cos"]) is True
 
-    def test_empty_brands_fails(self):
-        assert h5_brand([]) is False
+    def test_empty_brands_passes(self):
+        assert h5_brand([]) is True
 
-    def test_none_brands_fails(self):
-        assert h5_brand([None, None]) is False
+    def test_none_brands_passes(self):
+        assert h5_brand([None, None]) is True
 
 
 # ---------------------------------------------------------------------------

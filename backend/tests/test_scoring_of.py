@@ -40,24 +40,24 @@ class TestExpandTpos:
 
 class TestCalculateOf:
     def test_exact_match_single(self):
-        """정확 매칭 1개: 60 + (1/total_tags) * 20"""
+        """정확 매칭: best_sim=1.0 → 30+70=100"""
         score = calculate_of(["office"], ["office"])
-        assert score == 80.0  # 60 + (1/1)*20
+        assert score == 100.0
 
     def test_exact_match_multiple(self):
-        """정확 매칭 2개 이상: 80 + (match/total)*20"""
+        """정확 매칭 2개: best_sim=1.0 → 100"""
         score = calculate_of(["office", "casual"], ["office", "casual"])
-        assert score == 100.0  # 80 + (2/2)*20
+        assert score == 100.0
 
     def test_synonym_match(self):
-        """동의어 매칭: commute 사용자 → office 태그 코디 매칭"""
+        """유사 TPO: commute↔office sim=0.9 → 30+63=93"""
         score = calculate_of(["office"], ["commute"])
-        assert score == 80.0  # office는 commute의 동의어
+        assert score == 93.0
 
     def test_synonym_match_weekend_casual(self):
-        """weekend ↔ casual 동의어"""
+        """weekend↔casual sim=0.9 → 93"""
         score = calculate_of(["casual", "daily"], ["weekend"])
-        assert score >= 80.0  # casual, daily 둘 다 weekend 동의어
+        assert score == 93.0
 
     def test_no_match(self):
         """완전 미매칭: 30점 하한"""
@@ -65,19 +65,17 @@ class TestCalculateOf:
         assert score == 30.0
 
     def test_partial_match_with_extra_tags(self):
-        """3개 태그 중 1개 매칭"""
+        """3개 태그 중 office 정확 매칭: best_sim=1.0 → 100"""
         score = calculate_of(["office", "workout", "travel"], ["office"])
-        # match_count=1, total_tags=3: 60 + (1/3)*20 ≈ 66.67
-        assert score == pytest.approx(66.67, abs=0.01)
+        assert score == 100.0
 
     def test_partial_match_2_of_4(self):
-        """4개 태그 중 2개 매칭"""
+        """office↔commute sim=0.9 → 93"""
         score = calculate_of(
             ["office", "casual", "workout", "travel"],
-            ["commute"],  # → {office, commute}
+            ["commute"],
         )
-        # match_count=1 (office만 매칭), total_tags=4: 60 + (1/4)*20 = 65
-        assert score == 65.0
+        assert score == 93.0
 
     def test_empty_outfit_tags(self):
         score = calculate_of([], ["office"])
@@ -105,15 +103,11 @@ class TestCalculateOf:
         assert score <= 100.0
 
     def test_interview_matches_office_tag(self):
-        """면접 사용자에게 office 태그 코디 매칭"""
+        """interview↔office sim=0.8 → 30+56=86"""
         score = calculate_of(["office", "casual"], ["interview"])
-        # interview → {interview, office}, office 매칭 → match_count=1
-        # 60 + (1/2)*20 = 70
-        assert score == 70.0
+        assert score == 86.0
 
     def test_campus_matches_casual(self):
-        """campus → {campus, casual} 확장"""
+        """campus↔casual sim=0.8 → 30+56=86"""
         score = calculate_of(["casual", "daily"], ["campus"])
-        # campus → {campus, casual}, casual 매칭 → match_count=1
-        # 60 + (1/2)*20 = 70
-        assert score == 70.0
+        assert score == 86.0

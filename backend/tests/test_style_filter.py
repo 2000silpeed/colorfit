@@ -161,13 +161,12 @@ class TestFilterOutfit:
         assert score == 0.0
 
     def test_no_category_items(self):
-        """카테고리 없는 아이템만 → 탈락."""
+        """카테고리 없는 아이템만 → 판단 불가, 기본 통과."""
         items = [
             {"category": None, "group": "", "silhouette": None},
         ]
         passed, score = filter_outfit(items)
-        assert passed is False
-        assert score == 0.0
+        assert passed is True
 
     def test_silhouette_y_line_bonus(self):
         """오버사이즈 상의 + 슬림 하의 (Y라인) → 실루엣 점수 높음."""

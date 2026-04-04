@@ -55,7 +55,7 @@ class TestOnboardingEndpoint:
     @pytest.mark.asyncio
     async def test_user_saved_to_db(self, client, db_session):
         resp = await client.post("/api/onboarding", json=VALID_BODY)
-        user_id = resp.json()["user_id"]
+        user_id = resp.json()["user_id"].replace("-", "")
 
         row = await db_session.execute(
             text("SELECT gender, tone_id, budget_min, budget_max FROM users WHERE id = :uid"),
@@ -71,7 +71,7 @@ class TestOnboardingEndpoint:
     @pytest.mark.asyncio
     async def test_style_seed_saved_to_db(self, client, db_session):
         resp = await client.post("/api/onboarding", json=VALID_BODY)
-        user_id = resp.json()["user_id"]
+        user_id = resp.json()["user_id"].replace("-", "")
 
         row = await db_session.execute(
             text("SELECT mood_seed, silhouette_seed, color_seed, price_seed, seed_confidence FROM style_seeds WHERE user_id = :uid"),
@@ -143,7 +143,7 @@ class TestOnboardingEndpoint:
     @pytest.mark.asyncio
     async def test_tpo_primary_secondary_set(self, client, db_session):
         resp = await client.post("/api/onboarding", json=VALID_BODY)
-        user_id = resp.json()["user_id"]
+        user_id = resp.json()["user_id"].replace("-", "")
 
         row = await db_session.execute(
             text("SELECT tpo_primary, tpo_secondary FROM users WHERE id = :uid"),

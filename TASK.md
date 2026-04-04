@@ -637,31 +637,37 @@ W5 ─── 단독 실행 (통합 작업)
 - ⚠️ 온보딩 ORM 전환 (SQLAlchemy text SQL → 모델 직접 사용)
 - 🔧 H2 예산 필터 수정: budget_min 하한 + 1.5배 허용 제거
 
-**Task 4.8.2 — A vs B 비교 화면**
-- [ ] 좌우 분할 (50:50), 각 코디 이미지 + 정보
-- [ ] 중앙 5축 비교 (레이더 차트 또는 바 차트 오버레이)
-- [ ] 하단 1줄 결론 ("A가 퍼스널컬러에 더 잘 맞아요")
-- [ ] GET /api/compare 연동
+**Task 4.8.2 — A vs B 비교 화면** ✅
+- [x] 좌우 분할 (50:50), 각 코디 이미지 + 정보
+- [x] 중앙 5축 비교 (레이더 차트 또는 바 차트 오버레이)
+- [x] 하단 1줄 결론 ("A가 퍼스널컬러에 더 잘 맞아요")
+- [x] GET /api/compare 연동
+- ⚠️ 바 차트 방식 채택 (A=Marsala, B=Ocean Blue 색상 대비)
+- ⚠️ 코디 상세 CTA + 저장 목록 비교 모드 2가지 진입점 구현
 
-**Task 4.9 — 로그인 화면**
-- [ ] `frontend/app/login/page.tsx`
-- [ ] ColorFit 로고 + 서브카피
-- [ ] 카카오 로그인 버튼 (#FEE500)
-- [ ] 구글 로그인 버튼 (#FFFFFF + border)
-- [ ] "게스트로 둘러보기" 텍스트 링크
+**Task 4.9 — 로그인 화면** ✅
+- [x] `frontend/app/login/page.tsx`
+- [x] ColorFit 로고 + 서브카피
+- [x] 카카오 로그인 버튼 (#FEE500)
+- [x] 구글 로그인 버튼 (#FFFFFF + border)
+- [x] "게스트로 둘러보기" 텍스트 링크
+- ⚠️ OAuth 콜백은 Task 4.9.1(백엔드)에서 구현 예정. 현재 버튼은 /api/auth/{provider}로 리다이렉트
 
 **Task 4.9.1 — 소셜 로그인 백엔드**
-- [ ] `backend/app/services/jwt.py` — JWT 토큰 발급/검증
-- [ ] `backend/app/routers/auth.py` — 카카오/구글 OAuth 콜백
-- [ ] 게스트 → 로그인 전환 (저장/Top Pick 접근 시 로그인 요구)
+- [x] `backend/app/services/jwt.py` — JWT 토큰 발급/검증
+- [x] `backend/app/routers/auth.py` — 카카오/구글 OAuth 콜백
+- [x] 게스트 → 로그인 전환 (저장/Top Pick 접근 시 로그인 요구)
+- 🔧 codex 리뷰 반영: jwt_secret_key 빈값 경고, except 범위 축소, OAuth token 응답 null 체크
 
-**Task 4.10 — 피드백 개인화 학습**
-- [ ] `backend/app/services/preference_tracker.py`
-- [ ] 피드백 행동별 가중치: save(+2.0), like(+1.0), click(+0.3), dislike(-1.5)
-- [ ] tone/category/brand/price 선호도 누적
-- [ ] 10건+ 축적 시 weight_overrides 자동 생성
-- [ ] `backend/app/routers/feedback.py` — POST /api/feedback
-- [ ] 참조: 기획서 섹션 6.8
+**Task 4.10 — 피드백 개인화 학습** ✅
+- [x] `backend/app/services/preference_tracker.py`
+- [x] 피드백 행동별 가중치: save(+2.0), like(+1.0), click(+0.3), dislike(-1.5)
+- [x] tone/category/brand/price 선호도 누적
+- [x] 10건+ 축적 시 weight_overrides 자동 생성
+- [x] `backend/app/routers/feedback.py` — POST /api/feedback
+- [x] 참조: 기획서 섹션 6.8
+- [x] 26개 pytest 테스트 통과
+- 🔧 codex 리뷰 반영: positive_count를 긍정 피드백 건수로 수정, user_id unique 제약 추가, import 정리
 
 **Task 4.10.1 — 구매 후 피드백 바텀시트**
 - [ ] 외부 쇼핑몰 이동 후 복귀 시 자동 표시

@@ -222,7 +222,7 @@ class TestGenerateOutfitsForSlot:
         }
         seen = set()
         outfits = generate_outfits_for_slot(
-            recipe, pool, "spring_warm_light", "spring", [], seen, target_count=5
+            recipe, pool, "spring_warm_light", "spring", "20s", [], seen, target_count=5
         )
         assert len(outfits) == 1
 
@@ -243,7 +243,7 @@ class TestGenerateOutfitsForSlot:
         }
         seen = set()
         outfits = generate_outfits_for_slot(
-            recipe, pool, "spring_warm_light", "fall", [], seen, target_count=3
+            recipe, pool, "spring_warm_light", "fall", "30s", [], seen, target_count=3
         )
         assert len(outfits) >= 1
 
@@ -273,16 +273,16 @@ class TestGenerateOutfitsForSlot:
         seen = set()
         winter_forbidden = ["샌들", "숏팬츠", "크롭탑", "탱크탑"]
         outfits = generate_outfits_for_slot(
-            recipe, pool, "spring_warm_light", "winter", winter_forbidden, seen, target_count=3
+            recipe, pool, "spring_warm_light", "winter", "20s", winter_forbidden, seen, target_count=3
         )
         assert len(outfits) == 0
 
 
 class TestMakeOutfitId:
     def test_format_with_season(self):
-        oid = make_outfit_id("female", "spring_warm_light", "interview", "spring", 1)
-        assert oid == "outfit_f_springwa_interview_sp_001"
+        oid = make_outfit_id("female", "spring_warm_light", "interview", "spring", "20s", 1)
+        assert oid == "outfit_f_springwa_interview_sp_20_001"
 
     def test_male_winter(self):
-        oid = make_outfit_id("male", "winter_cool_deep", "event", "winter", 10)
-        assert oid == "outfit_m_winterco_event_wi_010"
+        oid = make_outfit_id("male", "winter_cool_deep", "event", "winter", "40plus", 10)
+        assert oid == "outfit_m_winterco_event_wi_40_010"

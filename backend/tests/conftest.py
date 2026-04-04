@@ -4,9 +4,14 @@ PostgreSQL 전용 타입(ARRAY, JSONB)을 SQLite 호환 타입으로 매핑.
 필요한 테이블만 생성하여 server_default 호환성 문제를 회피.
 """
 
+import json
 import os
+import sqlite3
 
 os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///:memory:")
+
+# SQLite에서 Python list를 JSON 문자열로 자동 변환
+sqlite3.register_adapter(list, lambda val: json.dumps(val, ensure_ascii=False))
 
 import pytest_asyncio
 from sqlalchemy import ARRAY as SA_ARRAY, Table, Column, String, Float, Integer, SmallInteger, Boolean, Text, JSON
@@ -54,6 +59,7 @@ outfits_table = Table(
     Column("style_details", JSON),
     Column("reasons", Text),           # ARRAY → TEXT
     Column("llm_quality_score", SmallInteger),
+    Column("age_group", String(10)),
 )
 
 products_table = Table(
@@ -72,6 +78,7 @@ products_table = Table(
     Column("gender", String(10)),
     Column("silhouette", String(20)),
     Column("formality", SmallInteger),
+    Column("age_group", String(10)),
     Column("last_observed_at", Text),
 )
 
@@ -97,6 +104,7 @@ users_table = Table(
     Column("style_moods", Text),    # ARRAY → TEXT
     Column("budget_min", Integer),
     Column("budget_max", Integer),
+    Column("age_group", String(10)),
     Column("is_premium", Boolean, default=False),
     Column("created_at", Text),
 )
@@ -143,6 +151,19 @@ subscriptions_table = Table(
     Column("price_krw", Integer, nullable=False),
     Column("created_at", Text),
     Column("expires_at", Text),
+)
+
+user_preferences_table = Table(
+    "user_preferences", test_metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("user_id", String(36), unique=True),
+    Column("tone_preferences", JSON),
+    Column("category_preferences", JSON),
+    Column("brand_preferences", JSON),
+    Column("avg_liked_price", Integer),
+    Column("feedback_count", Integer, default=0),
+    Column("weight_overrides", JSON),
+    Column("updated_at", Text),
 )
 
 closet_items_table = Table(

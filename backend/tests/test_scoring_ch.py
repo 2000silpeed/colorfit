@@ -10,15 +10,15 @@ from app.services.scoring import _distance_score, _saturation, calculate_ch
 
 class TestDistanceScore:
     def test_very_similar_colors(self):
-        assert _distance_score(10) == 60.0
+        assert _distance_score(10) == 35.0
 
     def test_analogous_lower(self):
         score = _distance_score(30)
-        assert score == 80.0
+        assert score == 60.0
 
     def test_analogous_mid(self):
         score = _distance_score(55)
-        assert 89.0 < score < 91.0
+        assert score == 80.0
 
     def test_analogous_upper(self):
         score = _distance_score(80)
@@ -60,9 +60,9 @@ class TestCalculateCH:
         assert calculate_ch([]) == 50.0
 
     def test_all_black(self):
-        """올블랙: 거리 0 → 60점 (단조로움)."""
+        """올블랙: 거리 0 → 35점 (동일색 감점)."""
         score = calculate_ch(["#000000", "#000000", "#000000"])
-        assert score == 60.0
+        assert score == 35.0
 
     def test_tone_on_tone(self):
         """톤온톤 (유사색 구간): 80~100점."""

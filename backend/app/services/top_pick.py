@@ -110,7 +110,8 @@ def _generate_highlight_reason(
     if user_tone_id:
         tone_names = _load_tone_names()
         tone_name = tone_names.get(user_tone_id)
-    return _render_template(axis, raw_score, tone_name, outfit_tpo)
+    seed = str(scores.get("pcf", 0))
+    return _render_template(axis, raw_score, seed, tone_name, outfit_tpo)
 
 
 async def _load_saved_outfit_ids(

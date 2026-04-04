@@ -160,7 +160,8 @@ def _build_decisive_factor(
 
     # winner 측 실제 점수로 high/mid 분기
     winner_score = scores_a.get(axis, 0.0) if winner == "A" else scores_b.get(axis, 0.0)
-    reason = _render_template(axis, winner_score, tone_name, tpo)
+    seed = f"{scores_a.get(axis, 0)}_{scores_b.get(axis, 0)}"
+    reason = _render_template(axis, winner_score, seed, tone_name, tpo)
 
     explanation = f"{winner}가 {axis_name}에서 {abs(diff):.0f}점 더 높아요. {reason}"
 
