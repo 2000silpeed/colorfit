@@ -166,15 +166,17 @@ async def get_feed(
                 preferred_count += 1
 
         dominant_tone = max(tone_counts, key=tone_counts.get) if tone_counts else None
-        verified_brand_ratio = verified_count / len(items) if items else 0.0
+        branded_count = sum(1 for it in items if it.get("brand"))
+        verified_brand_ratio = verified_count / branded_count if branded_count else 0.0
 
         # BQ 보너스: 사용자 선호 브랜드가 있으면 그 기준, 없으면 화이트리스트 기준
         if user_preferred:
-            bq_ratio = preferred_count / len(items) if items else 0.0
+            bq_ratio = preferred_count / branded_count if branded_count else 0.0
         else:
             bq_ratio = verified_brand_ratio
 
-        if verified_only and verified_brand_ratio < 1.0:
+        # verified_only: brand가 있는 아이템 중 50%+ 화이트리스트 & 최소 1개
+        if verified_only and (verified_count == 0 or verified_brand_ratio < 0.5):
             continue
 
         scored.append({
