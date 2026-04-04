@@ -2,7 +2,7 @@
 
 **프로젝트 기간:** 5주 (W1: 3/24~3/28 ~ W5: 4/21~4/25)
 **현재 상태:** W4 완료 ✅ → W5 진입. 미동작 기능 연결(프로필/로그인 전환/옷장 저장/프리미엄) + 폴리싱 + 배포 남음
-**미동작 기능:** 프로필 변경/로그아웃 ❌, 게스트→로그인 강제 전환 ❌, 옷장 저장 API ❌, 프리미엄 구독 API ❌, 코디 상세 착장 버튼 ❌
+**미동작 기능:** OAuth 로그인 전체(GET redirect+콜백 미구현) ❌, 프로필 변경/로그아웃 ❌, 게스트→로그인 전환 ❌, 옷장 저장 API ❌, 프리미엄 구독 API ❌, 코디 상세 착장 버튼 ❌
 
 **사용법:** Claude Code에게 `"Task 1.3을 진행해줘"` 처럼 번호로 지시하세요.
 
@@ -750,11 +750,16 @@ W5 ─── 단독 실행 (통합 작업)
 - [ ] 계정 삭제 기능 구현 (확인 다이얼로그 + API 호출 + 로그인 페이지 이동)
 - `frontend/src/app/(main)/profile/page.tsx`
 
-**Task 5.2 — 게스트 → 로그인 전환 흐름**
+**Task 5.2 — 로그인/회원가입 흐름 완성** ⭐ 현재 전혀 동작하지 않음
+- [ ] 루트(/) → 로그인 페이지로 진입 경로 추가 (현재 온보딩으로만 redirect)
+- [ ] **백엔드 GET /api/auth/kakao → 카카오 인가 페이지 redirect** (현재 POST만 있어서 프론트 버튼 클릭 시 에러)
+- [ ] **백엔드 GET /api/auth/google → 구글 인가 페이지 redirect**
+- [ ] **프론트 콜백 페이지 생성** — `frontend/src/app/auth/kakao/callback/page.tsx`, `auth/google/callback/page.tsx`
+- [ ] 콜백 페이지: URL에서 code 파라미터 추출 → POST /api/auth/{provider} 호출 → JWT 저장 → 피드 이동
 - [ ] 저장/TopPick/A vs B 시 비로그인 상태면 로그인 페이지로 이동 (returnUrl 전달)
 - [ ] 로그인 완료 후 returnUrl로 복귀 → 저장 자동 실행
 - [ ] 피드 카드의 저장 실패 시 조용히 무시(현재) → 로그인 유도 토스트로 변경
-- `frontend/src/app/login/page.tsx`, `frontend/src/app/(main)/feed/page.tsx`
+- `backend/app/routers/auth.py`, `frontend/src/app/login/page.tsx`, `frontend/src/app/auth/*/callback/page.tsx`
 
 **Task 5.3 — 옷장 저장 API 연동**
 - [ ] 옷 분석 결과 → "내 옷장에 추가" 버튼이 실제 POST /api/closet 호출
