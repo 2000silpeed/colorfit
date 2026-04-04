@@ -1,7 +1,7 @@
 # ColorFit Task Tracker
 
 **프로젝트 기간:** 5주 (W1: 3/24~3/28 ~ W5: 4/21~4/25)
-**현재 상태:** W4 진행 중 (Task S + Task AG 완료, 4.1~4.8.1 완료). 연령대 기능 추가 + 데이터 품질 대폭 개선
+**현재 상태:** W4 진행 중 (4.1~4.8.1 + 4.12~4.16 완료). 스타일 태그 6종 + 선호 브랜드 선택 + BQ 보너스 + brand 보충 완료
 **Fallback 기준:** W3 금요일에 가격비교 미완이면 Fallback 발동
 
 **사용법:** Claude Code에게 `"Task 1.3을 진행해줘"` 처럼 번호로 지시하세요.
@@ -692,11 +692,47 @@ W5 ─── 단독 실행 (통합 작업)
 - [ ] 무료 3회 소진 → 프리미엄 화면 노출 확인
 - [ ] Edge case: 코디 0개, 예산 초과, 톤 불일치, 사진 품질 불량
 
+### 🅒 스타일 태그 + 브랜드 강화 (Task 4.12~4.16)
+
+**Task 4.12 — 스타일 태그 6종 분류** ✅
+- [x] 스타일 태그 체계 설계: formal/classic/smart_casual/casual/sporty/street
+- [x] `data/style_tag_map.json` — formality×category→style_tag 매핑
+- [x] `data/brand_style_map.json` — 화이트리스트 154개 브랜드의 대표 스타일
+- [x] `classify_products.py`에 `classify_style_tag()` 추가 (브랜드 → 키워드 → 카테고리 → formality)
+- [x] Gemini 프롬프트에 `style_tag` 필드 추가 (B안)
+- [x] Product 모델에 `style_tag VARCHAR(20)` + 인덱스 추가
+- [x] 16.5만건 배치 분류 완료 (casual 34% / classic 25% / smart_casual 21%)
+
+**Task 4.13 — 화이트리스트 브랜드 뱃지 + BQ 보너스** ✅
+- [x] API 응답에 `is_verified_brand`, `style_tag` 필드 추가 (FeedItemBrief, ProductBrief, ItemDetailResponse)
+- [x] OutfitCard 이미지 좌상단에 브랜드 오버레이 뱃지 (Marsala 배경 + 체크마크)
+- [x] 리랭킹에 BQ(Brand Quality) 보너스 (화이트리스트 비율 → 0~5점 가산)
+- [x] 피드 헤더에 "추천 브랜드" 토글 필터 (verified_only)
+
+**Task 4.14 — 선호 브랜드 선택 페이지** ✅
+- [x] `/brands` 페이지: 9개 카테고리별 화이트리스트 브랜드 선택 UI
+- [x] 프로필 → "선호 브랜드" 메뉴 연결
+- [x] GET /api/brands (카테고리별 브랜드 목록)
+- [x] GET/PUT /api/preference/{user_id}/brands (선호 브랜드 CRUD)
+- [x] localStorage + DB 동기화
+
+**Task 4.15 — 피드 선호 브랜드 BQ 연동** ✅
+- [x] 피드 API에 `preferred_brands` 파라미터 추가
+- [x] 사용자 선호 브랜드 기반 BQ 보너스 (화이트리스트 대신 개인 선택 기준)
+- [x] 피드 페이지에서 localStorage 선호 브랜드 자동 전달
+
+**Task 4.16 — 브랜드 데이터 보충** ✅
+- [x] `scripts/backfill_brands.py` — 상품명에서 브랜드 키워드/별칭 매칭 (90+ 한글/영문 별칭)
+- [x] brand NULL 비율 41.5% → 27.5% (23,165건 보충)
+- [x] 추천 브랜드 필터 조건 완화 (100% → brand 있는 아이템 기준 50%+)
+- [x] Hydration mismatch 수정 (예산 localStorage → useEffect 이동)
+
 ### W4 완료 기준
 - [ ] AI 착장 샘플 생성 동작 (Task 4.1, 4.3)
 - [ ] 무료 3회 제한 동작 (Task 4.2)
 - [ ] 프리미엄 화면 동작 (Task 4.4)
 - [ ] 소셜 로그인 동작 (Task 4.9)
+- [x] 스타일 태그 + 브랜드 필터 동작 (Task 4.12~4.16)
 - [ ] 경로 A + B 통합 테스트 통과 (Task 4.11)
 
 ---
