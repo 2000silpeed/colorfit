@@ -669,18 +669,20 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 26개 pytest 테스트 통과
 - 🔧 codex 리뷰 반영: positive_count를 긍정 피드백 건수로 수정, user_id unique 제약 추가, import 정리
 
-**Task 4.10.1 — 구매 후 피드백 바텀시트**
-- [ ] 외부 쇼핑몰 이동 후 복귀 시 자동 표시
-- [ ] "이 추천이 도움이 됐나요?" + 3개 버튼
-- [ ] 👎 선택 시 이유 태그 추가 표시
-- [ ] POST /api/feedback 연동
+**Task 4.10.1 — 구매 후 피드백 바텀시트** ✅
+- [x] 외부 쇼핑몰 이동 후 복귀 시 자동 표시
+- [x] "이 추천이 도움이 됐나요?" + 3개 버튼
+- [x] 👎 선택 시 이유 태그 추가 표시
+- [x] POST /api/feedback 연동
+- 🔧 conftest style_tag 컬럼 누락 수정 (test_closet_recommender 통과)
 
 ### 🅒 Feed API 최적화 (Task 2.11 codex 리뷰 기술부채)
 
 **Task 4.11a — Feed API 성능 최적화**
-- [ ] DB 레벨 limit/offset 또는 커서 기반 페이지네이션 적용 (현재 전체 메모리 로드)
-- [ ] 비즈니스 로직(dominant_tone, category_to_group 등)을 services/ 레이어로 분리
-- [ ] 코디 수 증가 시 OOM 방지 (스트리밍 또는 배치 처리)
+- [x] DB 레벨 limit/offset 또는 커서 기반 페이지네이션 적용 (현재 전체 메모리 로드) — budget/season/gender/age_group/tpo DB WHERE 푸시다운 + MAX_OUTFIT_LOAD=2000 안전 LIMIT
+- [x] 비즈니스 로직(dominant_tone, category_to_group 등)을 services/ 레이어로 분리 — `services/feed_service.py` 신규 생성, 라우터 44줄로 축소
+- [x] 코디 수 증가 시 OOM 방지 (스트리밍 또는 배치 처리) — Product 배치 로드 (PRODUCT_BATCH_SIZE=500)
+- 🔧 codex 리뷰 반영: travel TPO 시즌 필터 예외 DB 푸시다운에 반영
 
 ### 단독 실행 (🅐🅑 모두 완료 후)
 
