@@ -23,6 +23,9 @@ export interface FeedItemBrief {
   image_url: string | null;
   category: string | null;
   group: string | null;
+  brand: string | null;
+  style_tag: string | null;
+  is_verified_brand: boolean;
 }
 
 export interface OutfitFeedItem {
@@ -82,6 +85,8 @@ export interface ProductBrief {
   price: number | null;
   image_url: string | null;
   mall_url: string | null;
+  style_tag: string | null;
+  is_verified_brand: boolean;
 }
 
 export interface OutfitDetailResponse {

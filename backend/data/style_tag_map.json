@@ -1,0 +1,32 @@
+{
+  "_description": "formality 기반 style_tag 매핑. 카테고리별 예외 포함. formal/classic/smart_casual/casual/sporty/street 6종.",
+
+  "_formality_default": {
+    "5": "formal",
+    "4": "classic",
+    "3": "smart_casual",
+    "2": "casual",
+    "1": "sporty"
+  },
+
+  "category_override": {
+    "원피스": "smart_casual",
+    "스커트": "smart_casual",
+    "부츠": "smart_casual",
+    "가방": "smart_casual",
+    "액세서리": "smart_casual",
+    "와이드팬츠": "smart_casual",
+    "점퍼": "casual",
+    "패딩": "casual",
+    "조끼": "smart_casual"
+  },
+
+  "keyword_hints": {
+    "formal": ["포멀", "정장", "예복", "웨딩", "하객"],
+    "classic": ["오피스", "비즈니스", "클래식", "포멀룩", "출근"],
+    "smart_casual": ["오피스캐주얼", "세미캐주얼", "데일리룩", "미니멀"],
+    "casual": ["캐주얼", "데일리", "편한", "일상"],
+    "sporty": ["운동", "스포츠", "애슬레저", "트레이닝", "요가", "러닝"],
+    "street": ["스트릿", "힙합", "그래피티", "오버사이즈", "빈티지", "Y2K", "레트로"]
+  }
+}

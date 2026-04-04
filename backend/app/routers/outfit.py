@@ -13,6 +13,7 @@ from app.db.session import get_db
 from app.models.outfit import Outfit
 from app.models.product import Product
 from app.schemas.outfit import OutfitDetailResponse, ProductBrief, ScoresResponse
+from app.services.feed_builder import _load_brand_whitelist
 from app.utils import ensure_list, ensure_dict
 
 router = APIRouter(prefix="/api", tags=["outfit"])
@@ -40,6 +41,7 @@ async def get_outfit(
         id_order = {pid: i for i, pid in enumerate(item_ids)}
         products_sorted = sorted(products, key=lambda p: id_order.get(p.id, 999))
 
+        whitelist = _load_brand_whitelist()
         items = [
             ProductBrief(
                 id=p.id,
@@ -49,6 +51,8 @@ async def get_outfit(
                 price=p.price,
                 image_url=p.image_url,
                 mall_url=p.mall_url,
+                style_tag=p.style_tag,
+                is_verified_brand=bool(p.brand and p.brand.lower() in whitelist),
             )
             for p in products_sorted
         ]

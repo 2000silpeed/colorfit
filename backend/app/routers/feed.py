@@ -16,7 +16,7 @@ from app.models.product import Product
 from app.models.reaction import Reaction
 from app.utils import ensure_list, ensure_dict
 from app.schemas.outfit import FeedResponse, FeedItemBrief, OutfitFeedItem, ScoresResponse
-from app.services.feed_builder import apply_hard_filters, calculate_soft_score, rerank
+from app.services.feed_builder import apply_hard_filters, calculate_soft_score, rerank, _load_brand_whitelist
 from app.services.reason_generator import generate_reasons
 
 router = APIRouter(prefix="/api", tags=["feed"])
@@ -97,6 +97,7 @@ async def get_feed(
                             "color_hex": p.color_hex,
                             "price": p.price,
                             "image_url": p.image_url,
+                            "style_tag": p.style_tag,
                         })
                 item_map[outfit_id] = items
 
@@ -194,11 +195,15 @@ async def get_feed(
         ) if scores else None
 
         outfit_items = item_map.get(o.id, [])
+        whitelist = _load_brand_whitelist()
         feed_item_briefs = [
             FeedItemBrief(
                 image_url=it.get("image_url"),
                 category=it.get("category"),
                 group=it.get("group"),
+                brand=it.get("brand"),
+                style_tag=it.get("style_tag"),
+                is_verified_brand=bool(it.get("brand") and it["brand"].lower() in whitelist),
             )
             for it in outfit_items
         ]

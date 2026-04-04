@@ -17,6 +17,56 @@ from app.services.category_classifier import classify_by_keyword, _CATEGORY_TO_G
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
+# ── 스타일 태그 분류 ──
+
+VALID_STYLE_TAGS = {"formal", "classic", "smart_casual", "casual", "sporty", "street"}
+
+FORMALITY_TO_STYLE: dict[int, str] = {
+    5: "formal",
+    4: "classic",
+    3: "smart_casual",
+    2: "casual",
+    1: "sporty",
+}
+
+# 카테고리별 스타일 오버라이드 (formality 매핑보다 우선)
+CATEGORY_STYLE_OVERRIDE: dict[str, str] = {
+    "원피스": "smart_casual",
+    "스커트": "smart_casual",
+    "부츠": "smart_casual",
+    "가방": "smart_casual",
+    "액세서리": "smart_casual",
+    "와이드팬츠": "smart_casual",
+    "점퍼": "casual",
+    "패딩": "casual",
+    "조끼": "smart_casual",
+}
+
+STYLE_KEYWORD_HINTS: dict[str, list[str]] = {
+    "formal": ["포멀", "정장", "예복", "웨딩", "하객"],
+    "classic": ["오피스", "비즈니스", "클래식", "포멀룩", "출근"],
+    "smart_casual": ["오피스캐주얼", "세미캐주얼", "데일리룩", "미니멀"],
+    "casual": ["캐주얼", "데일리", "편한", "일상"],
+    "sporty": ["운동", "스포츠", "애슬레저", "트레이닝", "요가", "러닝"],
+    "street": ["스트릿", "힙합", "그래피티", "오버사이즈", "빈티지", "y2k", "레트로"],
+}
+
+_brand_style_map: dict[str, str] | None = None
+
+
+def _load_brand_style_map() -> dict[str, str]:
+    global _brand_style_map
+    if _brand_style_map is None:
+        with open(DATA_DIR / "brand_style_map.json", encoding="utf-8") as f:
+            raw = json.load(f)
+        _brand_style_map = {}
+        for style_tag, brands in raw.items():
+            if style_tag.startswith("_"):
+                continue
+            for brand in brands:
+                _brand_style_map[brand.lower()] = style_tag
+    return _brand_style_map
+
 # raw_category2 → gender
 RAW_GENDER_MAP: dict[str, str] = {
     "여성의류": "female", "여성신발": "female", "여성가방": "female",
@@ -156,8 +206,37 @@ def classify_age_group(item: dict, category: str | None, group: str | None) -> s
     return "30s"
 
 
+def classify_style_tag(item: dict, category: str | None, formality: int | None) -> str:
+    """상품의 스타일 태그를 3단계 휴리스틱으로 분류."""
+    name = item.get("name", "").lower()
+    brand = item.get("brand", "")
+
+    # 1단계: 브랜드 매핑 (가장 신뢰도 높음)
+    if brand:
+        brand_map = _load_brand_style_map()
+        style = brand_map.get(brand.lower())
+        if style:
+            return style
+
+    # 2단계: 상품명 키워드 힌트
+    for style, keywords in STYLE_KEYWORD_HINTS.items():
+        for kw in keywords:
+            if kw in name:
+                return style
+
+    # 3단계: 카테고리 오버라이드
+    if category and category in CATEGORY_STYLE_OVERRIDE:
+        return CATEGORY_STYLE_OVERRIDE[category]
+
+    # 4단계: formality 기반 기본 매핑
+    if formality is not None:
+        return FORMALITY_TO_STYLE.get(formality, "casual")
+
+    return "casual"
+
+
 def classify_item(item: dict) -> dict:
-    """상품 1건 분류. category, group, gender, formality, age_group 반환."""
+    """상품 1건 분류. category, group, gender, formality, age_group, style_tag 반환."""
     result = classify_by_keyword(
         item.get("name", ""),
         item.get("raw_category3"),
@@ -170,6 +249,7 @@ def classify_item(item: dict) -> dict:
     gender = RAW_GENDER_MAP.get(raw_cat2, "unisex")
     formality = DEFAULT_FORMALITY.get(category, 3) if category else None
     age_group = classify_age_group(item, category, group)
+    style_tag = classify_style_tag(item, category, formality)
 
     return {
         "category": category,
@@ -177,13 +257,18 @@ def classify_item(item: dict) -> dict:
         "gender": gender,
         "formality": formality,
         "age_group": age_group,
+        "style_tag": style_tag,
     }
 
 
 def process_normalized_files() -> dict:
     """normalized JSON 파일들에 분류 결과를 write-back한다."""
     files = sorted(glob.glob("data/normalized/*.json"))
-    stats = {"total": 0, "classified": 0, "non_fashion": 0, "age_dist": {"20s": 0, "30s": 0, "40plus": 0}}
+    stats = {
+        "total": 0, "classified": 0, "non_fashion": 0,
+        "age_dist": {"20s": 0, "30s": 0, "40plus": 0},
+        "style_dist": {"formal": 0, "classic": 0, "smart_casual": 0, "casual": 0, "sporty": 0, "street": 0},
+    }
 
     for filepath in files:
         with open(filepath, encoding="utf-8") as f:
@@ -210,11 +295,13 @@ def process_normalized_files() -> dict:
             item["gender"] = result["gender"]
             item["formality"] = result["formality"]
             item["age_group"] = result["age_group"]
+            item["style_tag"] = result["style_tag"]
 
             if result["category"]:
                 stats["classified"] += 1
 
             stats["age_dist"][result["age_group"]] += 1
+            stats["style_dist"][result["style_tag"]] += 1
             updated_items.append(item)
 
         data["items"] = updated_items
@@ -234,7 +321,7 @@ async def update_db():
     conn = await asyncpg.connect(url, statement_cache_size=0)
 
     try:
-        # age_group 컬럼 추가 (없으면)
+        # age_group, style_tag 컬럼 추가 (없으면)
         await conn.execute("""
             DO $$ BEGIN
                 ALTER TABLE products ADD COLUMN age_group VARCHAR(10);
@@ -242,6 +329,13 @@ async def update_db():
             END $$
         """)
         await conn.execute("CREATE INDEX IF NOT EXISTS ix_products_age_group ON products(age_group)")
+        await conn.execute("""
+            DO $$ BEGIN
+                ALTER TABLE products ADD COLUMN style_tag VARCHAR(20);
+            EXCEPTION WHEN duplicate_column THEN NULL;
+            END $$
+        """)
+        await conn.execute("CREATE INDEX IF NOT EXISTS ix_products_style_tag ON products(style_tag)")
 
         files = sorted(glob.glob("data/normalized/*.json"))
         valid_ids = set()
@@ -258,6 +352,7 @@ async def update_db():
                     item.get("gender"),
                     item.get("formality"),
                     item.get("age_group"),
+                    item.get("style_tag"),
                     pid,
                 ))
 
@@ -273,7 +368,7 @@ async def update_db():
         for i in range(0, len(updates), BATCH):
             batch = updates[i:i + BATCH]
             await conn.executemany(
-                "UPDATE products SET category=$1, gender=$2, formality=$3, age_group=$4 WHERE id=$5",
+                "UPDATE products SET category=$1, gender=$2, formality=$3, age_group=$4, style_tag=$5 WHERE id=$6",
                 batch,
             )
 
@@ -289,6 +384,13 @@ async def update_db():
         for r in rows:
             print(f"    {r['age_group']}: {r['cnt']}")
 
+        rows = await conn.fetch(
+            "SELECT style_tag, count(*) as cnt FROM products GROUP BY style_tag ORDER BY cnt DESC"
+        )
+        print("\n  스타일 분포:")
+        for r in rows:
+            print(f"    {r['style_tag']}: {r['cnt']}")
+
     finally:
         await conn.close()
 
@@ -298,6 +400,8 @@ async def main():
     stats = process_normalized_files()
     print(f"\n  총 {stats['total']}건 → 분류 {stats['classified']}건, 비패션 제거 {stats['non_fashion']}건")
     print(f"  연령대: 20s={stats['age_dist']['20s']}, 30s={stats['age_dist']['30s']}, 40plus={stats['age_dist']['40plus']}")
+    sd = stats['style_dist']
+    print(f"  스타일: formal={sd['formal']}, classic={sd['classic']}, smart_casual={sd['smart_casual']}, casual={sd['casual']}, sporty={sd['sporty']}, street={sd['street']}")
 
     print("\n[2/2] DB 업데이트...")
     await update_db()

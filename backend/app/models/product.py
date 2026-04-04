@@ -22,4 +22,5 @@ class Product(Base):
     silhouette: Mapped[str | None] = mapped_column(String(20))
     formality: Mapped[int | None] = mapped_column(SmallInteger)
     age_group: Mapped[str | None] = mapped_column(String(10), index=True)
+    style_tag: Mapped[str | None] = mapped_column(String(20), index=True)
     last_observed_at: Mapped[str | None] = mapped_column(TIMESTAMP(timezone=True))

@@ -21,12 +21,17 @@ class ProductBrief(BaseModel):
     price: int | None = None
     image_url: str | None = None
     mall_url: str | None = None
+    style_tag: str | None = None
+    is_verified_brand: bool = False
 
 
 class FeedItemBrief(BaseModel):
     image_url: str | None = None
     category: str | None = None
     group: str | None = None
+    brand: str | None = None
+    style_tag: str | None = None
+    is_verified_brand: bool = False
 
 
 class OutfitFeedItem(BaseModel):

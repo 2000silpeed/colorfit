@@ -185,12 +185,13 @@ GEMINI_CLASSIFY_PROMPT = """다음 패션 상품들을 분류해주세요. 각 �
 - formality: 1~5 정수 (1=매우 캐주얼, 5=매우 포멀)
 - tpo: [{tpo_list}] 중 해당하는 것 모두 (배열)
 - gender: female, male, unisex 중 하나
+- style_tag: [{style_tags}] 중 하나 (상품의 전체적인 스타일 분위기)
 
 상품 목록:
 {items}
 
 JSON 배열로만 응답하세요. 다른 텍스트 없이:
-[{{"product_id": "...", "category": "...", "silhouette": "...", "formality": N, "tpo": [...], "gender": "..."}}]"""
+[{{"product_id": "...", "category": "...", "silhouette": "...", "formality": N, "tpo": [...], "gender": "...", "style_tag": "..."}}]"""
 
 VALID_CATEGORIES = sorted({cat for cats in CATEGORY_KEYWORDS.values() for cat in cats})
 VALID_TPO = [
@@ -199,6 +200,7 @@ VALID_TPO = [
 ]
 VALID_SILHOUETTES = ["oversized", "slim", "fitted", "wide", "regular"]
 VALID_GENDERS = ["female", "male", "unisex"]
+VALID_STYLE_TAGS = ["formal", "classic", "smart_casual", "casual", "sporty", "street"]
 
 
 def _build_gemini_prompt(items: list[dict]) -> str:
@@ -212,6 +214,7 @@ def _build_gemini_prompt(items: list[dict]) -> str:
     return GEMINI_CLASSIFY_PROMPT.format(
         categories=", ".join(VALID_CATEGORIES),
         tpo_list=", ".join(VALID_TPO),
+        style_tags=", ".join(VALID_STYLE_TAGS),
         items="\n".join(item_lines),
     )
 
@@ -248,6 +251,8 @@ def _parse_gemini_response(response_text: str) -> list[dict]:
             r["tpo"] = [t for t in r["tpo"] if t in VALID_TPO] or ["casual"]
         if r.get("gender") not in VALID_GENDERS:
             r["gender"] = "unisex"
+        if r.get("style_tag") not in VALID_STYLE_TAGS:
+            r["style_tag"] = "casual"
         validated.append(r)
 
     return validated

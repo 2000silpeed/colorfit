@@ -14,6 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.schemas.outfit import TopPickResponse, ScoresResponse, ProductBrief
 from app.services.top_pick import get_top_pick
+from app.services.feed_builder import _load_brand_whitelist
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +63,7 @@ async def top_pick(
         sf=scores.get("sf", 0) or scores.get("style_fit", 0),
     ) if scores else None
 
+    whitelist = _load_brand_whitelist()
     items = [
         ProductBrief(
             id=item["id"],
@@ -71,6 +73,8 @@ async def top_pick(
             price=item.get("price"),
             image_url=item.get("image_url"),
             mall_url=item.get("mall_url"),
+            style_tag=item.get("style_tag"),
+            is_verified_brand=bool(item.get("brand") and item["brand"].lower() in whitelist),
         )
         for item in result.get("items", [])
     ]

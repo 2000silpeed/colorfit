@@ -17,6 +17,8 @@ class ItemDetailResponse(BaseModel):
     gender: str | None = None
     silhouette: str | None = None
     formality: int | None = None
+    style_tag: str | None = None
+    is_verified_brand: bool = False
     price_entries: list[PriceEntry] = []
 
 

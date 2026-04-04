@@ -10,6 +10,15 @@ interface OutfitScores {
   of: number;
 }
 
+const STYLE_TAG_LABEL: Record<string, string> = {
+  formal: "Formal",
+  classic: "Classic",
+  smart_casual: "Smart Casual",
+  casual: "Casual",
+  sporty: "Sporty",
+  street: "Street",
+};
+
 interface OutfitCardProps {
   id: string;
   imageUrl: string;
@@ -297,8 +306,31 @@ export default function OutfitCard({
         {reason}
       </p>
 
-      {/* Score Badges */}
-      <div className="flex gap-[6px] mt-[8px]">
+      {/* Badges */}
+      <div className="flex flex-wrap gap-[6px] mt-[8px]">
+        {/* Verified Brand Badges */}
+        {items
+          .filter((it) => it.is_verified_brand && it.brand)
+          .filter((it, i, arr) => arr.findIndex((a) => a.brand === it.brand) === i)
+          .slice(0, 2)
+          .map((it) => (
+            <span
+              key={it.brand}
+              className="inline-flex items-center gap-[3px] text-[11px] font-body rounded-full px-[8px] py-[3px]"
+              style={{ backgroundColor: "rgba(212, 165, 165, 0.25)", color: "var(--color-accent)" }}
+            >
+              <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zm3.41 5.09L7.2 9.3 5.3 7.4a.75.75 0 0 0-1.1 1.02l.08.08 2.5 2.5a.75.75 0 0 0 1.02.08l.08-.08 4.8-4.8a.75.75 0 0 0-1.1-1.02l-.07.01z" />
+              </svg>
+              {it.brand}
+            </span>
+          ))}
+        {/* Style Tag */}
+        {items[0]?.style_tag && (
+          <span className="bg-bg-secondary text-text-secondary text-[11px] font-body rounded-full px-[8px] py-[3px]">
+            {STYLE_TAG_LABEL[items[0].style_tag] ?? items[0].style_tag}
+          </span>
+        )}
         <span className="bg-bg-secondary text-text-primary text-[11px] font-body rounded-full px-[8px] py-[3px]">
           PCF {Math.round(scores.pcf)}
         </span>
