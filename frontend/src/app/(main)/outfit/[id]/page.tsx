@@ -13,6 +13,7 @@ import {
   type SavedOutfit,
 } from "@/lib/api";
 import PurchaseFeedbackSheet from "@/components/PurchaseFeedbackSheet";
+import { isLoggedIn } from "@/lib/auth";
 
 /* ── 스코어 축 설정 ── */
 const SCORE_AXES: {
@@ -253,6 +254,7 @@ export default function OutfitDetailPage() {
 
   const [outfit, setOutfit] = useState<OutfitDetailResponse | null>(null);
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+  const [loginToast, setLoginToast] = useState(false);
   const [saved, setSaved] = useState(() => {
     if (typeof window === "undefined") return false;
     const savedIds = JSON.parse(localStorage.getItem("colorfit_saved_ids") ?? "[]");
@@ -293,6 +295,14 @@ export default function OutfitDetailPage() {
       : "";
 
   const handleSave = useCallback(() => {
+    if (!isLoggedIn()) {
+      setLoginToast(true);
+      setTimeout(() => {
+        sessionStorage.setItem("colorfit_return_url", `/outfit/${outfitId}`);
+        router.push(`/login?returnUrl=${encodeURIComponent(`/outfit/${outfitId}`)}`);
+      }, 1200);
+      return;
+    }
     setSaved((prev) => {
       const next = !prev;
       const savedIds: string[] = JSON.parse(
@@ -310,7 +320,7 @@ export default function OutfitDetailPage() {
     if (userId) {
       postReaction(userId, outfitId, "save").catch(() => {});
     }
-  }, [outfitId, userId]);
+  }, [outfitId, userId, router]);
 
   /* ── 구매 후 피드백 바텀시트 ── */
   const [showPurchaseFeedback, setShowPurchaseFeedback] = useState(false);
@@ -667,6 +677,21 @@ export default function OutfitDetailPage() {
             userId={userId}
             onClose={handleFeedbackClose}
           />
+        )}
+      </AnimatePresence>
+
+      {/* 로그인 필요 토스트 */}
+      <AnimatePresence>
+        {loginToast && (
+          <motion.div
+            className="fixed bottom-[100px] left-1/2 -translate-x-1/2 z-50 px-[20px] py-[12px] rounded-full text-[14px] font-body"
+            style={{ backgroundColor: "rgba(0,0,0,0.8)", color: "#FFFFFF" }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+          >
+            로그인이 필요해요
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

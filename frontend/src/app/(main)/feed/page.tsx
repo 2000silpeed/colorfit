@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import OutfitCard from "@/components/OutfitCard";
 import { fetchFeed, postReaction, type OutfitFeedItem } from "@/lib/api";
+import { isLoggedIn } from "@/lib/auth";
 
 /* ── TPO 탭 데이터 ── */
 const TPO_TABS = [
@@ -227,6 +228,12 @@ export default function FeedPage() {
   })();
 
   const handleSaveToggle = useCallback((id: string) => {
+    if (!isLoggedIn()) {
+      showToast("로그인이 필요해요");
+      sessionStorage.setItem("colorfit_return_url", `/feed`);
+      router.push("/login?returnUrl=/feed");
+      return;
+    }
     const wasSaved = savedIds.has(id);
     setSavedIds((prev) => {
       const next = new Set(prev);
@@ -238,17 +245,23 @@ export default function FeedPage() {
     if (userId) {
       postReaction(userId, id, "save").catch(() => {});
     }
-  }, [savedIds, userId, showToast]);
+  }, [savedIds, userId, showToast, router]);
 
   const handleDislike = useCallback(
     (id: string) => {
+      if (!isLoggedIn()) {
+        showToast("로그인이 필요해요");
+        sessionStorage.setItem("colorfit_return_url", `/feed`);
+        router.push("/login?returnUrl=/feed");
+        return;
+      }
       setOutfits((prev) => prev.filter((o) => o.id !== id));
       showToast("관심없음");
       if (userId) {
         postReaction(userId, id, "dislike").catch(() => {});
       }
     },
-    [userId, showToast],
+    [userId, showToast, router],
   );
 
   const handleCardTap = useCallback((id: string) => {

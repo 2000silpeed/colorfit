@@ -13,7 +13,7 @@
 8. ❌ 톤 변경 버튼 onClick 없음
 9. ❌ 프리미엄 구독 더미 (API 미호출)
 10. ❌ 코디 상세 착장 버튼 없음 (분석 페이지에만)
-11. ⚠️ 게스트 저장 시 로그인 강제 없음 (조용히 무시)
+11. ✅ 게스트 저장 시 로그인 강제 → 토스트 + /login?returnUrl= 이동 (Task 5.2)
 
 **사용법:** Claude Code에게 `"Task 1.3을 진행해줘"` 처럼 번호로 지시하세요.
 
@@ -770,10 +770,11 @@ W5 ─── 단독 실행 (통합 작업)
 - `backend/app/routers/auth.py`, `frontend/src/app/page.tsx`, `frontend/src/app/login/page.tsx`, `frontend/src/app/auth/*/callback/page.tsx`
 - 해결하는 끊김: #1, #2, #3
 
-**Task 5.2 — 게스트→로그인 강제 전환**
-- [ ] 저장/TopPick/A vs B 시 비로그인 → 로그인 페이지 이동 (returnUrl 쿼리 전달)
-- [ ] 로그인 완료 후 returnUrl 복귀 → 저장 자동 실행
-- [ ] 피드 저장 버튼: 조용히 무시(현재) → "로그인이 필요해요" 토스트 + 로그인 유도
+**Task 5.2 — 게스트→로그인 강제 전환** ✅
+- [x] 저장/TopPick/A vs B 시 비로그인 → 로그인 페이지 이동 (returnUrl 쿼리 전달)
+- [x] 로그인 완료 후 returnUrl 복귀 → 저장 자동 실행
+- [x] 피드 저장 버튼: 조용히 무시(현재) → "로그인이 필요해요" 토스트 + 로그인 유도
+- 🔧 codex 리뷰 반영: returnUrl open redirect 방지 (상대경로만 허용), outfit detail 토스트 추가, sessionStorage stale returnUrl 정리
 - `frontend/src/app/(main)/feed/page.tsx`, `frontend/src/app/(main)/outfit/[id]/page.tsx`, `frontend/src/app/(main)/saved/page.tsx`
 - 해결하는 끊김: #11
 
@@ -841,7 +842,7 @@ W5 ─── 단독 실행 (통합 작업)
 
 ### W5 완료 기준
 - [x] OAuth 로그인 동작 — 카카오/구글 (Task 5.1)
-- [ ] 게스트→로그인 전환 동작 (Task 5.2)
+- [x] 게스트→로그인 전환 동작 (Task 5.2)
 - [ ] 온보딩 뒤로가기 동작 (Task 5.3)
 - [ ] 옷장 저장 API 동작 (Task 5.4)
 - [ ] 프로필 로그아웃/톤 변경 동작 (Task 5.5)

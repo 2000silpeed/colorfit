@@ -1,26 +1,31 @@
 "use client";
 
 import { useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
+import { sanitizeReturnUrl } from "@/lib/auth";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const prefersReducedMotion = useReducedMotion();
+  const returnUrl = sanitizeReturnUrl(searchParams.get("returnUrl"));
 
   const handleKakaoLogin = useCallback(() => {
     const state = crypto.randomUUID();
     sessionStorage.setItem("oauth_state", state);
+    if (returnUrl) sessionStorage.setItem("colorfit_return_url", returnUrl);
     window.location.href = `${API_BASE}/api/auth/kakao?state=${state}`;
-  }, []);
+  }, [returnUrl]);
 
   const handleGoogleLogin = useCallback(() => {
     const state = crypto.randomUUID();
     sessionStorage.setItem("oauth_state", state);
+    if (returnUrl) sessionStorage.setItem("colorfit_return_url", returnUrl);
     window.location.href = `${API_BASE}/api/auth/google?state=${state}`;
-  }, []);
+  }, [returnUrl]);
 
   const handleGuest = useCallback(() => {
     if (typeof window !== "undefined") {
@@ -29,14 +34,15 @@ export default function LoginPage() {
         userId = crypto.randomUUID();
         localStorage.setItem("colorfit_user_id", userId);
       }
+      sessionStorage.removeItem("colorfit_return_url");
       const tone = localStorage.getItem("colorfit_tone");
       if (tone) {
-        router.push("/feed");
+        router.push(returnUrl ?? "/feed");
       } else {
         router.push("/onboarding/step1");
       }
     }
-  }, [router]);
+  }, [router, returnUrl]);
 
   return (
     <div

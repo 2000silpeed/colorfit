@@ -31,10 +31,13 @@ export default function KakaoCallbackPage() {
         localStorage.setItem("colorfit_user_id", data.user_id);
 
         const tone = localStorage.getItem("colorfit_tone");
+        const returnUrl = sessionStorage.getItem("colorfit_return_url");
+        sessionStorage.removeItem("colorfit_return_url");
+
         if (data.is_new_user || !tone) {
           router.replace("/onboarding/step1");
         } else {
-          router.replace("/feed");
+          router.replace(returnUrl ?? "/feed");
         }
       })
       .catch(() => {
