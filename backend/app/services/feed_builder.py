@@ -227,26 +227,40 @@ def calculate_soft_score(
     return round(total, 2)
 
 
+def _calculate_bq_bonus(verified_ratio: float) -> float:
+    """화이트리스트 브랜드 비율에 따른 BQ(Brand Quality) 보너스."""
+    if verified_ratio >= 1.0:
+        return 5.0
+    elif verified_ratio >= 0.75:
+        return 3.0
+    elif verified_ratio >= 0.5:
+        return 2.0
+    elif verified_ratio >= 0.25:
+        return 1.0
+    return 0.0
+
+
 def rerank(
     scored_outfits: list[dict[str, Any]],
     disliked_ids: set[str] | None = None,
     personalization: dict[str, float] | None = None,
     limit: int = 200,
 ) -> list[dict[str, Any]]:
-    """리랭킹 5단계를 순차 적용하여 상위 코디를 반환한다.
+    """리랭킹 6단계를 순차 적용하여 상위 코디를 반환한다.
 
     기획서 섹션 6.1 (단계 5) 구현.
 
     처리 순서:
         1. dislike 제외
         2. 완성도 가산 (상하의+아우터 → +3점)
-        3. 개인화 보정 (-10 ~ +10)
-        4. 점수순 정렬
-        5. 톤 다양성(동일 톤 3개 제한) + 메인아이템 중복 제거(1개 제한)
+        3. BQ 가산 (화이트리스트 브랜드 비율 → 0~5점)
+        4. 개인화 보정 (-10 ~ +10)
+        5. 점수순 정렬
+        6. 톤 다양성(동일 톤 3개 제한) + 메인아이템 중복 제거(1개 제한)
 
     Args:
         scored_outfits: 각 dict에 id, soft_score, is_complete_outfit,
-                        dominant_tone, main_item_id 키 필요
+                        dominant_tone, main_item_id, verified_brand_ratio 키 필요
         disliked_ids: 사용자 dislike 코디 ID 집합
         personalization: 코디 ID → 보정값 매핑 (-10 ~ +10 클램핑)
         limit: 반환 개수 (기본 200)
@@ -264,6 +278,7 @@ def rerank(
         score = o.get("soft_score", 0.0)
         if o.get("is_complete_outfit"):
             score += 3.0
+        score += _calculate_bq_bonus(o.get("verified_brand_ratio", 0.0))
         adj = max(-10.0, min(10.0, personal.get(o["id"], 0.0)))
         score += adj
         candidates.append({**o, "final_score": round(score, 2)})
