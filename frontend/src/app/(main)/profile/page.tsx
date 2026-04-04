@@ -303,6 +303,18 @@ export default function ProfilePage() {
             <path d="M6 3l5 5-5 5" stroke="var(--color-text-tertiary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
+        <button
+          onClick={() => router.push("/brands")}
+          className="flex items-center justify-between w-full py-[14px] border-b"
+          style={{ borderColor: "var(--color-border)" }}
+        >
+          <span className="text-[15px] text-text-primary" style={{ fontFamily: "var(--font-body)" }}>
+            선호 브랜드
+          </span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 3l5 5-5 5" stroke="var(--color-text-tertiary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
       </motion.div>
 
       {/* 설정 */}

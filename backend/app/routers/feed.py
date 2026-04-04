@@ -34,6 +34,7 @@ async def get_feed(
     budget_max: int | None = Query(None, ge=0, description="최대 예산"),
     user_id: str | None = Query(None, description="사용자 ID (dislike 필터용)"),
     verified_only: bool = Query(False, description="화이트리스트 브랜드만 포함된 코디"),
+    preferred_brands: str | None = Query(None, description="사용자 선호 브랜드 (콤마 구분)"),
     page: int = Query(1, ge=1, description="페이지 번호"),
     db: AsyncSession = Depends(get_db),
 ) -> FeedResponse:
@@ -44,6 +45,11 @@ async def get_feed(
         "budget_min": budget_min,
         "budget_max": budget_max,
     }
+
+    # 사용자 선호 브랜드 파싱
+    user_preferred: set[str] | None = None
+    if preferred_brands:
+        user_preferred = {b.strip().lower() for b in preferred_brands.split(",") if b.strip()}
 
     # 1. DB에서 코디 로드 (인덱스 활용 pre-filter)
     stmt = select(Outfit)
@@ -146,17 +152,27 @@ async def get_feed(
         main_item_id: str | None = None
         whitelist = _load_brand_whitelist()
         verified_count = 0
+        preferred_count = 0
         for item in items:
             t = item.get("tone_id")
             if t:
                 tone_counts[t] = tone_counts.get(t, 0) + 1
             if item.get("group") in ("top", "onepiece") and main_item_id is None:
                 main_item_id = item["id"]
-            if item.get("brand") and item["brand"].lower() in whitelist:
+            brand_lower = item["brand"].lower() if item.get("brand") else ""
+            if brand_lower and brand_lower in whitelist:
                 verified_count += 1
+            if user_preferred and brand_lower and brand_lower in user_preferred:
+                preferred_count += 1
 
         dominant_tone = max(tone_counts, key=tone_counts.get) if tone_counts else None
         verified_brand_ratio = verified_count / len(items) if items else 0.0
+
+        # BQ 보너스: 사용자 선호 브랜드가 있으면 그 기준, 없으면 화이트리스트 기준
+        if user_preferred:
+            bq_ratio = preferred_count / len(items) if items else 0.0
+        else:
+            bq_ratio = verified_brand_ratio
 
         if verified_only and verified_brand_ratio < 1.0:
             continue
@@ -168,7 +184,7 @@ async def get_feed(
             "is_complete_outfit": o.is_complete_outfit,
             "dominant_tone": dominant_tone,
             "main_item_id": main_item_id,
-            "verified_brand_ratio": verified_brand_ratio,
+            "verified_brand_ratio": bq_ratio,
             "outfit": o,
             "image_url": image_url,
         })

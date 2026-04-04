@@ -9,6 +9,7 @@ interface FeedParams {
   budgetMax?: number;
   userId?: string;
   verifiedOnly?: boolean;
+  preferredBrands?: string[];
   page?: number;
 }
 
@@ -594,6 +595,7 @@ export async function fetchFeed(params: FeedParams): Promise<FeedResponse> {
   if (params.budgetMax != null) q.set("budget_max", String(params.budgetMax));
   if (params.userId) q.set("user_id", params.userId);
   if (params.verifiedOnly) q.set("verified_only", "true");
+  if (params.preferredBrands?.length) q.set("preferred_brands", params.preferredBrands.join(","));
   if (params.page != null) q.set("page", String(params.page));
 
   const res = await fetch(`${API_BASE}/api/feed?${q.toString()}`);
@@ -601,4 +603,31 @@ export async function fetchFeed(params: FeedParams): Promise<FeedResponse> {
     throw new Error(`Feed API error: ${res.status}`);
   }
   return res.json();
+}
+
+/* ── 브랜드 ── */
+
+export interface BrandGroupsResponse {
+  groups: Record<string, string[]>;
+}
+
+export async function fetchBrandGroups(): Promise<BrandGroupsResponse> {
+  const res = await fetch(`${API_BASE}/api/brands`);
+  if (!res.ok) throw new Error(`Brands API error: ${res.status}`);
+  return res.json();
+}
+
+export async function fetchPreferredBrands(userId: string): Promise<{ preferred_brands: string[] }> {
+  const res = await fetch(`${API_BASE}/api/preference/${userId}/brands`);
+  if (!res.ok) throw new Error(`Preferred brands API error: ${res.status}`);
+  return res.json();
+}
+
+export async function savePreferredBrands(userId: string, brands: string[]): Promise<void> {
+  const res = await fetch(`${API_BASE}/api/preference/${userId}/brands`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ brands }),
+  });
+  if (!res.ok) throw new Error(`Save brands API error: ${res.status}`);
 }

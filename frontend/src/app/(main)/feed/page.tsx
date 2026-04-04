@@ -107,6 +107,7 @@ export default function FeedPage() {
   });
   const [budgetOpen, setBudgetOpen] = useState(false);
   const [verifiedOnly, setVerifiedOnly] = useState(false);
+  const [preferredBrands, setPreferredBrands] = useState<string[]>([]);
 
   /* 토스트 */
   const [toast, setToast] = useState<string | null>(null);
@@ -140,6 +141,10 @@ export default function FeedPage() {
     setToneId(storedTone);
     setGender(storedGender);
     setAgeGroup(storedAge);
+    try {
+      const storedBrands = JSON.parse(localStorage.getItem("colorfit_preferred_brands") || "[]");
+      if (Array.isArray(storedBrands)) setPreferredBrands(storedBrands);
+    } catch { /* empty */ }
   }, []);
 
   /* 피드 로드 */
@@ -162,6 +167,7 @@ export default function FeedPage() {
           budgetMin,
           budgetMax,
           verifiedOnly: verifiedOnly || undefined,
+          preferredBrands: preferredBrands.length > 0 ? preferredBrands : undefined,
           page: pageNum,
         });
 
@@ -178,7 +184,7 @@ export default function FeedPage() {
         setLoadingMore(false);
       }
     },
-    [toneId, gender, ageGroup, activeTpo, budgetMin, budgetMax, verifiedOnly],
+    [toneId, gender, ageGroup, activeTpo, budgetMin, budgetMax, verifiedOnly, preferredBrands],
   );
 
   /* 필터 변경 시 리로드 */
