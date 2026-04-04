@@ -91,20 +91,8 @@ export default function FeedPage() {
 
   /* 필터 상태 */
   const [activeTpo, setActiveTpo] = useState("all");
-  const [budgetMin, setBudgetMin] = useState(() => {
-    if (typeof window === "undefined") return BUDGET_MIN_DEFAULT;
-    try {
-      const stored = JSON.parse(localStorage.getItem("colorfit_budget") || "null");
-      return stored?.[0] ?? BUDGET_MIN_DEFAULT;
-    } catch { return BUDGET_MIN_DEFAULT; }
-  });
-  const [budgetMax, setBudgetMax] = useState(() => {
-    if (typeof window === "undefined") return BUDGET_MAX_DEFAULT;
-    try {
-      const stored = JSON.parse(localStorage.getItem("colorfit_budget") || "null");
-      return stored?.[1] ?? BUDGET_MAX_DEFAULT;
-    } catch { return BUDGET_MAX_DEFAULT; }
-  });
+  const [budgetMin, setBudgetMin] = useState(BUDGET_MIN_DEFAULT);
+  const [budgetMax, setBudgetMax] = useState(BUDGET_MAX_DEFAULT);
   const [budgetOpen, setBudgetOpen] = useState(false);
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [preferredBrands, setPreferredBrands] = useState<string[]>([]);
@@ -141,6 +129,13 @@ export default function FeedPage() {
     setToneId(storedTone);
     setGender(storedGender);
     setAgeGroup(storedAge);
+    try {
+      const storedBudget = JSON.parse(localStorage.getItem("colorfit_budget") || "null");
+      if (storedBudget) {
+        setBudgetMin(storedBudget[0] ?? BUDGET_MIN_DEFAULT);
+        setBudgetMax(storedBudget[1] ?? BUDGET_MAX_DEFAULT);
+      }
+    } catch { /* empty */ }
     try {
       const storedBrands = JSON.parse(localStorage.getItem("colorfit_preferred_brands") || "[]");
       if (Array.isArray(storedBrands)) setPreferredBrands(storedBrands);
