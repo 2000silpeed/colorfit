@@ -12,6 +12,7 @@ import {
   type ScoresResponse,
   type SavedOutfit,
 } from "@/lib/api";
+import PurchaseFeedbackSheet from "@/components/PurchaseFeedbackSheet";
 
 /* ── 스코어 축 설정 ── */
 const SCORE_AXES: {
@@ -309,6 +310,33 @@ export default function OutfitDetailPage() {
     }
   }, [outfitId, userId]);
 
+  /* ── 구매 후 피드백 바텀시트 ── */
+  const [showPurchaseFeedback, setShowPurchaseFeedback] = useState(false);
+  const mallClickedRef = useRef(false);
+
+  const handleMallClick = useCallback(() => {
+    mallClickedRef.current = true;
+  }, []);
+
+  useEffect(() => {
+    function onVisibilityChange() {
+      if (document.visibilityState === "visible" && mallClickedRef.current) {
+        mallClickedRef.current = false;
+        const dismissed = sessionStorage.getItem(`colorfit_fb_dismissed_${outfitId}`);
+        if (!dismissed) {
+          setShowPurchaseFeedback(true);
+        }
+      }
+    }
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
+  }, [outfitId]);
+
+  const handleFeedbackClose = useCallback(() => {
+    setShowPurchaseFeedback(false);
+    sessionStorage.setItem(`colorfit_fb_dismissed_${outfitId}`, "1");
+  }, [outfitId]);
+
   const [showComparePicker, setShowComparePicker] = useState(false);
 
   const handleCompareSelect = useCallback((targetId: string) => {
@@ -543,6 +571,7 @@ export default function OutfitDetailPage() {
                   href={item.mall_url ?? "#"}
                   target={item.mall_url ? "_blank" : undefined}
                   rel={item.mall_url ? "noopener noreferrer" : undefined}
+                  onClick={item.mall_url ? handleMallClick : undefined}
                   className="shrink-0 w-[80px] group"
                 >
                   <div className="w-[80px] h-[80px] rounded-[var(--radius-md)] overflow-hidden bg-bg-secondary border border-border">
@@ -617,6 +646,17 @@ export default function OutfitDetailPage() {
             currentOutfitId={outfitId}
             onSelect={handleCompareSelect}
             onClose={() => setShowComparePicker(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── 구매 후 피드백 바텀시트 ── */}
+      <AnimatePresence>
+        {showPurchaseFeedback && userId && (
+          <PurchaseFeedbackSheet
+            outfitId={outfitId}
+            userId={userId}
+            onClose={handleFeedbackClose}
           />
         )}
       </AnimatePresence>

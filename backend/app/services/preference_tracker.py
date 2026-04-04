@@ -21,6 +21,9 @@ ACTION_WEIGHTS: dict[str, float] = {
     "like": 1.0,
     "click": 0.3,
     "dislike": -1.5,
+    "purchase": 3.0,
+    "considering": 0.5,
+    "not_helpful": -2.0,
 }
 
 WEIGHT_OVERRIDE_THRESHOLD = 10
@@ -170,6 +173,7 @@ async def record_feedback(
     user_id: str,
     outfit_id: str,
     action: str,
+    reason: str | None = None,
 ) -> tuple[int, str]:
     """피드백을 기록하고 선호도를 누적 업데이트한다.
 
@@ -177,6 +181,12 @@ async def record_feedback(
         (feedback_count, learning_phase)
     """
     weight = ACTION_WEIGHTS.get(action, 0.0)
+
+    if reason:
+        logger.info(
+            "purchase feedback: user=%s outfit=%s action=%s reason=%s",
+            user_id, outfit_id, action, reason,
+        )
 
     outfit, items = await _fetch_outfit_items(db, outfit_id)
     if not outfit:

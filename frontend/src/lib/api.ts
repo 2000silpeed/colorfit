@@ -177,6 +177,41 @@ export async function fetchSimilarItems(
   return res.json();
 }
 
+/* ── 구매 후 피드백 ── */
+
+export type PurchaseFeedbackAction = "purchase" | "considering" | "not_helpful";
+export type PurchaseFeedbackReason = "price_mismatch" | "style_different" | "sold_out" | "other";
+
+export interface PurchaseFeedbackResponse {
+  status: string;
+  feedback_count: number;
+  learning_phase: string;
+}
+
+export async function postPurchaseFeedback(
+  userId: string,
+  outfitId: string,
+  action: PurchaseFeedbackAction,
+  reason?: PurchaseFeedbackReason,
+): Promise<PurchaseFeedbackResponse> {
+  const body: Record<string, string> = {
+    user_id: userId,
+    outfit_id: outfitId,
+    action,
+  };
+  if (reason) body.reason = reason;
+
+  const res = await fetch(`${API_BASE}/api/feedback`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    throw new Error(`Feedback API error: ${res.status}`);
+  }
+  return res.json();
+}
+
 /* ── 톤 상세 ── */
 
 export interface ToneColor {

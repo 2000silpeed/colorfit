@@ -79,6 +79,7 @@ products_table = Table(
     Column("silhouette", String(20)),
     Column("formality", SmallInteger),
     Column("age_group", String(10)),
+    Column("style_tag", String(30)),
     Column("last_observed_at", Text),
 )
 

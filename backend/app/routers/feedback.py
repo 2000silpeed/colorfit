@@ -30,6 +30,7 @@ async def post_feedback(
             user_id=str(body.user_id),
             outfit_id=body.outfit_id,
             action=body.action,
+            reason=body.reason,
         )
         return FeedbackResponse(
             status="ok",
