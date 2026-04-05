@@ -666,7 +666,7 @@ export default function ClosetAnalyzeResultPage() {
         <button
           type="button"
           onClick={() => window.history.length > 1 ? router.back() : router.push("/closet")}
-          className="absolute top-[16px] left-[16px] z-10 w-[36px] h-[36px] rounded-full bg-black/30 flex items-center justify-center"
+          className="absolute top-[12px] left-[12px] z-10 w-[44px] h-[44px] rounded-full bg-black/30 flex items-center justify-center"
           aria-label="뒤로가기"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

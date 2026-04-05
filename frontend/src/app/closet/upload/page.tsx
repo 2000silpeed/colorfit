@@ -73,7 +73,7 @@ export default function ClosetUploadPage() {
         <button
           type="button"
           onClick={() => window.history.length > 1 ? router.back() : router.push("/closet")}
-          className="w-[36px] h-[36px] rounded-full flex items-center justify-center -ml-[8px]"
+          className="w-[44px] h-[44px] rounded-full flex items-center justify-center -ml-[12px]"
           aria-label="뒤로가기"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

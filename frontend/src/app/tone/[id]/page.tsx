@@ -101,7 +101,7 @@ export default function ToneDetailPage() {
         {/* 뒤로가기 */}
         <button
           onClick={() => window.history.length > 1 ? router.back() : router.push("/feed")}
-          className="absolute top-[12px] left-[16px] w-[36px] h-[36px] rounded-full bg-black/20 flex items-center justify-center"
+          className="absolute top-[8px] left-[12px] w-[44px] h-[44px] rounded-full bg-black/20 flex items-center justify-center"
         >
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
             <path d="M12.5 15L7.5 10L12.5 5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

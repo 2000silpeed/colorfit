@@ -145,7 +145,7 @@ export default function PremiumPage() {
           <button
             type="button"
             onClick={handleBack}
-            className="w-[40px] h-[40px] flex items-center justify-center -ml-[8px]"
+            className="w-[44px] h-[44px] flex items-center justify-center -ml-[10px]"
             aria-label="뒤로 가기"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-primary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

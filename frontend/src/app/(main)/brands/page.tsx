@@ -129,7 +129,7 @@ export default function BrandsPage() {
           <button
             type="button"
             onClick={() => window.history.length > 1 ? router.back() : router.push("/feed")}
-            className="w-[32px] h-[32px] flex items-center justify-center"
+            className="w-[44px] h-[44px] -ml-[10px] flex items-center justify-center"
             aria-label="뒤로 가기"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

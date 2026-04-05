@@ -258,7 +258,7 @@ export default function OutfitCard({
         <button
           type="button"
           onClick={handleSaveToggle}
-          className="absolute top-[10px] right-[10px] w-[36px] h-[36px] flex items-center justify-center z-10"
+          className="absolute top-[4px] right-[4px] w-[44px] h-[44px] flex items-center justify-center z-10"
           aria-label={saved ? "저장 취소" : "저장"}
           aria-pressed={saved}
         >

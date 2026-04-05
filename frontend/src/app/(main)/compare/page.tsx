@@ -251,7 +251,7 @@ export default function ComparePage() {
         <button
           type="button"
           onClick={handleBack}
-          className="w-[36px] h-[36px] flex items-center justify-center rounded-full"
+          className="w-[44px] h-[44px] flex items-center justify-center rounded-full"
           style={{ backgroundColor: "var(--color-bg-secondary)" }}
           aria-label="뒤로가기"
         >

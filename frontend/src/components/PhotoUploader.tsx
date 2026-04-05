@@ -150,7 +150,7 @@ export default function PhotoUploader({ onFileReady, disabled }: PhotoUploaderPr
           type="button"
           onClick={handleReset}
           disabled={disabled}
-          className="absolute top-[12px] right-[12px] w-[32px] h-[32px] rounded-full bg-black/40 flex items-center justify-center"
+          className="absolute top-[8px] right-[8px] w-[44px] h-[44px] rounded-full bg-black/40 flex items-center justify-center"
           aria-label="사진 다시 선택"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round">

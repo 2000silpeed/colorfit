@@ -282,7 +282,7 @@ export default function FeedPage() {
           </span>
           <button
             type="button"
-            className="w-[32px] h-[32px] rounded-full bg-bg-secondary flex items-center justify-center"
+            className="w-[44px] h-[44px] rounded-full bg-bg-secondary flex items-center justify-center"
             aria-label="프로필"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -303,7 +303,7 @@ export default function FeedPage() {
               key={tab.id}
               type="button"
               onClick={() => setActiveTpo(tab.id)}
-              className={`shrink-0 px-[16px] py-[8px] rounded-full text-[14px] font-body transition-colors whitespace-nowrap ${
+              className={`shrink-0 min-h-[44px] px-[16px] py-[12px] rounded-full text-[14px] font-body transition-colors whitespace-nowrap ${
                 activeTpo === tab.id
                   ? "bg-accent text-white"
                   : "bg-bg-secondary text-text-secondary border border-border"
@@ -319,7 +319,7 @@ export default function FeedPage() {
           <button
             type="button"
             onClick={() => setBudgetOpen((prev) => !prev)}
-            className="flex items-center gap-[6px] text-[13px] font-body text-text-secondary"
+            className="flex items-center gap-[6px] min-h-[44px] py-[10px] text-[13px] font-body text-text-secondary"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" />
@@ -346,7 +346,7 @@ export default function FeedPage() {
           <button
             type="button"
             onClick={() => setVerifiedOnly((prev) => !prev)}
-            className={`shrink-0 inline-flex items-center gap-[4px] px-[12px] py-[6px] rounded-full text-[13px] font-body transition-colors ${
+            className={`shrink-0 inline-flex items-center gap-[4px] min-h-[44px] px-[12px] py-[10px] rounded-full text-[13px] font-body transition-colors ${
               verifiedOnly
                 ? "bg-accent text-white"
                 : "bg-bg-secondary text-text-secondary border border-border"

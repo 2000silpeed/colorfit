@@ -322,7 +322,7 @@ function TopPickModal({ data, onClose, onViewOutfit }: TopPickModalProps) {
         </span>
         <button
           onClick={onClose}
-          className="w-[36px] h-[36px] flex items-center justify-center rounded-full"
+          className="w-[44px] h-[44px] flex items-center justify-center rounded-full"
           style={{ backgroundColor: "var(--color-bg-secondary)" }}
           aria-label="닫기"
         >

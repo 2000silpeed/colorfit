@@ -172,7 +172,7 @@ function ComparePickerSheet({ currentOutfitId, onSelect, onClose }: ComparePicke
           </h3>
           <button
             onClick={onClose}
-            className="w-[32px] h-[32px] flex items-center justify-center rounded-full"
+            className="w-[44px] h-[44px] flex items-center justify-center rounded-full"
             style={{ backgroundColor: "var(--color-bg-secondary)" }}
             aria-label="닫기"
           >
@@ -502,7 +502,7 @@ export default function OutfitDetailPage() {
         <button
           type="button"
           onClick={handleBack}
-          className="absolute top-[12px] left-[12px] z-20 w-[36px] h-[36px] rounded-full bg-black/30 flex items-center justify-center backdrop-blur-sm"
+          className="absolute top-[8px] left-[8px] z-20 w-[44px] h-[44px] rounded-full bg-black/30 flex items-center justify-center backdrop-blur-sm"
           aria-label="뒤로가기"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -514,7 +514,7 @@ export default function OutfitDetailPage() {
         <button
           type="button"
           onClick={handleSave}
-          className="absolute top-[12px] right-[12px] z-20 w-[36px] h-[36px] rounded-full bg-black/30 flex items-center justify-center backdrop-blur-sm"
+          className="absolute top-[8px] right-[8px] z-20 w-[44px] h-[44px] rounded-full bg-black/30 flex items-center justify-center backdrop-blur-sm"
           aria-label={saved ? "저장 취소" : "저장"}
         >
           <motion.svg
