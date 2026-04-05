@@ -5,11 +5,15 @@ PIL + scikit-learn K-means 클러스터링으로 상위 N개 색상을 반환.
 
 import io
 import logging
+from pathlib import Path
+from urllib.parse import urlparse
 
 import httpx
 import numpy as np
 from PIL import Image
 from sklearn.cluster import MiniBatchKMeans
+
+_STORAGE_ROOT = Path(__file__).resolve().parents[2] / "storage"
 
 logger = logging.getLogger(__name__)
 
@@ -91,6 +95,14 @@ def extract_colors_from_url(
         HEX 색상 리스트, 실패 시 빈 리스트
     """
     try:
+        # 로컬 스토리지 URL이면 파일시스템에서 직접 읽기 (self-request로 인한 event loop 블록킹 방지)
+        parsed = urlparse(url)
+        if parsed.path.startswith("/static/") and parsed.hostname in ("localhost", "127.0.0.1"):
+            local_path = _STORAGE_ROOT / parsed.path.replace("/static/", "", 1)
+            if local_path.exists():
+                img = Image.open(local_path)
+                return extract_colors_from_image(img, n_colors)
+
         if client:
             resp = client.get(url, timeout=REQUEST_TIMEOUT)
         else:

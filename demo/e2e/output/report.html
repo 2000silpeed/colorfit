@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ColorFit 데모 리포트 — 3 페르소나 풀 시나리오</title>
+<style>
+  :root { --bg:#F8F6F3; --bg2:#FFF; --text:#1A1714; --text2:#6B6560; --accent:#964F4C; --border:#E8E2DB; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:"Pretendard",-apple-system,BlinkMacSystemFont,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; -webkit-font-smoothing:antialiased; }
+  .container { max-width:1280px; margin:0 auto; padding:48px 24px; }
+  header { text-align:center; padding:48px 0; border-bottom:1px solid var(--border); margin-bottom:48px; }
+  .brand { font-family:"Nanum Myeongjo",serif; font-size:52px; color:var(--accent); font-weight:700; letter-spacing:-1px; }
+  .subtitle { color:var(--text2); font-size:16px; margin-top:8px; }
+  .meta-badges { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:24px; }
+  .badge { padding:6px 14px; background:var(--bg2); border:1px solid var(--border); border-radius:9999px; font-size:13px; color:var(--text2); }
+  .badge.pass { background:#E8F0E8; color:#2D5A2D; border-color:#B5D4B5; }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:48px; }
+  .stat-card { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:24px; }
+  .stat-label { font-size:12px; color:var(--text2); text-transform:uppercase; letter-spacing:0.5px; }
+  .stat-value { font-size:36px; font-weight:700; color:var(--accent); margin-top:4px; font-family:"Nanum Myeongjo",serif; }
+  .stat-sub { font-size:12px; color:var(--text2); margin-top:4px; }
+  .persona-section { margin-bottom:64px; padding:32px; background:var(--bg2); border-radius:20px; border:1px solid var(--border); border-top:4px solid var(--persona-color); }
+  .persona-header { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
+  .persona-swatch { width:56px; height:56px; border-radius:50%; border:3px solid var(--bg); box-shadow:0 0 0 1px var(--border); }
+  .persona-header h2 { font-family:"Nanum Myeongjo",serif; font-size:28px; }
+  .persona-header .tagline { font-size:14px; color:var(--text2); margin-top:2px; }
+  .persona-header .step-count { margin-left:auto; padding:6px 14px; background:var(--persona-color); color:#fff; border-radius:9999px; font-size:13px; font-weight:600; }
+  .persona-profile { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:12px 16px; padding:16px; background:var(--bg); border-radius:12px; margin-bottom:24px; }
+  .persona-profile dt { font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:2px; }
+  .persona-profile dd { font-size:14px; color:var(--text); font-weight:500; }
+  .video-wrap { background:#000; border-radius:16px; overflow:hidden; max-width:390px; margin:0 auto 24px; aspect-ratio:390/844; }
+  .video-wrap video { width:100%; height:100%; display:block; }
+  .steps-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:16px; }
+  .step { background:var(--bg); border:1px solid var(--border); border-radius:12px; overflow:hidden; transition:transform 0.2s,box-shadow 0.2s; }
+  .step:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.08); }
+  .step-image { position:relative; background:#F0EDE8; }
+  .step-image img { width:100%; height:auto; aspect-ratio:390/844; object-fit:cover; object-position:top; display:block; }
+  .step-num { position:absolute; top:8px; left:8px; background:var(--persona-color); color:#fff; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; }
+  .step-body { padding:12px; }
+  .step-body h4 { font-size:14px; font-weight:700; margin-bottom:4px; }
+  .step-desc { font-size:12px; color:var(--text2); line-height:1.5; margin-bottom:6px; }
+  .step-meta { display:flex; justify-content:space-between; align-items:center; font-size:10px; color:var(--text2); }
+  .step-meta code { background:var(--bg2); padding:2px 6px; border-radius:4px; font-family:"SF Mono",Monaco,monospace; }
+  footer { text-align:center; padding:48px 0; border-top:1px solid var(--border); color:var(--text2); font-size:13px; }
+  .toc { display:flex; gap:12px; justify-content:center; margin-bottom:32px; }
+  .toc a { padding:10px 20px; background:var(--bg2); border:1px solid var(--border); border-radius:9999px; font-size:14px; color:var(--text); text-decoration:none; font-weight:500; transition:all 0.2s; }
+  .toc a:hover { background:var(--accent); color:#fff; border-color:var(--accent); }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1 class="brand">ColorFit</h1>
+      <p class="subtitle">전체 기능 데모 리포트 · 3 페르소나 풀 시나리오</p>
+      <div class="meta-badges">
+        <span class="badge pass">✓ Playwright E2E PASSED</span>
+        <span class="badge">2026. 4. 6. AM 7:59:51</span>
+        <span class="badge">3 personas · 35 steps</span>
+        <span class="badge">Pixel 7 Mobile</span>
+      </div>
+    </header>
+
+    <div class="stats">
+      <div class="stat-card"><div class="stat-label">페르소나</div><div class="stat-value">3</div><div class="stat-sub">multi-profile journey</div></div>
+      <div class="stat-card"><div class="stat-label">총 스텝</div><div class="stat-value">35</div><div class="stat-sub">feature coverage</div></div>
+      <div class="stat-card"><div class="stat-label">코디 풀</div><div class="stat-value">5,022</div><div class="stat-sub">outfits available</div></div>
+      <div class="stat-card"><div class="stat-label">착장샷</div><div class="stat-value">Gemini</div><div class="stat-sub">2.5-flash-image</div></div>
+    </div>
+
+    <nav class="toc">
+      <a href="#persona-A">페르소나 A</a><a href="#persona-B">페르소나 B</a><a href="#persona-C">페르소나 C</a>
+    </nav>
+
+    
+    <section class="persona-section" id="persona-A" style="--persona-color: #B0A6C6">
+      <div class="persona-header">
+        <div class="persona-swatch" style="background: #B0A6C6"></div>
+        <div>
+          <h2>페르소나 A</h2>
+          <p class="tagline">여성 20대 · 여름쿨소프트 · 소개팅 룩</p>
+        </div>
+        <span class="step-count">13 steps</span>
+      </div>
+      <dl class="persona-profile"><div><dt>이름</dt><dd>김하늘 (28세)</dd></div><div><dt>톤</dt><dd>summer_cool_soft</dd></div><div><dt>성별</dt><dd>여성</dd></div><div><dt>연령</dt><dd>20s</dd></div><div><dt>TPO</dt><dd>데이트</dd></div><div><dt>예산</dt><dd>5~15만</dd></div></dl>
+      
+      <div class="video-wrap"><video src="video_A.webm" controls muted loop playsinline></video></div>
+      <div class="steps-grid">
+    <article class="step" id="step-A-1">
+      <div class="step-image"><img src="screenshots/A_01_login.png" loading="lazy" alt="① 로그인 화면" /><span class="step-num">01</span></div>
+      <div class="step-body">
+        <h4>① 로그인 화면</h4>
+        <p class="step-desc">카카오/구글 OAuth + 게스트 진입. 데모는 JWT 주입으로 우회.</p>
+        <div class="step-meta"><code>/login</code><span>7시 57분 42초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-A-2">
+      <div class="step-image"><img src="screenshots/A_02_onb1.png" loading="lazy" alt="② Step1 성별/연령" /><span class="step-num">02</span></div>
+      <div class="step-body">
+        <h4>② Step1 성별/연령</h4>
+        <p class="step-desc">여성·20대 선택</p>
+        <div class="step-meta"><code>/onboarding/step1</code><span>7시 57분 43초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-A-3">
+      <div class="step-image"><img src="screenshots/A_03_onb2_tone.png" loading="lazy" alt="③ Step2 톤 확장" /><span class="step-num">03</span></div>
+      <div class="step-body">
+        <h4>③ Step2 톤 확장</h4>
+        <p class="step-desc">여름쿨 → 소프트/라이트/뮤트 확장</p>
+        <div class="step-meta"><code>/onboarding/step2</code><span>7시 57분 46초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-A-4">
+      <div class="step-image"><img src="screenshots/A_04_feed.png" loading="lazy" alt="④ 피드 진입" /><span class="step-num">04</span></div>
+      <div class="step-body">
+        <h4>④ 피드 진입</h4>
+        <p class="step-desc">여름쿨소프트 + 데이트 맞춤 피드 (5022 outfits)</p>
+        <div class="step-meta"><code>/feed</code><span>7시 57분 54초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-A-5">
+      <div class="step-image"><img src="screenshots/A_05_dislike_swipe.png" loading="lazy" alt="⑤ 스와이프 싫어요" /><span class="step-num">05</span></div>
+      <div class="step-body">
+        <h4>⑤ 스와이프 싫어요</h4>
+        <p class="step-desc">좌스와이프로 관심없음 처리 → 피드에서 제거</p>
+        <div class="step-meta"><code>/feed</code><span>7시 57분 59초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-A-6">
+      <div class="step-image"><img src="screenshots/A_06_save_heart.png" loading="lazy" alt="⑥ 하트 저장" /><span class="step-num">06</span></div>
+      <div class="step-body">
+        <h4>⑥ 하트 저장</h4>
+        <p class="step-desc">reactions 테이블 기록 (onConflict 지원)</p>
+        <div class="step-meta"><code>/feed</code><span>7시 58분 0초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-A-7">
+      <div class="step-image"><img src="screenshots/A_07_detail.png" loading="lazy" alt="⑦ 코디 상세 & 5축 스코어" /><span class="step-num">07</span></div>
+      <div class="step-body">
+        <h4>⑦ 코디 상세 & 5축 스코어</h4>
+        <p class="step-desc">PCF·OF·CH·PE·SF 레이더 + 추천 이유</p>
+        <div class="step-meta"><code>/outfit/outfit_f_winterco_weekend_fa_20_001_winter_cool_strong</code><span>7시 58분 3초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-A-8">
+      <div class="step-image"><img src="screenshots/A_08_detail_items.png" loading="lazy" alt="⑧ 아이템 리스트" /><span class="step-num">08</span></div>
+      <div class="step-body">
+        <h4>⑧ 아이템 리스트</h4>
+        <p class="step-desc">상품별 외부 링크 (무신사/29cm)</p>
+        <div class="step-meta"><code>/outfit/outfit_f_winterco_weekend_fa_20_001_winter_cool_strong</code><span>7시 58분 4초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-A-9">
+      <div class="step-image"><img src="screenshots/A_09_tryon_loading.png" loading="lazy" alt="⑨ 착장샷 생성 중" /><span class="step-num">09</span></div>
+      <div class="step-body">
+        <h4>⑨ 착장샷 생성 중</h4>
+        <p class="step-desc">Gemini 2.5 Flash Image로 AI 합성 (10~30초)</p>
+        <div class="step-meta"><code>/outfit/outfit_f_winterco_weekend_fa_20_001_winter_cool_strong</code><span>7시 58분 5초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-A-10">
+      <div class="step-image"><img src="screenshots/A_10_tryon_result.png" loading="lazy" alt="⑩ 착장샷 결과" /><span class="step-num">10</span></div>
+      <div class="step-body">
+        <h4>⑩ 착장샷 결과</h4>
+        <p class="step-desc">Gemini nano-banana 생성 이미지</p>
+        <div class="step-meta"><code>/outfit/outfit_f_winterco_weekend_fa_20_001_winter_cool_strong</code><span>7시 58분 21초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-A-11">
+      <div class="step-image"><img src="screenshots/A_11_compare_picker.png" loading="lazy" alt="⑪ 비교 대상 선택" /><span class="step-num">11</span></div>
+      <div class="step-body">
+        <h4>⑪ 비교 대상 선택</h4>
+        <p class="step-desc">저장한 코디 중 1개 선택 → A vs B</p>
+        <div class="step-meta"><code>/outfit/outfit_f_winterco_weekend_fa_20_001_winter_cool_strong</code><span>7시 58분 25초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-A-12">
+      <div class="step-image"><img src="screenshots/A_12_saved_list.png" loading="lazy" alt="⑬ 저장 목록" /><span class="step-num">12</span></div>
+      <div class="step-body">
+        <h4>⑬ 저장 목록</h4>
+        <p class="step-desc">정렬(최근/점수/가격) + Top Pick + A vs B 진입점</p>
+        <div class="step-meta"><code>/saved</code><span>7시 58분 29초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-A-13">
+      <div class="step-image"><img src="screenshots/A_13_profile.png" loading="lazy" alt="⑭ 프로필" /><span class="step-num">13</span></div>
+      <div class="step-body">
+        <h4>⑭ 프로필</h4>
+        <p class="step-desc">톤 정보 · 설정 · 로그아웃</p>
+        <div class="step-meta"><code>/profile</code><span>7시 58분 31초</span></div>
+      </div>
+    </article></div>
+    </section>
+
+    <section class="persona-section" id="persona-B" style="--persona-color: #8B4513">
+      <div class="persona-header">
+        <div class="persona-swatch" style="background: #8B4513"></div>
+        <div>
+          <h2>페르소나 B</h2>
+          <p class="tagline">남성 30대 · 가을웜딥 · 출근 룩</p>
+        </div>
+        <span class="step-count">10 steps</span>
+      </div>
+      <dl class="persona-profile"><div><dt>이름</dt><dd>정재훈 (33세)</dd></div><div><dt>톤</dt><dd>autumn_warm_deep</dd></div><div><dt>성별</dt><dd>남성</dd></div><div><dt>연령</dt><dd>30s</dd></div><div><dt>TPO</dt><dd>출근</dd></div><div><dt>예산</dt><dd>5~15만</dd></div></dl>
+      
+      <div class="video-wrap"><video src="video_B.webm" controls muted loop playsinline></video></div>
+      <div class="steps-grid">
+    <article class="step" id="step-B-1">
+      <div class="step-image"><img src="screenshots/B_01_feed_entry.png" loading="lazy" alt="① 피드 진입 (게스트 + 프로필 프리셋)" /><span class="step-num">01</span></div>
+      <div class="step-body">
+        <h4>① 피드 진입 (게스트 + 프로필 프리셋)</h4>
+        <p class="step-desc">가을웜딥 + 남성 + 30대 맞춤 피드</p>
+        <div class="step-meta"><code>/feed</code><span>7시 58분 38초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-B-2">
+      <div class="step-image"><img src="screenshots/B_02_tpo_commute.png" loading="lazy" alt="② 출근 TPO 필터" /><span class="step-num">02</span></div>
+      <div class="step-body">
+        <h4>② 출근 TPO 필터</h4>
+        <p class="step-desc">오피스 포멀 코디 우선 노출</p>
+        <div class="step-meta"><code>/feed</code><span>7시 58분 40초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-B-3">
+      <div class="step-image"><img src="screenshots/B_03_budget_open.png" loading="lazy" alt="③ 예산 슬라이더 열기" /><span class="step-num">03</span></div>
+      <div class="step-body">
+        <h4>③ 예산 슬라이더 열기</h4>
+        <p class="step-desc">듀얼 레인지 슬라이더 (0~50만원, 1만 단위)</p>
+        <div class="step-meta"><code>/feed</code><span>7시 58분 41초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-B-4">
+      <div class="step-image"><img src="screenshots/B_04_brand_filter.png" loading="lazy" alt="④ 추천 브랜드 필터" /><span class="step-num">04</span></div>
+      <div class="step-body">
+        <h4>④ 추천 브랜드 필터</h4>
+        <p class="step-desc">선호 브랜드 아이템만 노출 (프리퍼런스 기반)</p>
+        <div class="step-meta"><code>/feed</code><span>7시 58분 43초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-B-5">
+      <div class="step-image"><img src="screenshots/B_05_detail.png" loading="lazy" alt="⑤ 코디 상세" /><span class="step-num">05</span></div>
+      <div class="step-body">
+        <h4>⑤ 코디 상세</h4>
+        <p class="step-desc">가을웜딥 + 출근 스코어 + 5축 레이더</p>
+        <div class="step-meta"><code>/outfit/outfit_m_winterco_commute_fa_30_002_winter_cool_strong</code><span>7시 58분 46초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-B-6">
+      <div class="step-image"><img src="screenshots/B_06_detail_score.png" loading="lazy" alt="⑥ 5축 스코어 전체" /><span class="step-num">06</span></div>
+      <div class="step-body">
+        <h4>⑥ 5축 스코어 전체</h4>
+        <p class="step-desc">PCF·OF·CH·PE·SF 각 축 설명 + 툴팁</p>
+        <div class="step-meta"><code>/outfit/outfit_m_winterco_commute_fa_30_002_winter_cool_strong</code><span>7시 58분 47초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-B-7">
+      <div class="step-image"><img src="screenshots/B_07_save_multi.png" loading="lazy" alt="⑦ 복수 저장 (3개)" /><span class="step-num">07</span></div>
+      <div class="step-body">
+        <h4>⑦ 복수 저장 (3개)</h4>
+        <p class="step-desc">Top Pick 진입 조건 충족 (2개 이상)</p>
+        <div class="step-meta"><code>/feed</code><span>7시 58분 50초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-B-8">
+      <div class="step-image"><img src="screenshots/B_08_saved_list.png" loading="lazy" alt="⑧ 저장 목록" /><span class="step-num">08</span></div>
+      <div class="step-body">
+        <h4>⑧ 저장 목록</h4>
+        <p class="step-desc">Top Pick + A vs B 버튼 노출</p>
+        <div class="step-meta"><code>/saved</code><span>7시 58분 54초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-B-9">
+      <div class="step-image"><img src="screenshots/B_09_top_pick.png" loading="lazy" alt="⑨ Top Pick 추천" /><span class="step-num">09</span></div>
+      <div class="step-body">
+        <h4>⑨ Top Pick 추천</h4>
+        <p class="step-desc">저장 코디 중 최고 스코어 1개 자동 선별 (5축 가중 평균)</p>
+        <div class="step-meta"><code>/saved</code><span>7시 58분 57초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-B-10">
+      <div class="step-image"><img src="screenshots/B_10_saved_sort_score.png" loading="lazy" alt="⑩ 점수순 정렬" /><span class="step-num">10</span></div>
+      <div class="step-body">
+        <h4>⑩ 점수순 정렬</h4>
+        <p class="step-desc">저장 코디 스코어 기준 재정렬</p>
+        <div class="step-meta"><code>/saved</code><span>7시 58분 59초</span></div>
+      </div>
+    </article></div>
+    </section>
+
+    <section class="persona-section" id="persona-C" style="--persona-color: #1E1E4E">
+      <div class="persona-header">
+        <div class="persona-swatch" style="background: #1E1E4E"></div>
+        <div>
+          <h2>페르소나 C</h2>
+          <p class="tagline">여성 40+ · 겨울쿨딥 · 하객/이벤트 룩</p>
+        </div>
+        <span class="step-count">12 steps</span>
+      </div>
+      <dl class="persona-profile"><div><dt>이름</dt><dd>박서연 (45세)</dd></div><div><dt>톤</dt><dd>winter_cool_deep</dd></div><div><dt>성별</dt><dd>여성</dd></div><div><dt>연령</dt><dd>40+</dd></div><div><dt>TPO</dt><dd>행사</dd></div><div><dt>예산</dt><dd>15~30만</dd></div></dl>
+      
+      <div class="video-wrap"><video src="video_C.webm" controls muted loop playsinline></video></div>
+      <div class="steps-grid">
+    <article class="step" id="step-C-1">
+      <div class="step-image"><img src="screenshots/C_01_feed.png" loading="lazy" alt="① 피드 진입" /><span class="step-num">01</span></div>
+      <div class="step-body">
+        <h4>① 피드 진입</h4>
+        <p class="step-desc">겨울쿨딥 + 40+ 여성 하객룩</p>
+        <div class="step-meta"><code>/feed</code><span>7시 59분 5초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-C-2">
+      <div class="step-image"><img src="screenshots/C_02_tpo_event.png" loading="lazy" alt="② 행사 TPO" /><span class="step-num">02</span></div>
+      <div class="step-body">
+        <h4>② 행사 TPO</h4>
+        <p class="step-desc">격식있는 하객룩 우선 노출</p>
+        <div class="step-meta"><code>/feed</code><span>7시 59분 7초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-C-3">
+      <div class="step-image"><img src="screenshots/C_03_profile.png" loading="lazy" alt="③ 프로필" /><span class="step-num">03</span></div>
+      <div class="step-body">
+        <h4>③ 프로필</h4>
+        <p class="step-desc">톤 · 선호도 · 브랜드 · 로그아웃</p>
+        <div class="step-meta"><code>/profile</code><span>7시 59분 10초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-C-4">
+      <div class="step-image"><img src="screenshots/C_04_tone_detail.png" loading="lazy" alt="④ 톤 상세 페이지" /><span class="step-num">04</span></div>
+      <div class="step-body">
+        <h4>④ 톤 상세 페이지</h4>
+        <p class="step-desc">겨울쿨딥 팔레트 · 추천 컬러 · 회피 컬러</p>
+        <div class="step-meta"><code>/tone/winter_cool_deep</code><span>7시 59분 12초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-C-5">
+      <div class="step-image"><img src="screenshots/C_05_tone_change.png" loading="lazy" alt="⑤ 톤 변경 모드" /><span class="step-num">05</span></div>
+      <div class="step-body">
+        <h4>⑤ 톤 변경 모드</h4>
+        <p class="step-desc">온보딩 Step2 재진입 (mode=change)</p>
+        <div class="step-meta"><code>/onboarding/step2?mode=change</code><span>7시 59분 14초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-C-6">
+      <div class="step-image"><img src="screenshots/C_06_premium.png" loading="lazy" alt="⑥ 프리미엄 구독" /><span class="step-num">06</span></div>
+      <div class="step-body">
+        <h4>⑥ 프리미엄 구독</h4>
+        <p class="step-desc">Free vs Premium 비교 · 착장샷 무제한 · 광고 제거</p>
+        <div class="step-meta"><code>/premium</code><span>7시 59분 17초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-C-7">
+      <div class="step-image"><img src="screenshots/C_07_closet.png" loading="lazy" alt="⑦ 옷장" /><span class="step-num">07</span></div>
+      <div class="step-body">
+        <h4>⑦ 옷장</h4>
+        <p class="step-desc">내 옷 업로드 · 분석 · 추천 엔진 통합</p>
+        <div class="step-meta"><code>/closet</code><span>7시 59분 21초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-C-8">
+      <div class="step-image"><img src="screenshots/C_08_closet_upload.png" loading="lazy" alt="⑧ 옷장 업로드 (프리뷰)" /><span class="step-num">08</span></div>
+      <div class="step-body">
+        <h4>⑧ 옷장 업로드 (프리뷰)</h4>
+        <p class="step-desc">상의(top) 카테고리 · 프리뷰 + 분석 시작 버튼</p>
+        <div class="step-meta"><code>/closet/upload</code><span>7시 59분 25초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-C-9">
+      <div class="step-image"><img src="screenshots/C_09_closet_analyzing.png" loading="lazy" alt="⑨ 옷장 분석 중" /><span class="step-num">09</span></div>
+      <div class="step-body">
+        <h4>⑨ 옷장 분석 중</h4>
+        <p class="step-desc">Gemini Vision 호출 — 색상/카테고리/톤 호환성 분석</p>
+        <div class="step-meta"><code>/closet/analyze?image_url=http%3A%2F%2Flocalhost%3A8000%2Fstatic%2Fcloset%2Fb3b15c8a571a9280_f9ca0fa8.jpg&user_tone_id=autumn_warm_deep&category=top</code><span>7시 59분 28초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-C-10">
+      <div class="step-image"><img src="screenshots/C_10_closet_analyze.png" loading="lazy" alt="⑩ 옷장 분석 결과" /><span class="step-num">10</span></div>
+      <div class="step-body">
+        <h4>⑩ 옷장 분석 결과</h4>
+        <p class="step-desc">Gemini Vision 결과 + 웜톤 적합도 + 추천 코디</p>
+        <div class="step-meta"><code>/closet/analyze?image_url=http%3A%2F%2Flocalhost%3A8000%2Fstatic%2Fcloset%2Fb3b15c8a571a9280_f9ca0fa8.jpg&user_tone_id=autumn_warm_deep&category=top</code><span>7시 59분 31초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-C-11">
+      <div class="step-image"><img src="screenshots/C_11_brands.png" loading="lazy" alt="⑨ 브랜드 선호 설정" /><span class="step-num">11</span></div>
+      <div class="step-body">
+        <h4>⑨ 브랜드 선호 설정</h4>
+        <p class="step-desc">추천 브랜드 선택 → 피드 필터에 반영</p>
+        <div class="step-meta"><code>/brands</code><span>7시 59분 34초</span></div>
+      </div>
+    </article>
+    <article class="step" id="step-C-12">
+      <div class="step-image"><img src="screenshots/C_12_preference.png" loading="lazy" alt="⑩ 선호도 설정" /><span class="step-num">12</span></div>
+      <div class="step-body">
+        <h4>⑩ 선호도 설정</h4>
+        <p class="step-desc">가중치 자동 조정 (PCF·OF·CH·PE·SF) · 선호 누적 시각화</p>
+        <div class="step-meta"><code>/preference</code><span>7시 59분 38초</span></div>
+      </div>
+    </article></div>
+    </section>
+
+    <footer>
+      ColorFit · Task 5.11 Demo · Generated by Playwright 1.59.1<br/>
+      2026-04-05T22:59:51.019Z
+    </footer>
+  </div>
+</body>
+</html>

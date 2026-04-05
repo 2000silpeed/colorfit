@@ -8,9 +8,12 @@ Gemini 나노바나나(gemini-2.5-flash-image)로 코디 아이템 착장 이미
 from __future__ import annotations
 
 import base64
+import hashlib
 import ipaddress
 import logging
+import secrets
 import uuid
+from pathlib import Path
 from urllib.parse import urlparse
 
 import httpx
@@ -27,12 +30,22 @@ from app.models.tryon_cache import TryonCache
 
 logger = logging.getLogger(__name__)
 
-TRYON_MODEL = "gemini-2.5-flash-preview-image-generation"
+TRYON_MODEL = "gemini-2.5-flash-image"
+
+TRYON_STORAGE = Path(__file__).resolve().parents[2] / "storage" / "tryon"
+TRYON_STORAGE.mkdir(parents=True, exist_ok=True)
 
 TRYON_PROMPT = (
     "이 사람이 위 패션 아이템들을 착용한 전신 패션 사진을 생성해주세요. "
     "자연스러운 포즈, 심플한 배경, 패션 매거진 에디토리얼 스타일. "
     "아이템의 색상과 디테일을 최대한 유지해주세요."
+)
+
+TRYON_PROMPT_NO_MODEL = (
+    "위 패션 아이템들을 착용한 사람의 전신 패션 사진을 생성해주세요. "
+    "20대 아시아인 모델, 자연스러운 포즈, 심플한 밝은 회색 배경, "
+    "패션 매거진 에디토리얼 스타일, 고품질 실사. "
+    "아이템의 색상과 디테일을 최대한 정확히 반영해주세요."
 )
 
 DEFAULT_MODEL_IMAGES: dict[str, str] = {
@@ -152,9 +165,6 @@ async def generate_tryon_image(
         if closet_url:
             item_image_urls.append(closet_url)
 
-    if not model_image_url:
-        model_image_url = DEFAULT_MODEL_IMAGES.get("female")
-
     image_parts: list[types.Part] = []
     for url in item_image_urls:
         img_bytes = await _fetch_image_bytes(url)
@@ -162,12 +172,18 @@ async def generate_tryon_image(
             types.Part.from_bytes(data=img_bytes, mime_type="image/jpeg")
         )
 
-    model_bytes = await _fetch_image_bytes(model_image_url)
-    image_parts.append(
-        types.Part.from_bytes(data=model_bytes, mime_type="image/jpeg")
-    )
+    prompt_text = TRYON_PROMPT_NO_MODEL
+    if model_image_url:
+        try:
+            model_bytes = await _fetch_image_bytes(model_image_url)
+            image_parts.append(
+                types.Part.from_bytes(data=model_bytes, mime_type="image/jpeg")
+            )
+            prompt_text = TRYON_PROMPT
+        except Exception as exc:
+            logger.warning("model image fetch failed (%s), falling back to prompt-only", exc)
 
-    image_parts.append(types.Part.from_text(text=TRYON_PROMPT))
+    image_parts.append(types.Part.from_text(text=prompt_text))
 
     client = genai.Client(api_key=settings.gemini_api_key)
 
@@ -183,7 +199,12 @@ async def generate_tryon_image(
     if not generated_image:
         raise RuntimeError("Gemini API에서 이미지를 생성하지 못했습니다")
 
-    image_url = _image_to_data_url(generated_image)
+    # storage/tryon/*.png 저장 후 상대 URL 캐싱
+    digest = hashlib.sha256(generated_image).hexdigest()[:16]
+    filename = f"{digest}_{secrets.token_hex(4)}.png"
+    filepath = TRYON_STORAGE / filename
+    filepath.write_bytes(generated_image)
+    image_url = f"{settings.api_url.rstrip('/')}/static/tryon/{filename}" if getattr(settings, "api_url", "") else f"/static/tryon/{filename}"
 
     await _save_cache(db, outfit_id, closet_item_id, user_id, image_url)
 

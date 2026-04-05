@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     google_client_secret: str = ""
 
     frontend_url: str = "http://localhost:3000"
+    api_url: str = "http://localhost:8000"
 
     @model_validator(mode="after")
     def _validate_jwt_secret(self) -> "Settings":

@@ -9,9 +9,10 @@ class ClosetAnalyzeRequest(BaseModel):
 
     @field_validator("image_url")
     @classmethod
-    def must_be_https(cls, v: HttpUrl) -> HttpUrl:
-        if str(v).startswith("http://"):
-            raise ValueError("https URL만 허용됩니다")
+    def must_be_https_or_local(cls, v: HttpUrl) -> HttpUrl:
+        url = str(v)
+        if url.startswith("http://") and "localhost" not in url and "127.0.0.1" not in url:
+            raise ValueError("https URL만 허용됩니다 (localhost 예외)")
         return v
 
 
@@ -43,9 +44,10 @@ class ClosetItemAddRequest(BaseModel):
 
     @field_validator("image_url")
     @classmethod
-    def must_be_https(cls, v: HttpUrl) -> HttpUrl:
-        if str(v).startswith("http://"):
-            raise ValueError("https URL만 허용됩니다")
+    def must_be_https_or_local(cls, v: HttpUrl) -> HttpUrl:
+        url = str(v)
+        if url.startswith("http://") and "localhost" not in url and "127.0.0.1" not in url:
+            raise ValueError("https URL만 허용됩니다 (localhost 예외)")
         return v
 
 

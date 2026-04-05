@@ -827,9 +827,9 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] reactions 테이블 `(user_id, outfit_id, reaction_type)` UNIQUE 제약 + save/unsave upsert 처리 — `reaction.py`에 `ON CONFLICT DO NOTHING` 적용, 모델 `__table_args__` UniqueConstraint 추가, 기존 DB용 `scripts/migrate_reactions_unique.sql` (dedup → ADD CONSTRAINT) 제공, `create_tables.py` DDL 동기화
 
 **Task 5.9 — 성능 최적화**
-- [ ] next/image 최적화 + lazy loading
-- [ ] 피드 API 응답 800ms 이내 확인
-- [ ] Lighthouse 80+ 목표
+- [x] next/image 최적화 + lazy loading — 전 페이지 `<Image>` 기반 확인, 첫 카드(index=0) LCP용 `priority + fetchPriority="high"` 적용, 하위 카드는 `loading="lazy"`, 모든 이미지에 `sizes` 속성 지정됨
+- [x] 피드 API 응답 800ms 이내 확인 — 인메모리 TTL 캐시(300s) + FastAPI lifespan 프리워밍 도입: DB 5022 outfits + 참조 products를 1회 로드 후 Python 필터링, warm 요청 **2~10ms** (목표 대비 100배) · `app/services/feed_service.py`, `app/main.py` 🔧 codex 리뷰 반영: (1) `order_by(Outfit.id)` 추가로 LIMIT 2000 결정적 보장, (2) lifespan 프리워밍 task 참조를 `app.state`에 보관 + shutdown 시 cancel/await로 정리
+- [ ] Lighthouse 80+ 목표 — 프로덕션 배포(Task 5.10) 후 측정 예정
 
 ### 🅓 배포 + 데모 (Task 5.10~5.11)
 
@@ -840,9 +840,9 @@ W5 ─── 단독 실행 (통합 작업)
 - [ ] 프로덕션 스모크 테스트
 
 **Task 5.11 — 데모 준비**
-- [ ] 데모 시나리오 (페르소나 A: 소개팅 룩 찾기)
-- [ ] 데모용 샘플 데이터 확인
-- [ ] 발표 자료
+- [x] 데모 시나리오 (페르소나 A: 소개팅 룩 찾기) — `DEMO.md` 작성 (11단계 시나리오 + 대체 시나리오 + 리스크 대비책)
+- [x] 데모용 샘플 데이터 확인 — `summer_cool_soft × date` 코디 **71건** 확보 (20s 23 · 30s 24 · 40plus 24), 샘플 `outfit_f_summerco_date_sp_20_001` 총액 104,900원 · 5축 스코어 pcf75/of100/ch72/pe100/sf67
+- [x] 발표 자료 — `presentation.html` 16 슬라이드 기 작성, 10분 발표 흐름(슬라이드 1~3/7~10/라이브 데모/16) DEMO.md에 정리
 
 ### W5 완료 기준
 - [x] OAuth 로그인 동작 — 카카오/구글 (Task 5.1)
@@ -852,7 +852,7 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 프로필 로그아웃/톤 변경 동작 (Task 5.5)
 - [x] 프리미엄 구독 + 코디 상세 착장 동작 (Task 5.6)
 - [ ] 프로덕션 URL 접속 가능 (Task 5.10)
-- [ ] 데모 준비 완료 (Task 5.11)
+- [x] 데모 준비 완료 (Task 5.11) — 현 기준(Task 5.10 미완). 프로덕션 URL은 배포 후 `DEMO.md §6`에 추가
 
 ---
 

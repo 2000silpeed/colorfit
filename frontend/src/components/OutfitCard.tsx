@@ -194,7 +194,9 @@ export default function OutfitCard({
           fill
           sizes="(max-width: 768px) 100vw, 430px"
           className="object-contain"
-          loading="lazy"
+          {...(index === 0
+            ? { priority: true, fetchPriority: "high" as const }
+            : { loading: "lazy" as const })}
         />
 
         {/* 하단 그라데이션 */}
@@ -337,11 +339,17 @@ export default function OutfitCard({
             {STYLE_TAG_LABEL[items[0].style_tag] ?? items[0].style_tag}
           </span>
         )}
-        <span className="bg-bg-secondary text-text-primary text-[11px] font-body rounded-full px-[8px] py-[3px]">
-          PCF {Math.round(scores.pcf)}
+        <span
+          className="bg-bg-secondary text-text-primary text-[11px] font-body rounded-full px-[8px] py-[3px]"
+          title="퍼스널컬러 적합도"
+        >
+          컬러 {Math.round(scores.pcf)}
         </span>
-        <span className="bg-bg-secondary text-text-primary text-[11px] font-body rounded-full px-[8px] py-[3px]">
-          OF {Math.round(scores.of)}
+        <span
+          className="bg-bg-secondary text-text-primary text-[11px] font-body rounded-full px-[8px] py-[3px]"
+          title="TPO 적합도"
+        >
+          TPO {Math.round(scores.of)}
         </span>
       </div>
     </motion.article>

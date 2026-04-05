@@ -12,7 +12,10 @@ import logging
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+import hashlib
+import secrets
+from pathlib import Path
+from fastapi import APIRouter, Depends, File, HTTPException, Query, Request, UploadFile
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -38,6 +41,34 @@ from app.services.closet_recommender import recommend_for_closet_item
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/closet", tags=["closet"])
+
+MAX_UPLOAD_BYTES = 8 * 1024 * 1024  # 8MB
+ALLOWED_MIME = {"image/jpeg", "image/jpg", "image/png", "image/webp"}
+MIME_EXT = {"image/jpeg": "jpg", "image/jpg": "jpg", "image/png": "png", "image/webp": "webp"}
+CLOSET_STORAGE = Path(__file__).resolve().parents[2] / "storage" / "closet"
+CLOSET_STORAGE.mkdir(parents=True, exist_ok=True)
+
+
+@router.post("/upload")
+async def upload_closet_image(request: Request, file: UploadFile = File(...)) -> dict:
+    """옷장 사진 업로드 → storage/closet 파일 저장 후 /static URL 반환."""
+    if file.content_type not in ALLOWED_MIME:
+        raise HTTPException(status_code=400, detail=f"지원하지 않는 파일 형식: {file.content_type}")
+    data = await file.read()
+    if len(data) > MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=413, detail="이미지가 너무 커요 (최대 8MB)")
+    # 컨텐츠 해시 + 랜덤 suffix로 파일명 생성 (동일 파일 중복 업로드 방지)
+    ext = MIME_EXT[file.content_type]
+    digest = hashlib.sha256(data).hexdigest()[:16]
+    filename = f"{digest}_{secrets.token_hex(4)}.{ext}"
+    filepath = CLOSET_STORAGE / filename
+    filepath.write_bytes(data)
+    base_url = str(request.base_url).rstrip("/")
+    return {
+        "image_url": f"{base_url}/static/closet/{filename}",
+        "size": len(data),
+        "content_type": file.content_type,
+    }
 
 
 @router.get("", response_model=ClosetListResponse)

@@ -62,10 +62,10 @@ function ScoreBar({
 
   return (
     <div className="flex items-center gap-[12px]">
-      <div className="w-[56px] shrink-0">
-        <span className="font-body text-[13px] text-text-secondary">{label}</span>
-        <span className="font-body text-[11px] text-text-tertiary ml-[4px] hidden sm:inline">
-          {fullLabel}
+      <div className="w-[72px] shrink-0">
+        <span className="font-body text-[13px] text-text-secondary">{fullLabel}</span>
+        <span className="font-body text-[10px] text-text-tertiary ml-[4px] hidden sm:inline" title={fullLabel}>
+          {label}
         </span>
       </div>
       <div className="flex-1 h-[8px] bg-border rounded-full overflow-hidden">

@@ -193,3 +193,33 @@ async def google_callback(
     return AuthTokenResponse(
         access_token=token, user_id=str(user.id), is_new_user=is_new
     )
+
+
+@router.post("/guest", response_model=AuthTokenResponse)
+async def guest_login(
+    guest_user_id: str | None = None,
+    db: AsyncSession = Depends(get_db),
+) -> AuthTokenResponse:
+    """게스트 JWT 발급 — provider=NULL 사용자 생성/재사용 후 토큰 반환."""
+    user: User | None = None
+    is_new = False
+
+    if guest_user_id:
+        try:
+            guest_uuid = UUID(guest_user_id)
+            result = await db.execute(select(User).where(User.id == guest_uuid))
+            user = result.scalar_one_or_none()
+        except ValueError:
+            logger.warning("invalid guest_user_id: %s", guest_user_id)
+
+    if user is None:
+        user = User(id=uuid.uuid4(), provider=None, email=None)
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
+        is_new = True
+
+    token = create_access_token(user.id)
+    return AuthTokenResponse(
+        access_token=token, user_id=str(user.id), is_new_user=is_new
+    )

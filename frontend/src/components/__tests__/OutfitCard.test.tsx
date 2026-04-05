@@ -76,8 +76,8 @@ describe("OutfitCard", () => {
 
   it("renders score badges with rounded values", () => {
     render(<OutfitCard {...defaultProps} />);
-    expect(screen.getByText("PCF 95")).toBeInTheDocument();
-    expect(screen.getByText("OF 88")).toBeInTheDocument();
+    expect(screen.getByText("컬러 95")).toBeInTheDocument();
+    expect(screen.getByText("TPO 88")).toBeInTheDocument();
   });
 
   it("renders main image from first item", () => {

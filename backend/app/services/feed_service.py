@@ -9,7 +9,10 @@
 
 from __future__ import annotations
 
+import asyncio
+import time
 from datetime import datetime
+from types import SimpleNamespace
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -38,6 +41,15 @@ from app.utils import ensure_list, ensure_dict
 PAGE_SIZE = 20
 MAX_OUTFIT_LOAD = 2000
 PRODUCT_BATCH_SIZE = 500
+PRODUCT_WARMUP_BATCH_SIZE = 5000
+FEED_CACHE_TTL_SEC = 300.0
+
+_feed_cache_lock = asyncio.Lock()
+_feed_cache: dict = {
+    "expires_at": 0.0,
+    "outfits": None,
+    "item_map": None,
+}
 
 _GROUP_MAP: dict[str, str] = {
     "티셔츠": "top", "셔츠": "top", "블라우스": "top", "니트": "top",
@@ -114,6 +126,110 @@ def compute_outfit_metadata(
         "verified_count": verified_count,
         "verified_brand_ratio": bq_ratio,
     }
+
+
+def _outfit_to_ns(o: Outfit) -> SimpleNamespace:
+    """ORM Outfit을 세션 독립 SimpleNamespace로 변환 (캐시 저장용)."""
+    return SimpleNamespace(
+        id=o.id,
+        item_ids=list(o.item_ids) if o.item_ids else [],
+        gender=o.gender,
+        age_group=o.age_group,
+        designed_tpo=o.designed_tpo,
+        designed_season=o.designed_season,
+        total_price=o.total_price,
+        is_complete_outfit=o.is_complete_outfit,
+        tags=list(o.tags) if o.tags else [],
+        scores=dict(o.scores) if o.scores else {},
+        reasons=list(o.reasons) if o.reasons else [],
+        llm_quality_score=o.llm_quality_score,
+    )
+
+
+async def _load_feed_cache(db: AsyncSession) -> tuple[list, dict[str, list[dict]]]:
+    """전체 outfits + item_map을 TTL 캐시로 로드."""
+    now = time.time()
+    if _feed_cache["outfits"] is not None and _feed_cache["expires_at"] > now:
+        return _feed_cache["outfits"], _feed_cache["item_map"]
+
+    async with _feed_cache_lock:
+        now = time.time()
+        if _feed_cache["outfits"] is not None and _feed_cache["expires_at"] > now:
+            return _feed_cache["outfits"], _feed_cache["item_map"]
+
+        # order_by(id)로 LIMIT 2000 결과가 결정적이도록 보장
+        result = await db.execute(select(Outfit).order_by(Outfit.id))
+        outfits_orm = result.scalars().all()
+        outfits = [_outfit_to_ns(o) for o in outfits_orm]
+
+        all_ids: set[str] = set()
+        for o in outfits:
+            all_ids.update(o.item_ids)
+
+        products_by_id: dict[str, dict] = {}
+        id_list = list(all_ids)
+        for i in range(0, len(id_list), PRODUCT_WARMUP_BATCH_SIZE):
+            batch = id_list[i:i + PRODUCT_WARMUP_BATCH_SIZE]
+            pr = await db.execute(select(Product).where(Product.id.in_(batch)))
+            for p in pr.scalars().all():
+                products_by_id[p.id] = _build_item_dict(p)
+
+        item_map: dict[str, list[dict]] = {
+            o.id: [products_by_id[pid] for pid in o.item_ids if pid in products_by_id]
+            for o in outfits
+        }
+
+        _feed_cache["outfits"] = outfits
+        _feed_cache["item_map"] = item_map
+        _feed_cache["expires_at"] = now + FEED_CACHE_TTL_SEC
+
+        return outfits, item_map
+
+
+def _filter_outfits_in_memory(
+    outfits: list,
+    gender: str | None,
+    age_group: str | None,
+    tpo: str | None,
+    budget_min: int | None,
+    budget_max: int | None,
+) -> list:
+    """DB WHERE절과 동일한 필터를 Python 레벨에서 적용 (반대 시즌 제외 포함)."""
+    current_month = datetime.now().month
+    current_season = MONTH_TO_SEASON.get(current_month)
+    opposite = OPPOSITE_SEASONS.get(current_season) if current_season else None
+    tpo_expanded = set(TPO_SYNONYMS.get(tpo, {tpo})) if tpo else None
+    has_budget_min = bool(budget_min and budget_min > 0)
+    has_budget_max = bool(budget_max and budget_max > 0)
+
+    filtered: list = []
+    for o in outfits:
+        if gender:
+            if not (o.gender == gender or o.gender == "unisex" or o.gender is None):
+                continue
+        if age_group:
+            if not (o.age_group == age_group or o.age_group is None):
+                continue
+        if tpo_expanded is not None:
+            if not (o.designed_tpo in tpo_expanded or o.designed_tpo is None):
+                continue
+        if has_budget_min:
+            if not (o.total_price is None or o.total_price >= budget_min):
+                continue
+        if has_budget_max:
+            if not (o.total_price is None or o.total_price <= budget_max):
+                continue
+        if opposite:
+            if not (
+                o.designed_season != opposite
+                or o.designed_season is None
+                or o.designed_tpo == "travel"
+            ):
+                continue
+        filtered.append(o)
+        if len(filtered) >= MAX_OUTFIT_LOAD:
+            break
+    return filtered
 
 
 async def _build_db_query(
@@ -350,15 +466,15 @@ async def get_feed(
     if preferred_brands:
         user_preferred = {b.strip().lower() for b in preferred_brands.split(",") if b.strip()}
 
-    # 1. DB 쿼리 (필터 푸시다운 + LIMIT)
-    stmt = await _build_db_query(gender, age_group, tpo, budget_min, budget_max)
-    result = await db.execute(stmt)
-    outfits = result.scalars().all()
+    # 1. 전체 outfits + item_map 캐시 로드 (TTL 300s)
+    all_outfits, item_map = await _load_feed_cache(db)
 
-    # 2. 아이템 배치 로드
-    item_map = await _load_items_batched(db, outfits)
+    # 2. Python 레벨 필터 (DB WHERE와 동일)
+    outfits = _filter_outfits_in_memory(
+        all_outfits, gender, age_group, tpo, budget_min, budget_max
+    )
 
-    # 3. dislike 로드
+    # 3. dislike 로드 (user_id별이므로 캐싱 안 함)
     disliked_ids = await _load_disliked_ids(db, user_id)
 
     # 4. Hard Filter + Soft Score
