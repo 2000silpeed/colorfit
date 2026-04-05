@@ -191,6 +191,7 @@ describe("ClosetUploadPage", () => {
   });
 
   it("navigates back on back button click", () => {
+    Object.defineProperty(window.history, "length", { value: 2, configurable: true });
     render(<UploadPage />);
     fireEvent.click(screen.getByLabelText("뒤로가기"));
     expect(mockBack).toHaveBeenCalled();

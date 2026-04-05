@@ -57,11 +57,14 @@ const mockRecommend = vi.fn();
 const mockGenerateTryon = vi.fn();
 const mockFetchTryonUsage = vi.fn();
 
+const mockAddClosetItem = vi.fn();
+
 vi.mock("@/lib/api", () => ({
   analyzeClosetItem: (...args: unknown[]) => mockAnalyze(...args),
   fetchClosetRecommendations: (...args: unknown[]) => mockRecommend(...args),
   generateTryon: (...args: unknown[]) => mockGenerateTryon(...args),
   fetchTryonUsage: (...args: unknown[]) => mockFetchTryonUsage(...args),
+  addClosetItem: (...args: unknown[]) => mockAddClosetItem(...args),
   TryonLimitError: class TryonLimitError extends Error {
     constructor(message: string) {
       super(message);
@@ -251,6 +254,8 @@ describe("ClosetAnalyzeResultPage", () => {
     setParams("https://img.example.com/my-top.jpg", "autumn_warm_deep");
     mockAnalyze.mockResolvedValue(MOCK_ANALYSIS);
     mockRecommend.mockResolvedValue(MOCK_RECOMMENDATIONS);
+    mockAddClosetItem.mockResolvedValue({ id: 1 });
+    localStorage.setItem("colorfit_user_id", "test-user");
 
     render(<AnalyzePage />);
 
@@ -258,7 +263,15 @@ describe("ClosetAnalyzeResultPage", () => {
       expect(screen.getByText("옷장에 추가")).toBeInTheDocument();
     });
     fireEvent.click(screen.getByText("옷장에 추가"));
-    expect(mockPush).toHaveBeenCalledWith("/closet");
+    await waitFor(() => {
+      expect(mockAddClosetItem).toHaveBeenCalledTimes(1);
+    });
+    await waitFor(
+      () => {
+        expect(mockPush).toHaveBeenCalledWith("/closet");
+      },
+      { timeout: 1500 },
+    );
   });
 
   it("navigates to upload on '다른 옷도 분석하기' click", async () => {

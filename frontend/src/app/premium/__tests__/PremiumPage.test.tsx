@@ -26,15 +26,33 @@ vi.mock("framer-motion", () => ({
 }));
 
 const mockBack = vi.fn();
+const mockPush = vi.fn();
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
-    push: vi.fn(),
+    push: mockPush,
     back: mockBack,
   }),
 }));
 
+const mockSubscribe = vi.fn();
+const mockFetchSubscriptionStatus = vi.fn();
+const mockFetchTryonUsage = vi.fn();
+
+vi.mock("@/lib/api", () => ({
+  subscribe: (...args: unknown[]) => mockSubscribe(...args),
+  fetchSubscriptionStatus: (...args: unknown[]) => mockFetchSubscriptionStatus(...args),
+  fetchTryonUsage: (...args: unknown[]) => mockFetchTryonUsage(...args),
+}));
+
+vi.mock("@/lib/auth", () => ({
+  isLoggedIn: () => true,
+}));
+
 beforeEach(() => {
   vi.clearAllMocks();
+  localStorage.setItem("colorfit_user_id", "test-user");
+  mockFetchSubscriptionStatus.mockResolvedValue({ is_premium: false });
+  mockFetchTryonUsage.mockResolvedValue({ remaining: 3 });
 });
 
 describe("PremiumPage", () => {
@@ -85,49 +103,50 @@ describe("PremiumPage", () => {
     expect(screen.getByText("월 3,250원꼴")).toBeInTheDocument();
   });
 
-  it("shows CTA button for interest registration", () => {
+  it("shows CTA button for premium subscription", () => {
     render(<PremiumPage />);
-    expect(screen.getByRole("button", { name: "관심 등록하기" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "프리미엄 시작하기" })).toBeInTheDocument();
     expect(screen.getByText(/MVP 기간 중 결제는 발생하지 않습니다/)).toBeInTheDocument();
   });
 
-  it("completes interest registration flow", async () => {
-    vi.useFakeTimers();
+  it("completes subscription flow with coupon code", async () => {
+    mockSubscribe.mockResolvedValue({ ok: true });
     render(<PremiumPage />);
-    const ctaButton = screen.getByRole("button", { name: "관심 등록하기" });
+    const input = screen.getByPlaceholderText("COLORFIT-BETA") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "COLORFIT-BETA" } });
+
+    const ctaButton = screen.getByRole("button", { name: "프리미엄 시작하기" });
     fireEvent.click(ctaButton);
 
-    expect(screen.getByText("등록 중...")).toBeInTheDocument();
-
-    await act(async () => {
-      vi.advanceTimersByTime(1100);
+    await waitFor(() => {
+      expect(mockSubscribe).toHaveBeenCalledWith("test-user", "yearly", "COLORFIT-BETA");
     });
-
-    expect(screen.getByText("관심 등록 완료")).toBeInTheDocument();
-    expect(screen.getByText("정식 출시 시 가장 먼저 알려드릴게요.")).toBeInTheDocument();
-    vi.useRealTimers();
+    await waitFor(() => {
+      expect(screen.getByText("프리미엄 활성화됨")).toBeInTheDocument();
+    });
   });
 
   it("back button navigates back", () => {
+    Object.defineProperty(window.history, "length", { value: 2, configurable: true });
     render(<PremiumPage />);
     const backButton = screen.getByLabelText("뒤로 가기");
     fireEvent.click(backButton);
     expect(mockBack).toHaveBeenCalledTimes(1);
   });
 
-  it("shows return button after registration and navigates back", async () => {
-    vi.useFakeTimers();
+  it("shows return button after subscription and navigates back", async () => {
+    Object.defineProperty(window.history, "length", { value: 2, configurable: true });
+    mockSubscribe.mockResolvedValue({ ok: true });
     render(<PremiumPage />);
-    fireEvent.click(screen.getByRole("button", { name: "관심 등록하기" }));
+    const input = screen.getByPlaceholderText("COLORFIT-BETA") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "COLORFIT-BETA" } });
+    fireEvent.click(screen.getByRole("button", { name: "프리미엄 시작하기" }));
 
-    await act(async () => {
-      vi.advanceTimersByTime(1100);
+    await waitFor(() => {
+      expect(screen.getByText("프리미엄 활성화됨")).toBeInTheDocument();
     });
-
-    expect(screen.getByText("관심 등록 완료")).toBeInTheDocument();
     const returnButton = screen.getByRole("button", { name: "돌아가기" });
     fireEvent.click(returnButton);
     expect(mockBack).toHaveBeenCalledTimes(1);
-    vi.useRealTimers();
   });
 });
