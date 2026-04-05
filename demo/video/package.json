@@ -1,0 +1,27 @@
+{
+  "name": "colorfit-demo-video",
+  "version": "1.0.0",
+  "description": "ColorFit AI 퍼스널컬러 앱 데모 영상",
+  "scripts": {
+    "start": "npx remotion studio",
+    "render": "npx remotion render src/index.ts ColorFitDemo output/colorfit-demo.mp4 --width=1920 --height=1080 --concurrency=4",
+    "tts": "npx ts-node --project tsconfig.node.json scripts/generate-tts.ts"
+  },
+  "dependencies": {
+    "@remotion/bundler": "^4.0.437",
+    "@remotion/cli": "^4.0.445",
+    "@remotion/google-fonts": "^4.0.437",
+    "@remotion/media-utils": "^4.0.437",
+    "@remotion/renderer": "^4.0.437",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.437"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

@@ -1,0 +1,119 @@
+[
+  {
+    "persona": "페르소나 A (여성 20대·여름쿨소프트·데이트)",
+    "id": "login",
+    "title": "① 로그인 화면",
+    "desc": "카카오/구글 OAuth + 게스트 진입. 데모는 JWT 주입으로 우회.",
+    "url": "/login",
+    "screenshot": "screenshots/A_01_login.png",
+    "timestamp": "2026-04-05T22:57:42.185Z"
+  },
+  {
+    "persona": "페르소나 A (여성 20대·여름쿨소프트·데이트)",
+    "id": "onb1",
+    "title": "② Step1 성별/연령",
+    "desc": "여성·20대 선택",
+    "url": "/onboarding/step1",
+    "screenshot": "screenshots/A_02_onb1.png",
+    "timestamp": "2026-04-05T22:57:43.197Z"
+  },
+  {
+    "persona": "페르소나 A (여성 20대·여름쿨소프트·데이트)",
+    "id": "onb2_tone",
+    "title": "③ Step2 톤 확장",
+    "desc": "여름쿨 → 소프트/라이트/뮤트 확장",
+    "url": "/onboarding/step2",
+    "screenshot": "screenshots/A_03_onb2_tone.png",
+    "timestamp": "2026-04-05T22:57:46.413Z"
+  },
+  {
+    "persona": "페르소나 A (여성 20대·여름쿨소프트·데이트)",
+    "id": "feed",
+    "title": "④ 피드 진입",
+    "desc": "여름쿨소프트 + 데이트 맞춤 피드 (5022 outfits)",
+    "url": "/feed",
+    "screenshot": "screenshots/A_04_feed.png",
+    "timestamp": "2026-04-05T22:57:54.967Z"
+  },
+  {
+    "persona": "페르소나 A (여성 20대·여름쿨소프트·데이트)",
+    "id": "dislike_swipe",
+    "title": "⑤ 스와이프 싫어요",
+    "desc": "좌스와이프로 관심없음 처리 → 피드에서 제거",
+    "url": "/feed",
+    "screenshot": "screenshots/A_05_dislike_swipe.png",
+    "timestamp": "2026-04-05T22:57:59.246Z"
+  },
+  {
+    "persona": "페르소나 A (여성 20대·여름쿨소프트·데이트)",
+    "id": "save_heart",
+    "title": "⑥ 하트 저장",
+    "desc": "reactions 테이블 기록 (onConflict 지원)",
+    "url": "/feed",
+    "screenshot": "screenshots/A_06_save_heart.png",
+    "timestamp": "2026-04-05T22:58:00.746Z"
+  },
+  {
+    "persona": "페르소나 A (여성 20대·여름쿨소프트·데이트)",
+    "id": "detail",
+    "title": "⑦ 코디 상세 & 5축 스코어",
+    "desc": "PCF·OF·CH·PE·SF 레이더 + 추천 이유",
+    "url": "/outfit/outfit_f_winterco_weekend_fa_20_001_winter_cool_strong",
+    "screenshot": "screenshots/A_07_detail.png",
+    "timestamp": "2026-04-05T22:58:03.536Z"
+  },
+  {
+    "persona": "페르소나 A (여성 20대·여름쿨소프트·데이트)",
+    "id": "detail_items",
+    "title": "⑧ 아이템 리스트",
+    "desc": "상품별 외부 링크 (무신사/29cm)",
+    "url": "/outfit/outfit_f_winterco_weekend_fa_20_001_winter_cool_strong",
+    "screenshot": "screenshots/A_08_detail_items.png",
+    "timestamp": "2026-04-05T22:58:04.612Z"
+  },
+  {
+    "persona": "페르소나 A (여성 20대·여름쿨소프트·데이트)",
+    "id": "tryon_loading",
+    "title": "⑨ 착장샷 생성 중",
+    "desc": "Gemini 2.5 Flash Image로 AI 합성 (10~30초)",
+    "url": "/outfit/outfit_f_winterco_weekend_fa_20_001_winter_cool_strong",
+    "screenshot": "screenshots/A_09_tryon_loading.png",
+    "timestamp": "2026-04-05T22:58:05.339Z"
+  },
+  {
+    "persona": "페르소나 A (여성 20대·여름쿨소프트·데이트)",
+    "id": "tryon_result",
+    "title": "⑩ 착장샷 결과",
+    "desc": "Gemini nano-banana 생성 이미지",
+    "url": "/outfit/outfit_f_winterco_weekend_fa_20_001_winter_cool_strong",
+    "screenshot": "screenshots/A_10_tryon_result.png",
+    "timestamp": "2026-04-05T22:58:21.954Z"
+  },
+  {
+    "persona": "페르소나 A (여성 20대·여름쿨소프트·데이트)",
+    "id": "compare_picker",
+    "title": "⑪ 비교 대상 선택",
+    "desc": "저장한 코디 중 1개 선택 → A vs B",
+    "url": "/outfit/outfit_f_winterco_weekend_fa_20_001_winter_cool_strong",
+    "screenshot": "screenshots/A_11_compare_picker.png",
+    "timestamp": "2026-04-05T22:58:25.069Z"
+  },
+  {
+    "persona": "페르소나 A (여성 20대·여름쿨소프트·데이트)",
+    "id": "saved_list",
+    "title": "⑬ 저장 목록",
+    "desc": "정렬(최근/점수/가격) + Top Pick + A vs B 진입점",
+    "url": "/saved",
+    "screenshot": "screenshots/A_12_saved_list.png",
+    "timestamp": "2026-04-05T22:58:29.423Z"
+  },
+  {
+    "persona": "페르소나 A (여성 20대·여름쿨소프트·데이트)",
+    "id": "profile",
+    "title": "⑭ 프로필",
+    "desc": "톤 정보 · 설정 · 로그아웃",
+    "url": "/profile",
+    "screenshot": "screenshots/A_13_profile.png",
+    "timestamp": "2026-04-05T22:58:31.923Z"
+  }
+]

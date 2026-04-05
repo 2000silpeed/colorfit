@@ -1,0 +1,240 @@
+{
+  "totalDuration": 264.187375,
+  "silenceGap": 0.4,
+  "segments": [
+    {
+      "sceneId": "intro",
+      "speechDuration": 8.490958333333333,
+      "start": 0,
+      "end": 8.490958333333333
+    },
+    {
+      "sceneId": "persona_a_intro",
+      "speechDuration": 7.050958333333333,
+      "start": 8.890958333333334,
+      "end": 15.941916666666668
+    },
+    {
+      "sceneId": "a_login",
+      "speechDuration": 4.250958333333333,
+      "start": 16.341916666666666,
+      "end": 20.592875
+    },
+    {
+      "sceneId": "a_onb1",
+      "speechDuration": 7.290958333333333,
+      "start": 20.992874999999998,
+      "end": 28.28383333333333
+    },
+    {
+      "sceneId": "a_onb2_tone",
+      "speechDuration": 8.570958333333333,
+      "start": 28.68383333333333,
+      "end": 37.25479166666666
+    },
+    {
+      "sceneId": "a_feed",
+      "speechDuration": 9.650958333333334,
+      "start": 37.65479166666666,
+      "end": 47.305749999999996
+    },
+    {
+      "sceneId": "a_dislike_swipe",
+      "speechDuration": 4.850958333333334,
+      "start": 47.705749999999995,
+      "end": 52.556708333333326
+    },
+    {
+      "sceneId": "a_save_heart",
+      "speechDuration": 3.250958333333333,
+      "start": 52.956708333333324,
+      "end": 56.207666666666654
+    },
+    {
+      "sceneId": "a_detail",
+      "speechDuration": 15.490958333333333,
+      "start": 56.60766666666665,
+      "end": 72.09862499999998
+    },
+    {
+      "sceneId": "a_detail_items",
+      "speechDuration": 7.210958333333333,
+      "start": 72.49862499999999,
+      "end": 79.70958333333333
+    },
+    {
+      "sceneId": "a_tryon_loading",
+      "speechDuration": 4.850958333333334,
+      "start": 80.10958333333333,
+      "end": 84.96054166666667
+    },
+    {
+      "sceneId": "a_tryon_result",
+      "speechDuration": 6.850958333333334,
+      "start": 85.36054166666668,
+      "end": 92.21150000000002
+    },
+    {
+      "sceneId": "a_compare_picker",
+      "speechDuration": 4.6509583333333335,
+      "start": 92.61150000000002,
+      "end": 97.26245833333336
+    },
+    {
+      "sceneId": "a_saved_list",
+      "speechDuration": 9.730958333333334,
+      "start": 97.66245833333336,
+      "end": 107.3934166666667
+    },
+    {
+      "sceneId": "persona_b_intro",
+      "speechDuration": 7.530958333333333,
+      "start": 107.7934166666667,
+      "end": 115.32437500000003
+    },
+    {
+      "sceneId": "b_feed_entry",
+      "speechDuration": 5.170958333333333,
+      "start": 115.72437500000004,
+      "end": 120.89533333333337
+    },
+    {
+      "sceneId": "b_tpo_commute",
+      "speechDuration": 5.450958333333333,
+      "start": 121.29533333333337,
+      "end": 126.7462916666667
+    },
+    {
+      "sceneId": "b_budget_open",
+      "speechDuration": 7.090958333333333,
+      "start": 127.14629166666671,
+      "end": 134.23725000000005
+    },
+    {
+      "sceneId": "b_brand_filter",
+      "speechDuration": 5.330958333333333,
+      "start": 134.63725000000005,
+      "end": 139.9682083333334
+    },
+    {
+      "sceneId": "b_detail",
+      "speechDuration": 4.890958333333334,
+      "start": 140.3682083333334,
+      "end": 145.25916666666674
+    },
+    {
+      "sceneId": "b_detail_score",
+      "speechDuration": 4.6109583333333335,
+      "start": 145.65916666666675,
+      "end": 150.2701250000001
+    },
+    {
+      "sceneId": "b_save_multi",
+      "speechDuration": 5.810958333333334,
+      "start": 150.6701250000001,
+      "end": 156.48108333333343
+    },
+    {
+      "sceneId": "b_saved_list",
+      "speechDuration": 3.730958333333333,
+      "start": 156.88108333333344,
+      "end": 160.61204166666676
+    },
+    {
+      "sceneId": "b_top_pick",
+      "speechDuration": 6.410958333333333,
+      "start": 161.01204166666676,
+      "end": 167.4230000000001
+    },
+    {
+      "sceneId": "b_saved_sort_score",
+      "speechDuration": 5.450958333333333,
+      "start": 167.8230000000001,
+      "end": 173.27395833333344
+    },
+    {
+      "sceneId": "persona_c_intro",
+      "speechDuration": 8.570958333333333,
+      "start": 173.67395833333345,
+      "end": 182.24491666666677
+    },
+    {
+      "sceneId": "c_feed",
+      "speechDuration": 5.970958333333333,
+      "start": 182.64491666666677,
+      "end": 188.6158750000001
+    },
+    {
+      "sceneId": "c_tpo_event",
+      "speechDuration": 4.6109583333333335,
+      "start": 189.0158750000001,
+      "end": 193.62683333333345
+    },
+    {
+      "sceneId": "c_profile",
+      "speechDuration": 5.490958333333333,
+      "start": 194.02683333333346,
+      "end": 199.5177916666668
+    },
+    {
+      "sceneId": "c_tone_detail",
+      "speechDuration": 7.130958333333333,
+      "start": 199.9177916666668,
+      "end": 207.04875000000013
+    },
+    {
+      "sceneId": "c_tone_change",
+      "speechDuration": 3.4909583333333334,
+      "start": 207.44875000000013,
+      "end": 210.93970833333347
+    },
+    {
+      "sceneId": "c_premium",
+      "speechDuration": 5.050958333333333,
+      "start": 211.33970833333348,
+      "end": 216.39066666666682
+    },
+    {
+      "sceneId": "c_closet",
+      "speechDuration": 4.450958333333333,
+      "start": 216.79066666666682,
+      "end": 221.24162500000017
+    },
+    {
+      "sceneId": "c_closet_upload",
+      "speechDuration": 4.730958333333334,
+      "start": 221.64162500000018,
+      "end": 226.37258333333352
+    },
+    {
+      "sceneId": "c_closet_analyzing",
+      "speechDuration": 6.210958333333333,
+      "start": 226.77258333333353,
+      "end": 232.98354166666687
+    },
+    {
+      "sceneId": "c_closet_analyze",
+      "speechDuration": 7.370958333333333,
+      "start": 233.38354166666687,
+      "end": 240.7545000000002
+    },
+    {
+      "sceneId": "c_brands",
+      "speechDuration": 6.010958333333333,
+      "start": 241.1545000000002,
+      "end": 247.16545833333353
+    },
+    {
+      "sceneId": "c_preference",
+      "speechDuration": 6.490958333333333,
+      "start": 247.56545833333354,
+      "end": 254.05641666666688
+    },
+    {
+      "sceneId": "outro",
+      "speechDuration": 9.730958333333334,
+      "start": 254.45641666666688,
+      "end": 264.1873750000002
+    }
+  ]
+}

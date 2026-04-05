@@ -40,7 +40,6 @@ test("페르소나 A — 여성 20대 · 여름쿨소프트 · 소개팅 룩", a
   await page.waitForURL(/\/step5/);
   await page.getByRole("button", { name: /취향 분석 건너뛰기/ }).click();
   await page.waitForURL(/\/feed/, { timeout: 15_000 });
-  await page.waitForTimeout(1500);
 
   // 온보딩 후 user_id 재발급
   const newUid = await page.evaluate(() => localStorage.getItem("colorfit_user_id"));
@@ -50,6 +49,9 @@ test("페르소나 A — 여성 20대 · 여름쿨소프트 · 소개팅 룩", a
   }
   const userId = newUid!;
 
+  // 피드 카드가 실제로 렌더링될 때까지 대기
+  await page.locator("article[role='link']").first().waitFor({ state: "visible", timeout: 15_000 });
+  await page.waitForTimeout(500);
   await rec.shoot(page, "feed", "④ 피드 진입", "여름쿨소프트 + 데이트 맞춤 피드 (5022 outfits)");
 
   // 스와이프 싫어요
@@ -79,7 +81,9 @@ test("페르소나 A — 여성 20대 · 여름쿨소프트 · 소개팅 룩", a
   });
   await card.click();
   await page.waitForURL(/\/outfit\//, { timeout: 10_000 });
-  await page.waitForTimeout(1500);
+  // 스켈레톤이 사라지고 실제 콘텐츠(제목 h1)가 나타날 때까지 대기
+  await page.locator("h1").first().waitFor({ state: "visible", timeout: 10_000 });
+  await page.waitForTimeout(500);
   await rec.shoot(page, "detail", "⑦ 코디 상세 & 5축 스코어", "PCF·OF·CH·PE·SF 레이더 + 추천 이유");
 
   await page.mouse.wheel(0, 400);

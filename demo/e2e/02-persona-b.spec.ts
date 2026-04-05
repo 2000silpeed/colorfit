@@ -51,7 +51,9 @@ test("페르소나 B — 남성 30대 · 가을웜딥 · 출근룩", async ({ pa
   const card = page.locator("article[role='link']").first();
   await card.click();
   await page.waitForURL(/\/outfit\//, { timeout: 10_000 });
-  await page.waitForTimeout(1500);
+  // 스켈레톤이 사라지고 실제 콘텐츠(제목 h1)가 나타날 때까지 대기
+  await page.locator("h1").first().waitFor({ state: "visible", timeout: 10_000 });
+  await page.waitForTimeout(500);
   await rec.shoot(page, "detail", "⑤ 코디 상세", "가을웜딥 + 출근 스코어 + 5축 레이더");
 
   // 6. 상세에서 스코어 확인 스크롤
@@ -90,6 +92,8 @@ test("페르소나 B — 남성 30대 · 가을웜딥 · 출근룩", async ({ pa
   const scoreSortBtn = page.getByRole("button", { name: "점수순" }).first();
   if (await scoreSortBtn.count()) {
     await scoreSortBtn.click();
+    // 정렬 후 이미지가 로딩될 때까지 대기
+    await page.locator("img").first().waitFor({ state: "visible", timeout: 10_000 });
     await page.waitForTimeout(800);
     await rec.shoot(page, "saved_sort_score", "⑩ 점수순 정렬", "저장 코디 스코어 기준 재정렬");
   }

@@ -1,0 +1,92 @@
+[
+  {
+    "persona": "페르소나 B (남성 30대·가을웜딥·출근)",
+    "id": "feed_entry",
+    "title": "① 피드 진입 (게스트 + 프로필 프리셋)",
+    "desc": "가을웜딥 + 남성 + 30대 맞춤 피드",
+    "url": "/feed",
+    "screenshot": "screenshots/B_01_feed_entry.png",
+    "timestamp": "2026-04-05T22:58:38.151Z"
+  },
+  {
+    "persona": "페르소나 B (남성 30대·가을웜딥·출근)",
+    "id": "tpo_commute",
+    "title": "② 출근 TPO 필터",
+    "desc": "오피스 포멀 코디 우선 노출",
+    "url": "/feed",
+    "screenshot": "screenshots/B_02_tpo_commute.png",
+    "timestamp": "2026-04-05T22:58:40.105Z"
+  },
+  {
+    "persona": "페르소나 B (남성 30대·가을웜딥·출근)",
+    "id": "budget_open",
+    "title": "③ 예산 슬라이더 열기",
+    "desc": "듀얼 레인지 슬라이더 (0~50만원, 1만 단위)",
+    "url": "/feed",
+    "screenshot": "screenshots/B_03_budget_open.png",
+    "timestamp": "2026-04-05T22:58:41.409Z"
+  },
+  {
+    "persona": "페르소나 B (남성 30대·가을웜딥·출근)",
+    "id": "brand_filter",
+    "title": "④ 추천 브랜드 필터",
+    "desc": "선호 브랜드 아이템만 노출 (프리퍼런스 기반)",
+    "url": "/feed",
+    "screenshot": "screenshots/B_04_brand_filter.png",
+    "timestamp": "2026-04-05T22:58:43.089Z"
+  },
+  {
+    "persona": "페르소나 B (남성 30대·가을웜딥·출근)",
+    "id": "detail",
+    "title": "⑤ 코디 상세",
+    "desc": "가을웜딥 + 출근 스코어 + 5축 레이더",
+    "url": "/outfit/outfit_m_winterco_commute_fa_30_002_winter_cool_strong",
+    "screenshot": "screenshots/B_05_detail.png",
+    "timestamp": "2026-04-05T22:58:46.019Z"
+  },
+  {
+    "persona": "페르소나 B (남성 30대·가을웜딥·출근)",
+    "id": "detail_score",
+    "title": "⑥ 5축 스코어 전체",
+    "desc": "PCF·OF·CH·PE·SF 각 축 설명 + 툴팁",
+    "url": "/outfit/outfit_m_winterco_commute_fa_30_002_winter_cool_strong",
+    "screenshot": "screenshots/B_06_detail_score.png",
+    "timestamp": "2026-04-05T22:58:47.121Z"
+  },
+  {
+    "persona": "페르소나 B (남성 30대·가을웜딥·출근)",
+    "id": "save_multi",
+    "title": "⑦ 복수 저장 (3개)",
+    "desc": "Top Pick 진입 조건 충족 (2개 이상)",
+    "url": "/feed",
+    "screenshot": "screenshots/B_07_save_multi.png",
+    "timestamp": "2026-04-05T22:58:50.211Z"
+  },
+  {
+    "persona": "페르소나 B (남성 30대·가을웜딥·출근)",
+    "id": "saved_list",
+    "title": "⑧ 저장 목록",
+    "desc": "Top Pick + A vs B 버튼 노출",
+    "url": "/saved",
+    "screenshot": "screenshots/B_08_saved_list.png",
+    "timestamp": "2026-04-05T22:58:54.443Z"
+  },
+  {
+    "persona": "페르소나 B (남성 30대·가을웜딥·출근)",
+    "id": "top_pick",
+    "title": "⑨ Top Pick 추천",
+    "desc": "저장 코디 중 최고 스코어 1개 자동 선별 (5축 가중 평균)",
+    "url": "/saved",
+    "screenshot": "screenshots/B_09_top_pick.png",
+    "timestamp": "2026-04-05T22:58:57.589Z"
+  },
+  {
+    "persona": "페르소나 B (남성 30대·가을웜딥·출근)",
+    "id": "saved_sort_score",
+    "title": "⑩ 점수순 정렬",
+    "desc": "저장 코디 스코어 기준 재정렬",
+    "url": "/saved",
+    "screenshot": "screenshots/B_10_saved_sort_score.png",
+    "timestamp": "2026-04-05T22:58:59.373Z"
+  }
+]
