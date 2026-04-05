@@ -243,7 +243,7 @@ export default function ComparePage() {
       className="min-h-screen"
       style={{
         backgroundColor: "var(--color-bg-primary)",
-        paddingBottom: "calc(100px + env(safe-area-inset-bottom, 0px))",
+        paddingBottom: "calc(160px + env(safe-area-inset-bottom, 0px))",
       }}
     >
       {/* ── 헤더 ── */}
@@ -465,13 +465,14 @@ export default function ComparePage() {
         </div>
       </section>
 
-      {/* ── 하단 CTA ── */}
+      {/* ── 하단 CTA (BottomTabBar 위에 고정) ── */}
       <div
-        className="fixed bottom-0 left-0 right-0 z-30 border-t"
+        className="fixed left-0 right-0 z-40 border-t"
         style={{
           backgroundColor: "var(--color-bg-primary)",
           borderColor: "var(--color-border)",
-          paddingBottom: "calc(12px + env(safe-area-inset-bottom, 0px))",
+          bottom: "calc(60px + env(safe-area-inset-bottom, 0px))",
+          paddingBottom: "12px",
         }}
       >
         <div className="flex gap-[12px] px-[20px] py-[12px] max-w-[430px] mx-auto">

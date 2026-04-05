@@ -690,12 +690,15 @@ export default function OutfitDetailPage() {
           </section>
         )}
 
-        {/* 하단 여백 (CTA 겹침 방지) */}
-        <div className="h-[160px]" />
+        {/* 하단 여백 (CTA + BottomTabBar 겹침 방지) */}
+        <div className="h-[220px]" />
       </main>
 
-      {/* ── 하단 CTA ── */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 bg-bg-primary/95 backdrop-blur-sm border-t border-border">
+      {/* ── 하단 CTA (BottomTabBar 위에 고정) ── */}
+      <div
+        className="fixed left-0 right-0 z-40 bg-bg-primary/95 backdrop-blur-sm border-t border-border"
+        style={{ bottom: "calc(60px + env(safe-area-inset-bottom, 0px))" }}
+      >
         <div className="flex flex-col gap-[8px] px-[20px] py-[12px] max-w-[768px] mx-auto">
           <button
             type="button"
