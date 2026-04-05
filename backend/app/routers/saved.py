@@ -44,7 +44,13 @@ async def get_saved(
     result = await db.execute(stmt)
     raw_ids = result.scalars().all()
 
-    outfit_ids = [oid for oid in raw_ids if oid]
+    # 중복 제거 (최근 저장 순서 보존: 동일 outfit에 save 반응이 여러 번 쌓인 경우 대비)
+    outfit_ids: list[str] = []
+    seen: set[str] = set()
+    for oid in raw_ids:
+        if oid and oid not in seen:
+            outfit_ids.append(oid)
+            seen.add(oid)
     if not outfit_ids:
         return {"outfits": [], "total": 0}
 
