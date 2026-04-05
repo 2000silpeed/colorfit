@@ -820,7 +820,8 @@ W5 ─── 단독 실행 (통합 작업)
 **Task 5.8 — 버그 수정 + 크로스 브라우저**
 - [ ] 발견된 버그 목록 정리 + 수정
 - [ ] Chrome + Safari 테스트
-- [ ] 에러 바운더리 추가
+- [x] 에러 바운더리 추가 — `app/global-error.tsx` (루트 HTML 대체) + `app/error.tsx` (라우트 단위) + `app/not-found.tsx` 추가, 다시 시도/홈으로 CTA (44×44)
+- [x] reactions 테이블 `(user_id, outfit_id, reaction_type)` UNIQUE 제약 + save/unsave upsert 처리 — `reaction.py`에 `ON CONFLICT DO NOTHING` 적용, 모델 `__table_args__` UniqueConstraint 추가, 기존 DB용 `scripts/migrate_reactions_unique.sql` (dedup → ADD CONSTRAINT) 제공, `create_tables.py` DDL 동기화
 
 **Task 5.9 — 성능 최적화**
 - [ ] next/image 최적화 + lazy loading

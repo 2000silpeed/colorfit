@@ -72,9 +72,10 @@ CREATE INDEX IF NOT EXISTS ix_outfits_gender ON outfits(gender);
 CREATE TABLE IF NOT EXISTS reactions (
     id SERIAL PRIMARY KEY,
     user_id VARCHAR(36),
-    outfit_id VARCHAR(50),
+    outfit_id VARCHAR(100),
     reaction_type VARCHAR(10),
-    created_at TIMESTAMPTZ DEFAULT NOW()
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    CONSTRAINT uq_reactions_user_outfit_type UNIQUE (user_id, outfit_id, reaction_type)
 );
 
 CREATE TABLE IF NOT EXISTS style_seeds (
