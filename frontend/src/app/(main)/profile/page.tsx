@@ -1,9 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { motion, useReducedMotion } from "framer-motion";
-import { fetchToneDetail, type ToneDetailResponse } from "@/lib/api";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { deleteUser, fetchToneDetail, type ToneDetailResponse } from "@/lib/api";
+
+function clearColorfitStorage(): void {
+  for (let i = localStorage.length - 1; i >= 0; i--) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith("colorfit_")) {
+      localStorage.removeItem(key);
+    }
+  }
+}
 
 /* ── 톤별 그라데이션 매핑 ── */
 const TONE_GRADIENTS: Record<string, string> = {
@@ -79,9 +88,37 @@ export default function ProfilePage() {
   const [tone, setTone] = useState<ToneDetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const handleLogout = useCallback(() => {
+    clearColorfitStorage();
+    router.replace("/login");
+  }, [router]);
+
+  const handleDeleteAccount = useCallback(async () => {
+    if (deleting) return;
+    const userId = localStorage.getItem("colorfit_user_id");
+    if (!userId) {
+      clearColorfitStorage();
+      router.replace("/login");
+      return;
+    }
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await deleteUser(userId);
+      clearColorfitStorage();
+      router.replace("/login");
+    } catch {
+      setDeleteError("계정 삭제에 실패했어요. 다시 시도해주세요.");
+      setDeleting(false);
+    }
+  }, [deleting, router]);
 
   const toneId = typeof window !== "undefined"
-    ? localStorage.getItem("colorfit_tone_id") ?? "summer_cool_soft"
+    ? localStorage.getItem("colorfit_tone_id") ?? localStorage.getItem("colorfit_tone") ?? "summer_cool_soft"
     : "summer_cool_soft";
   const gender = typeof window !== "undefined"
     ? localStorage.getItem("colorfit_gender") ?? "female"
@@ -333,6 +370,8 @@ export default function ProfilePage() {
 
         <div className="space-y-[2px]">
           <button
+            type="button"
+            onClick={handleLogout}
             className="flex items-center justify-between w-full py-[14px] border-b"
             style={{ borderColor: "var(--color-border)" }}
           >
@@ -343,8 +382,95 @@ export default function ProfilePage() {
               <path d="M6 3l5 5-5 5" stroke="var(--color-text-tertiary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
+          <button
+            type="button"
+            onClick={() => setShowDeleteDialog(true)}
+            className="flex items-center justify-between w-full py-[14px] border-b"
+            style={{ borderColor: "var(--color-border)" }}
+          >
+            <span className="text-[15px]" style={{ fontFamily: "var(--font-body)", color: "var(--color-accent)" }}>
+              계정 삭제
+            </span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M6 3l5 5-5 5" stroke="var(--color-text-tertiary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
         </div>
       </motion.div>
+
+      {/* 계정 삭제 확인 다이얼로그 */}
+      <AnimatePresence>
+        {showDeleteDialog && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/40 z-40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => !deleting && setShowDeleteDialog(false)}
+            />
+            <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="delete-dialog-title"
+              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[320px] bg-bg-primary rounded-[var(--radius-lg)] p-[20px] shadow-lg"
+              initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.2 }}
+            >
+              <h3
+                id="delete-dialog-title"
+                className="text-[17px] text-text-primary mb-[8px]"
+                style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
+              >
+                계정을 삭제할까요?
+              </h3>
+              <p
+                className="text-[13px] text-text-secondary leading-[1.5] mb-[20px]"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                저장한 옷장, 코디, 취향 데이터가 모두 삭제되며 복구할 수 없어요.
+              </p>
+              {deleteError && (
+                <p
+                  className="text-[13px] mb-[12px]"
+                  style={{ fontFamily: "var(--font-body)", color: "var(--color-accent)" }}
+                >
+                  {deleteError}
+                </p>
+              )}
+              <div className="flex gap-[8px]">
+                <button
+                  type="button"
+                  onClick={() => setShowDeleteDialog(false)}
+                  disabled={deleting}
+                  className="flex-1 py-[12px] rounded-full text-[14px] font-medium border disabled:opacity-60"
+                  style={{
+                    fontFamily: "var(--font-body)",
+                    borderColor: "var(--color-border)",
+                    color: "var(--color-text-primary)",
+                  }}
+                >
+                  취소
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDeleteAccount}
+                  disabled={deleting}
+                  className="flex-1 py-[12px] rounded-full text-[14px] font-medium text-white disabled:opacity-60"
+                  style={{
+                    fontFamily: "var(--font-body)",
+                    backgroundColor: "var(--color-accent)",
+                  }}
+                >
+                  {deleting ? "삭제 중..." : "삭제"}
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

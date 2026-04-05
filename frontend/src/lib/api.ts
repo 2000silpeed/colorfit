@@ -350,6 +350,45 @@ export async function analyzeClosetItem(
   return res.json();
 }
 
+export interface AddClosetItemRequest {
+  user_id: string;
+  image_url: string;
+  category?: string | null;
+  dominant_color_hex?: string | null;
+  matched_tone_id?: string | null;
+  pcf_score?: number | null;
+  overall_score?: number | null;
+  reasons?: string[] | null;
+}
+
+export interface AddClosetItemResponse {
+  id: string;
+  message: string;
+}
+
+export async function addClosetItem(
+  payload: AddClosetItemRequest,
+): Promise<AddClosetItemResponse> {
+  const res = await fetch(`${API_BASE}/api/closet`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    throw new Error(`Add closet item error: ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function deleteUser(userId: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/api/user/${userId}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) {
+    throw new Error(`Delete user error: ${res.status}`);
+  }
+}
+
 /* ── 역방향 추천 ── */
 
 export interface RecommendedProduct {

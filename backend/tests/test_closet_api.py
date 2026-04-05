@@ -175,6 +175,50 @@ class TestGetClosetStats:
 # ── 에러 케이스 ──
 
 
+class TestAddClosetItem:
+    @pytest.mark.asyncio
+    async def test_add_item_success(self, empty_client):
+        new_user = str(uuid.uuid4())
+        resp = await empty_client.post("/api/closet", json={
+            "user_id": new_user,
+            "image_url": "https://example.com/new.jpg",
+            "category": "top",
+            "dominant_color_hex": "#FF0000",
+            "matched_tone_id": "spring_warm_light",
+            "pcf_score": 85.0,
+            "overall_score": 80.0,
+        })
+        assert resp.status_code == 201
+        data = resp.json()
+        assert "id" in data
+        assert data["message"] == "옷장에 추가되었습니다"
+
+        list_resp = await empty_client.get(f"/api/closet?user_id={new_user}")
+        assert list_resp.status_code == 200
+        items = list_resp.json()["items"]
+        assert len(items) == 1
+        assert items[0]["image_url"] == "https://example.com/new.jpg"
+        assert items[0]["category"] == "top"
+        assert items[0]["pcf_score"] == 85.0
+
+    @pytest.mark.asyncio
+    async def test_add_item_rejects_http(self, empty_client):
+        new_user = str(uuid.uuid4())
+        resp = await empty_client.post("/api/closet", json={
+            "user_id": new_user,
+            "image_url": "http://example.com/insecure.jpg",
+        })
+        assert resp.status_code == 422
+
+    @pytest.mark.asyncio
+    async def test_add_item_invalid_user_id(self, empty_client):
+        resp = await empty_client.post("/api/closet", json={
+            "user_id": "not-a-uuid",
+            "image_url": "https://example.com/new.jpg",
+        })
+        assert resp.status_code == 422
+
+
 class TestGetClosetValidation:
     @pytest.mark.asyncio
     async def test_missing_user_id_returns_422(self, client):

@@ -31,6 +31,29 @@ class ClosetAnalyzeResponse(BaseModel):
     reasons: list[str]
 
 
+class ClosetItemAddRequest(BaseModel):
+    user_id: str
+    image_url: HttpUrl
+    category: str | None = None
+    dominant_color_hex: str | None = None
+    matched_tone_id: str | None = None
+    pcf_score: float | None = None
+    overall_score: float | None = None
+    reasons: list[str] | None = None
+
+    @field_validator("image_url")
+    @classmethod
+    def must_be_https(cls, v: HttpUrl) -> HttpUrl:
+        if str(v).startswith("http://"):
+            raise ValueError("https URL만 허용됩니다")
+        return v
+
+
+class ClosetItemAddResponse(BaseModel):
+    id: str
+    message: str
+
+
 class ClosetItemResponse(BaseModel):
     id: str
     image_url: str

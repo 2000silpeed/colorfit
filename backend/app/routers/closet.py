@@ -21,6 +21,8 @@ from app.models.closet_item import ClosetItem
 from app.schemas.closet import (
     ClosetAnalyzeRequest,
     ClosetAnalyzeResponse,
+    ClosetItemAddRequest,
+    ClosetItemAddResponse,
     ClosetItemResponse,
     ClosetListResponse,
     ClosetStats,
@@ -81,6 +83,39 @@ async def get_closet(
     )
 
     return ClosetListResponse(items=items, stats=stats)
+
+
+@router.post("", response_model=ClosetItemAddResponse, status_code=201)
+async def add_closet_item(
+    req: ClosetItemAddRequest,
+    db: AsyncSession = Depends(get_db),
+) -> ClosetItemAddResponse:
+    """사용자 옷장에 아이템 추가."""
+    try:
+        user_uuid = uuid.UUID(req.user_id)
+    except ValueError:
+        raise HTTPException(status_code=422, detail="유효하지 않은 user_id 형식입니다")
+
+    item = ClosetItem(
+        id=uuid.uuid4(),
+        user_id=user_uuid,
+        image_url=str(req.image_url),
+        category=req.category,
+        dominant_color_hex=req.dominant_color_hex,
+        matched_tone_id=req.matched_tone_id,
+        pcf_score=req.pcf_score,
+        overall_score=req.overall_score,
+        reasons=req.reasons,
+    )
+    db.add(item)
+    try:
+        await db.commit()
+    except Exception:
+        logger.exception("옷장 아이템 추가 실패")
+        await db.rollback()
+        raise HTTPException(status_code=500, detail="옷장 추가 중 오류가 발생했습니다")
+
+    return ClosetItemAddResponse(id=str(item.id), message="옷장에 추가되었습니다")
 
 
 @router.post("/analyze", response_model=ClosetAnalyzeResponse)

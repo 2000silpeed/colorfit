@@ -239,6 +239,8 @@ export default function ToneDetailPage() {
       {/* 톤 변경 버튼 */}
       <div className="px-[20px] pb-[32px]">
         <button
+          type="button"
+          onClick={() => router.push("/onboarding/step2?mode=change")}
           className="w-full py-[14px] text-center text-[14px] text-accent"
           style={{ fontFamily: "var(--font-body)", fontWeight: 500 }}
         >

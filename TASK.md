@@ -6,7 +6,7 @@
 1. ✅ 로그인 진입 경로 없음 → 루트(/) 분기 구현 (Task 5.1)
 2. ✅ OAuth GET redirect 백엔드 없음 → GET /api/auth/kakao, /google 추가 (Task 5.1)
 3. ✅ OAuth 콜백 페이지 프론트 없음 → callback 페이지 생성 (Task 5.1)
-4. ❌ 온보딩 뒤로가기 버튼 없음 (건너뛰기만)
+4. ✅ 온보딩 뒤로가기 버튼 추가 (Step1→로그인, Step2~5→이전스텝) (Task 5.3)
 5. ❌ 옷장 저장 API 미연동 (TODO 주석)
 6. ❌ 프로필 로그아웃 onClick 없음
 7. ❌ 프로필 계정 삭제 미구현
@@ -780,24 +780,24 @@ W5 ─── 단독 실행 (통합 작업)
 
 ### 🅑 기능 연결 (Task 5.3~5.6) ⭐ 필수
 
-**Task 5.3 — 온보딩 뒤로가기**
-- [ ] 각 Step에 뒤로가기 버튼 추가 (Step1 제외 — Step1에서는 로그인 페이지로)
-- [ ] 진행 바에 현재 단계 시각 표시 (현재도 있지만 뒤로 가능함을 알려야)
+**Task 5.3 — 온보딩 뒤로가기** ✅
+- [x] 각 Step에 뒤로가기 버튼 추가 (Step1 제외 — Step1에서는 로그인 페이지로)
+- [x] 진행 바에 현재 단계 시각 표시 (현재도 있지만 뒤로 가능함을 알려야)
 - `frontend/src/app/onboarding/step*/page.tsx`
 - 해결하는 끊김: #4
 
-**Task 5.4 — 옷장 저장 API 연동**
-- [ ] "내 옷장에 추가" → POST /api/closet 실제 호출 (현재 TODO 주석만)
-- [ ] 백엔드 POST /api/closet 엔드포인트 추가
-- [ ] api.ts에 `addClosetItem()` 함수 추가
-- [ ] 저장 성공 시 토스트 + 옷장 이동 선택지
+**Task 5.4 — 옷장 저장 API 연동** ✅
+- [x] "내 옷장에 추가" → POST /api/closet 실제 호출 (현재 TODO 주석만)
+- [x] 백엔드 POST /api/closet 엔드포인트 추가
+- [x] api.ts에 `addClosetItem()` 함수 추가
+- [x] 저장 성공 시 토스트 + 옷장 이동 선택지 🔧 codex 리뷰 반영: 성공 후 버튼 비활성 유지(중복 POST 방지) + refresh() 제거
 - `frontend/src/app/closet/analyze/page.tsx`, `frontend/src/lib/api.ts`, `backend/app/routers/closet.py`
 - 해결하는 끊김: #5
 
-**Task 5.5 — 프로필 기능 완성**
-- [ ] 로그아웃: localStorage 초기화 + 로그인 페이지 이동 (onClick 핸들러 연결)
-- [ ] 계정 삭제: 확인 다이얼로그 → DELETE /api/user → 로그인 페이지
-- [ ] 톤 변경: 톤 상세 페이지 "다른 톤으로 변경하기" → 온보딩 Step2 바텀시트 or 페이지 이동
+**Task 5.5 — 프로필 기능 완성** ✅
+- [x] 로그아웃: localStorage 초기화 + 로그인 페이지 이동 (onClick 핸들러 연결)
+- [x] 계정 삭제: 확인 다이얼로그 → DELETE /api/user → 로그인 페이지
+- [x] 톤 변경: 톤 상세 페이지 "다른 톤으로 변경하기" → 온보딩 Step2 (mode=change) 🔧 codex 리뷰 반영: colorfit_* 키 전부 정리 + 온보딩 layout에서 change 모드시 progress bar 숨김 + step1로 뒤로가기 차단 + season prefix fallback
 - `frontend/src/app/(main)/profile/page.tsx`, `frontend/src/app/tone/[id]/page.tsx`
 - 해결하는 끊김: #6, #7, #8
 
@@ -843,9 +843,9 @@ W5 ─── 단독 실행 (통합 작업)
 ### W5 완료 기준
 - [x] OAuth 로그인 동작 — 카카오/구글 (Task 5.1)
 - [x] 게스트→로그인 전환 동작 (Task 5.2)
-- [ ] 온보딩 뒤로가기 동작 (Task 5.3)
-- [ ] 옷장 저장 API 동작 (Task 5.4)
-- [ ] 프로필 로그아웃/톤 변경 동작 (Task 5.5)
+- [x] 온보딩 뒤로가기 동작 (Task 5.3)
+- [x] 옷장 저장 API 동작 (Task 5.4)
+- [x] 프로필 로그아웃/톤 변경 동작 (Task 5.5)
 - [ ] 프리미엄 구독 + 코디 상세 착장 동작 (Task 5.6)
 - [ ] 프로덕션 URL 접속 가능 (Task 5.10)
 - [ ] 데모 준비 완료 (Task 5.11)

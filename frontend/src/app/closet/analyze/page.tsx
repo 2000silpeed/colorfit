@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
+  addClosetItem,
   analyzeClosetItem,
   fetchClosetRecommendations,
   generateTryon,
@@ -440,6 +441,10 @@ export default function ClosetAnalyzeResultPage() {
   const [recommendations, setRecommendations] = useState<ClosetRecommendationResponse | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
 
+  /* 옷장 추가 상태 */
+  const [addingToCloset, setAddingToCloset] = useState(false);
+  const [closetToast, setClosetToast] = useState<string | null>(null);
+
   /* Try-On 상태 */
   const [tryonOpen, setTryonOpen] = useState(false);
   const [tryonState, setTryonState] = useState<TryOnState>("idle");
@@ -550,10 +555,40 @@ export default function ClosetAnalyzeResultPage() {
     router.push("/premium");
   }, [router]);
 
-  const handleAddToCloset = useCallback(() => {
-    // TODO: POST /api/closet (옷장에 추가 API 연동)
-    router.push("/closet");
-  }, [router]);
+  const handleAddToCloset = useCallback(async () => {
+    if (addingToCloset) return;
+    const userId = localStorage.getItem("colorfit_user_id");
+    if (!userId) {
+      setClosetToast("로그인이 필요해요");
+      setTimeout(() => setClosetToast(null), 1800);
+      return;
+    }
+    if (!analyzeResult) return;
+
+    setAddingToCloset(true);
+    try {
+      await addClosetItem({
+        user_id: userId,
+        image_url: imageUrl,
+        category,
+        dominant_color_hex: analyzeResult.dominant_colors[0]?.hex ?? null,
+        matched_tone_id: analyzeResult.matched_tone_id,
+        pcf_score: analyzeResult.pcf_score,
+        overall_score: analyzeResult.overall_score,
+        reasons: analyzeResult.reasons,
+      });
+      setClosetToast("옷장에 추가되었어요");
+      // 성공: 버튼 비활성 상태 유지 + 자동 이동 (중복 POST 방지)
+      setTimeout(() => {
+        setClosetToast(null);
+        router.push("/closet");
+      }, 900);
+    } catch {
+      setClosetToast("옷장 추가에 실패했어요");
+      setTimeout(() => setClosetToast(null), 1800);
+      setAddingToCloset(false);
+    }
+  }, [addingToCloset, analyzeResult, category, imageUrl, router]);
 
   const handleAnalyzeAnother = useCallback(() => {
     router.push("/closet/upload");
@@ -805,11 +840,29 @@ export default function ClosetAnalyzeResultPage() {
         <button
           type="button"
           onClick={handleAddToCloset}
-          className="flex-1 py-[14px] bg-accent text-white font-body text-[15px] font-medium rounded-[var(--radius-full)]"
+          disabled={addingToCloset}
+          className="flex-1 py-[14px] bg-accent text-white font-body text-[15px] font-medium rounded-[var(--radius-full)] disabled:opacity-60"
         >
-          옷장에 추가
+          {addingToCloset ? "추가 중..." : "옷장에 추가"}
         </button>
       </div>
+
+      {/* 토스트 */}
+      <AnimatePresence>
+        {closetToast && (
+          <motion.div
+            role="status"
+            aria-live="polite"
+            className="fixed bottom-[100px] left-1/2 -translate-x-1/2 z-[60] bg-[#333] text-white text-[14px] font-body px-[20px] py-[10px] rounded-full shadow-lg"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.2 }}
+          >
+            {closetToast}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

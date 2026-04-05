@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 
 const STEPS = [
@@ -23,11 +23,19 @@ interface OnboardingLayoutProps {
 export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isChangeMode = searchParams.get("mode") === "change";
   const currentStep = getCurrentStep(pathname);
   const prefersReducedMotion = useReducedMotion();
 
   const handleBack = () => {
-    if (currentStep > 0) {
+    if (isChangeMode) {
+      router.push("/profile");
+      return;
+    }
+    if (currentStep === 0) {
+      router.push("/login");
+    } else {
       router.push(STEPS[currentStep - 1].path);
     }
   };
@@ -36,29 +44,27 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
     <div className="min-h-dvh flex flex-col bg-bg-primary">
       <header className="sticky top-0 z-10 bg-bg-primary px-[var(--space-md)] pt-[var(--space-md)] pb-[var(--space-sm)]">
         <div className="h-10 flex items-center">
-          {currentStep > 0 && (
-            <button
-              onClick={handleBack}
-              className="flex items-center justify-center w-10 h-10 -ml-2 text-text-primary"
-              aria-label="이전 단계로"
+          <button
+            onClick={handleBack}
+            className="flex items-center justify-center w-10 h-10 -ml-2 text-text-primary"
+            aria-label={isChangeMode ? "프로필로 돌아가기" : currentStep === 0 ? "로그인으로 돌아가기" : "이전 단계로"}
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M15 18l-6-6 6-6" />
-              </svg>
-            </button>
-          )}
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
         </div>
 
-        <div
+        {!isChangeMode && <div
           className="flex gap-[var(--space-xs)] mt-[var(--space-sm)]"
           role="progressbar"
           aria-valuenow={currentStep + 1}
@@ -88,14 +94,14 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
               />
             </div>
           ))}
-        </div>
+        </div>}
 
-        <p
+        {!isChangeMode && <p
           className="mt-[var(--space-xs)] font-body text-text-secondary"
           style={{ fontSize: "13px" }}
         >
           {currentStep + 1} / {STEPS.length}
-        </p>
+        </p>}
       </header>
 
       <main className="flex-1 flex flex-col px-[var(--space-md)]">
