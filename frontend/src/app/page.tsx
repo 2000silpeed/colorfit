@@ -3,10 +3,13 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+import { migrateLegacyTones } from "@/lib/toneMigration";
+
 export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
+    migrateLegacyTones();
     const token = localStorage.getItem("colorfit_token");
     const tone = localStorage.getItem("colorfit_tone");
     const userId = localStorage.getItem("colorfit_user_id");

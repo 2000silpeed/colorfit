@@ -58,31 +58,33 @@ const MALE_MOODS: MoodOption[] = [
 const TONE_COLORS: Record<string, string> = {
   spring_warm_light: "#FFCBA4",
   spring_warm_bright: "#FF6B6B",
-  spring_warm_mute: "#D4A574",
+  spring_warm_vivid: "#FF7043",
   summer_cool_light: "#9FB5D4",
   summer_cool_soft: "#B0A6C6",
   summer_cool_mute: "#8B8B9E",
+  summer_cool_bright: "#7FA8D4",
   autumn_warm_deep: "#8B5A2B",
   autumn_warm_mute: "#A0856C",
-  autumn_warm_bright: "#D4722A",
+  autumn_warm_strong: "#D4722A",
   winter_cool_deep: "#1E1E4E",
-  winter_cool_bright: "#CC0066",
-  winter_cool_light: "#E0E0F0",
+  winter_cool_strong: "#6B2E8E",
+  winter_cool_vivid: "#CC0066",
 };
 
 const TONE_LABELS: Record<string, string> = {
   spring_warm_light: "봄웜 라이트",
   spring_warm_bright: "봄웜 브라이트",
-  spring_warm_mute: "봄웜 뮤트",
+  spring_warm_vivid: "봄웜 비비드",
   summer_cool_light: "여름쿨 라이트",
   summer_cool_soft: "여름쿨 소프트",
   summer_cool_mute: "여름쿨 뮤트",
+  summer_cool_bright: "여름쿨 브라이트",
   autumn_warm_deep: "가을웜 딥",
   autumn_warm_mute: "가을웜 뮤트",
-  autumn_warm_bright: "가을웜 브라이트",
+  autumn_warm_strong: "가을웜 스트롱",
   winter_cool_deep: "겨울쿨 딥",
-  winter_cool_bright: "겨울쿨 브라이트",
-  winter_cool_light: "겨울쿨 라이트",
+  winter_cool_strong: "겨울쿨 스트롱",
+  winter_cool_vivid: "겨울쿨 비비드",
 };
 
 const MAX_TPO = 3;

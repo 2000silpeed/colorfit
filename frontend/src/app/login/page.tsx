@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { sanitizeReturnUrl } from "@/lib/auth";
+import { migrateLegacyTones } from "@/lib/toneMigration";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -29,6 +30,7 @@ export default function LoginPage() {
 
   const handleGuest = useCallback(() => {
     if (typeof window !== "undefined") {
+      migrateLegacyTones();
       let userId = localStorage.getItem("colorfit_user_id");
       if (!userId) {
         userId = crypto.randomUUID();

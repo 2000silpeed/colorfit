@@ -27,7 +27,7 @@ const SEASONS: Season[] = [
     tones: [
       { id: "spring_warm_light", label: "라이트", color: "#FFCBA4" },
       { id: "spring_warm_bright", label: "브라이트", color: "#FF6B6B" },
-      { id: "spring_warm_mute", label: "뮤트", color: "#D4A574" },
+      { id: "spring_warm_vivid", label: "비비드", color: "#FF7043" },
     ],
   },
   {
@@ -47,7 +47,7 @@ const SEASONS: Season[] = [
     tones: [
       { id: "autumn_warm_deep", label: "딥", color: "#8B5A2B" },
       { id: "autumn_warm_mute", label: "뮤트", color: "#A0856C" },
-      { id: "autumn_warm_bright", label: "브라이트", color: "#D4722A" },
+      { id: "autumn_warm_strong", label: "스트롱", color: "#D4722A" },
     ],
   },
   {
@@ -56,8 +56,8 @@ const SEASONS: Season[] = [
     gradient: "linear-gradient(90deg, #1A1A2E, #2E4A8E, #F0C0D0)",
     tones: [
       { id: "winter_cool_deep", label: "딥", color: "#1E1E4E" },
-      { id: "winter_cool_bright", label: "브라이트", color: "#CC0066" },
-      { id: "winter_cool_light", label: "라이트", color: "#E0E0F0" },
+      { id: "winter_cool_strong", label: "스트롱", color: "#6B2E8E" },
+      { id: "winter_cool_vivid", label: "비비드", color: "#CC0066" },
     ],
   },
 ];
@@ -79,10 +79,10 @@ type Q2Choice = "basic" | "earth" | "pastel" | "vivid";
 
 const Q2_TONE_MAP: Record<string, Record<Q2Choice, string>> = {
   spring_warm: {
-    basic: "spring_warm_mute",
-    earth: "spring_warm_mute",
+    basic: "spring_warm_light",
+    earth: "spring_warm_light",
     pastel: "spring_warm_light",
-    vivid: "spring_warm_bright",
+    vivid: "spring_warm_vivid",
   },
   summer_cool: {
     basic: "summer_cool_mute",
@@ -94,13 +94,13 @@ const Q2_TONE_MAP: Record<string, Record<Q2Choice, string>> = {
     basic: "autumn_warm_mute",
     earth: "autumn_warm_deep",
     pastel: "autumn_warm_mute",
-    vivid: "autumn_warm_bright",
+    vivid: "autumn_warm_strong",
   },
   winter_cool: {
     basic: "winter_cool_deep",
     earth: "winter_cool_deep",
-    pastel: "winter_cool_light",
-    vivid: "winter_cool_bright",
+    pastel: "winter_cool_strong",
+    vivid: "winter_cool_vivid",
   },
 };
 

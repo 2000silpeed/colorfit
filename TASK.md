@@ -818,8 +818,11 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 터치 타겟 44px 이상 확인 — 14개 파일에서 32~40px 버튼을 44×44로 일괄 상향 (OutfitCard 하트, 피드 TPO/필터, 공통 헤더 아이콘 등)
 
 **Task 5.8 — 버그 수정 + 크로스 브라우저**
-- [ ] 발견된 버그 목록 정리 + 수정
-- [ ] Chrome + Safari 테스트
+- [x] 발견된 버그 목록 정리 + 수정 — `/qa` 스킬(Chromium 자동화)로 2건 발견 · 수정:
+  - BUG-001: 피드 empty state의 "필터를 변경해보세요" 버튼이 `verifiedOnly`(추천 브랜드)/`preferredBrands`(선호 브랜드) 필터를 리셋하지 않음 → `feed/page.tsx:452-453` 에 `setVerifiedOnly(false) + setPreferredBrands([])` 추가
+  - BUG-002: 온보딩 step2/step3에서 제시된 4개 톤 ID가 데이터에 없어 피드가 항상 비어있음(`spring_warm_mute`, `autumn_warm_bright`, `winter_cool_bright`, `winter_cool_light`) → 실제 데이터 톤(`spring_warm_vivid`, `autumn_warm_strong`, `winter_cool_strong`, `winter_cool_vivid`)으로 교체 + Q2_TONE_MAP(vivid→spring_warm_vivid) 동기화 + 기존 사용자 localStorage 마이그레이션(`lib/toneMigration.ts`) 추가하여 root/login/feed mount 시 자동 정규화
+  - 🔧 codex 리뷰 반영: Q2_TONE_MAP.spring_warm.vivid 미동기화(=spring_warm_bright), preferredBrands 리셋 누락, localStorage 구형 톤 ID 미마이그레이션 3건 수정
+- [x] Chrome + Safari 테스트 — Chromium 기반 headless(gstack browse)로 전체 온보딩 → 피드 flow 테스트, 콘솔 에러 0건
 - [x] 에러 바운더리 추가 — `app/global-error.tsx` (루트 HTML 대체) + `app/error.tsx` (라우트 단위) + `app/not-found.tsx` 추가, 다시 시도/홈으로 CTA (44×44)
 - [x] reactions 테이블 `(user_id, outfit_id, reaction_type)` UNIQUE 제약 + save/unsave upsert 처리 — `reaction.py`에 `ON CONFLICT DO NOTHING` 적용, 모델 `__table_args__` UniqueConstraint 추가, 기존 DB용 `scripts/migrate_reactions_unique.sql` (dedup → ADD CONSTRAINT) 제공, `create_tables.py` DDL 동기화
 

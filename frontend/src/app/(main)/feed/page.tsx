@@ -6,6 +6,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import OutfitCard from "@/components/OutfitCard";
 import { fetchFeed, postReaction, type OutfitFeedItem } from "@/lib/api";
 import { isLoggedIn } from "@/lib/auth";
+import { migrateLegacyTones } from "@/lib/toneMigration";
 
 /* ── TPO 탭 데이터 ── */
 const TPO_TABS = [
@@ -124,6 +125,7 @@ export default function FeedPage() {
 
   /* 프로필 로드 */
   useEffect(() => {
+    migrateLegacyTones();
     const storedTone = localStorage.getItem("colorfit_tone") ?? "";
     const storedGender = localStorage.getItem("colorfit_gender") ?? "";
     const storedAge = localStorage.getItem("colorfit_age_group") ?? "";
@@ -450,6 +452,8 @@ export default function FeedPage() {
                 setActiveTpo("all");
                 setBudgetMin(BUDGET_MIN_DEFAULT);
                 setBudgetMax(BUDGET_MAX_DEFAULT);
+                setVerifiedOnly(false);
+                setPreferredBrands([]);
               }}
               className="mt-[12px] px-[24px] py-[10px] rounded-full bg-accent text-white text-[14px] font-body"
             >
