@@ -1,10 +1,17 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
+import {
+  subscribe,
+  fetchSubscriptionStatus,
+  fetchTryonUsage,
+  type SubscriptionPlan,
+} from "@/lib/api";
+import { isLoggedIn } from "@/lib/auth";
 
-type PlanType = "monthly" | "yearly";
+type PlanType = SubscriptionPlan;
 type RegisterState = "idle" | "submitting" | "done";
 
 interface BenefitItem {
@@ -57,6 +64,21 @@ export default function PremiumPage() {
 
   const [selectedPlan, setSelectedPlan] = useState<PlanType>("yearly");
   const [registerState, setRegisterState] = useState<RegisterState>("idle");
+  const [couponCode, setCouponCode] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isPremium, setIsPremium] = useState(false);
+  const [tryonRemaining, setTryonRemaining] = useState<number | null>(null);
+
+  useEffect(() => {
+    const userId = localStorage.getItem("colorfit_user_id");
+    if (!userId) return;
+    fetchSubscriptionStatus(userId)
+      .then((status) => setIsPremium(status.is_premium))
+      .catch(() => {});
+    fetchTryonUsage(userId)
+      .then((usage) => setTryonRemaining(usage.remaining))
+      .catch(() => {});
+  }, []);
 
   const handleBack = useCallback(() => {
     if (window.history.length > 1) {
@@ -68,11 +90,44 @@ export default function PremiumPage() {
 
   const handleRegister = useCallback(async () => {
     if (registerState !== "idle") return;
+
+    if (!isLoggedIn()) {
+      sessionStorage.setItem("colorfit_return_url", "/premium");
+      router.push("/login?returnUrl=/premium");
+      return;
+    }
+
+    const userId = localStorage.getItem("colorfit_user_id");
+    if (!userId) {
+      setErrorMessage("로그인 정보를 찾지 못했어요. 다시 로그인해주세요.");
+      return;
+    }
+
+    const code = couponCode.trim();
+    if (!code) {
+      setErrorMessage("쿠폰 코드를 입력해주세요.");
+      return;
+    }
+
+    setErrorMessage("");
     setRegisterState("submitting");
-    // MVP: 더미 결제 — 1초 딜레이 후 관심 등록 완료
-    await new Promise((r) => setTimeout(r, 1000));
-    setRegisterState("done");
-  }, [registerState]);
+    try {
+      await subscribe(userId, selectedPlan, code);
+      setIsPremium(true);
+      setRegisterState("done");
+      try {
+        const usage = await fetchTryonUsage(userId);
+        setTryonRemaining(usage.remaining);
+      } catch {
+        // ignore
+      }
+    } catch (err) {
+      setRegisterState("idle");
+      setErrorMessage(
+        err instanceof Error ? err.message : "구독 처리 중 오류가 발생했어요.",
+      );
+    }
+  }, [registerState, couponCode, selectedPlan, router]);
 
   const fadeUp = prefersReducedMotion
     ? {}
@@ -288,7 +343,7 @@ export default function PremiumPage() {
         {...fadeUp}
         transition={{ ...springTransition, delay: prefersReducedMotion ? 0 : 0.7 }}
       >
-        {registerState === "done" ? (
+        {isPremium || registerState === "done" ? (
           <div className="text-center py-[16px]">
             <div className="w-[48px] h-[48px] rounded-full mx-auto mb-[12px] flex items-center justify-center" style={{ backgroundColor: "var(--color-success-bg)" }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-success-text)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -296,11 +351,16 @@ export default function PremiumPage() {
               </svg>
             </div>
             <p className="font-display text-[18px] text-text-primary">
-              관심 등록 완료
+              프리미엄 활성화됨
             </p>
             <p className="font-body text-[14px] text-text-secondary mt-[4px]">
-              정식 출시 시 가장 먼저 알려드릴게요.
+              AI 착장 샘플을 무제한으로 이용하세요.
             </p>
+            {tryonRemaining === null && (
+              <p className="font-body text-[12px] text-text-tertiary mt-[8px]">
+                착장 생성 무제한
+              </p>
+            )}
             <button
               type="button"
               onClick={handleBack}
@@ -312,6 +372,30 @@ export default function PremiumPage() {
           </div>
         ) : (
           <>
+            <label className="block mb-[12px]">
+              <span className="font-body text-[13px] text-text-secondary block mb-[6px]">
+                쿠폰 코드
+              </span>
+              <input
+                type="text"
+                value={couponCode}
+                onChange={(e) => {
+                  setCouponCode(e.target.value);
+                  if (errorMessage) setErrorMessage("");
+                }}
+                placeholder="COLORFIT-BETA"
+                className="w-full px-[16px] py-[14px] rounded-[var(--radius-md)] border font-body text-[15px] text-text-primary bg-bg-primary focus:outline-none focus:border-accent"
+                style={{ borderColor: "var(--color-border)" }}
+                autoCapitalize="characters"
+                autoCorrect="off"
+                spellCheck={false}
+              />
+            </label>
+            {errorMessage && (
+              <p className="font-body text-[13px] text-error-text mb-[12px]" style={{ color: "var(--color-error-text)" }}>
+                {errorMessage}
+              </p>
+            )}
             <button
               type="button"
               onClick={handleRegister}
@@ -319,12 +403,12 @@ export default function PremiumPage() {
               className="w-full py-[16px] font-body text-[16px] font-medium text-white rounded-[var(--radius-full)] disabled:opacity-60"
               style={{ backgroundColor: "var(--color-accent)" }}
             >
-              {registerState === "submitting" ? "등록 중..." : "관심 등록하기"}
+              {registerState === "submitting" ? "등록 중..." : "프리미엄 시작하기"}
             </button>
             <p className="font-body text-[12px] text-text-tertiary text-center mt-[12px]">
               MVP 기간 중 결제는 발생하지 않습니다.
               <br />
-              정식 출시 시 알림을 보내드려요.
+              테스트 쿠폰으로 프리미엄을 체험해보세요.
             </p>
           </>
         )}

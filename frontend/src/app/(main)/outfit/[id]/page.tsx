@@ -8,6 +8,9 @@ import {
   fetchOutfitDetail,
   fetchSaved,
   postReaction,
+  generateTryon,
+  fetchTryonUsage,
+  TryonLimitError,
   type OutfitDetailResponse,
   type ScoresResponse,
   type SavedOutfit,
@@ -351,6 +354,63 @@ export default function OutfitDetailPage() {
 
   const [showComparePicker, setShowComparePicker] = useState(false);
 
+  /* Try-On 상태 */
+  type TryOnState = "idle" | "loading" | "success" | "error" | "limit";
+  const [tryonOpen, setTryonOpen] = useState(false);
+  const [tryonState, setTryonState] = useState<TryOnState>("idle");
+  const [tryonImageUrl, setTryonImageUrl] = useState("");
+  const [tryonRemaining, setTryonRemaining] = useState<number | null>(null);
+  const tryonCancelRef = useRef(false);
+
+  useEffect(() => {
+    if (!userId) return;
+    fetchTryonUsage(userId)
+      .then((usage) => setTryonRemaining(usage.remaining))
+      .catch(() => {});
+  }, [userId]);
+
+  const handleTryOn = useCallback(async () => {
+    if (tryonState === "loading") return;
+    if (!isLoggedIn()) {
+      setLoginToast(true);
+      setTimeout(() => {
+        sessionStorage.setItem("colorfit_return_url", `/outfit/${outfitId}`);
+        router.push(`/login?returnUrl=${encodeURIComponent(`/outfit/${outfitId}`)}`);
+      }, 1200);
+      return;
+    }
+    if (!userId) return;
+    tryonCancelRef.current = false;
+    setTryonOpen(true);
+    setTryonState("loading");
+    setTryonImageUrl("");
+    try {
+      const result = await generateTryon(outfitId, userId);
+      if (tryonCancelRef.current) return;
+      setTryonImageUrl(result.image_url);
+      setTryonState("success");
+      setTryonRemaining(result.remaining);
+    } catch (err) {
+      if (tryonCancelRef.current) return;
+      if (err instanceof TryonLimitError) {
+        setTryonState("limit");
+      } else {
+        setTryonState("error");
+      }
+    }
+  }, [outfitId, userId, router, tryonState]);
+
+  const handleTryOnClose = useCallback(() => {
+    tryonCancelRef.current = true;
+    setTryonOpen(false);
+    setTryonState("idle");
+  }, []);
+
+  const handleTryOnUpgrade = useCallback(() => {
+    setTryonOpen(false);
+    router.push("/premium");
+  }, [router]);
+
   const handleCompareSelect = useCallback((targetId: string) => {
     setShowComparePicker(false);
     router.push(`/compare?a=${outfitId}&b=${targetId}`);
@@ -631,32 +691,175 @@ export default function OutfitDetailPage() {
         )}
 
         {/* 하단 여백 (CTA 겹침 방지) */}
-        <div className="h-[100px]" />
+        <div className="h-[160px]" />
       </main>
 
       {/* ── 하단 CTA ── */}
       <div className="fixed bottom-0 left-0 right-0 z-30 bg-bg-primary/95 backdrop-blur-sm border-t border-border">
-        <div className="flex gap-[12px] px-[20px] py-[12px] max-w-[768px] mx-auto">
+        <div className="flex flex-col gap-[8px] px-[20px] py-[12px] max-w-[768px] mx-auto">
           <button
             type="button"
-            onClick={handleSave}
-            className={`flex-1 py-[14px] rounded-full text-[15px] font-body font-medium transition-colors ${
-              saved
-                ? "bg-accent text-white"
-                : "bg-bg-secondary text-text-primary border border-border"
-            }`}
+            onClick={handleTryOn}
+            disabled={tryonState === "loading"}
+            className="w-full py-[12px] rounded-full border border-accent text-accent text-[14px] font-body font-medium flex items-center justify-center gap-[6px] disabled:opacity-60"
           >
-            {saved ? "저장됨" : "저장"}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" />
+            </svg>
+            착장으로 보기
+            {tryonRemaining !== null && (
+              <span className="text-[12px] text-text-tertiary ml-[4px]">
+                (무료 {tryonRemaining}회 남음)
+              </span>
+            )}
           </button>
-          <button
-            type="button"
-            onClick={() => setShowComparePicker(true)}
-            className="flex-1 py-[14px] rounded-full bg-accent text-white text-[15px] font-body font-medium"
-          >
-            A vs B 비교
-          </button>
+          <div className="flex gap-[12px]">
+            <button
+              type="button"
+              onClick={handleSave}
+              className={`flex-1 py-[14px] rounded-full text-[15px] font-body font-medium transition-colors ${
+                saved
+                  ? "bg-accent text-white"
+                  : "bg-bg-secondary text-text-primary border border-border"
+              }`}
+            >
+              {saved ? "저장됨" : "저장"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowComparePicker(true)}
+              className="flex-1 py-[14px] rounded-full bg-accent text-white text-[15px] font-body font-medium"
+            >
+              A vs B 비교
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* ── Try-On 바텀시트 ── */}
+      <AnimatePresence>
+        {tryonOpen && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/40 z-40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={handleTryOnClose}
+            />
+            <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-label="AI 착장 미리보기"
+              className="fixed bottom-0 left-0 right-0 z-50 bg-bg-primary rounded-t-[var(--radius-xl)] px-[20px] pt-[16px] pb-[32px]"
+              initial={prefersReducedMotion ? false : { y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={
+                prefersReducedMotion
+                  ? { duration: 0 }
+                  : { type: "spring", stiffness: 300, damping: 30 }
+              }
+            >
+              <div className="flex justify-center mb-[16px]">
+                <div className="w-[36px] h-[4px] rounded-full bg-border" />
+              </div>
+
+              {tryonState === "loading" && (
+                <div className="flex flex-col items-center py-[32px]">
+                  <div className="w-[48px] h-[48px] rounded-full border-2 border-accent border-t-transparent animate-spin mb-[16px]" />
+                  <p className="font-body text-[15px] text-text-primary">
+                    AI 착장 이미지 생성 중...
+                  </p>
+                  <p className="font-body text-[13px] text-text-secondary mt-[4px]">
+                    보통 10~20초 정도 걸려요
+                  </p>
+                </div>
+              )}
+
+              {tryonState === "success" && tryonImageUrl && (
+                <motion.div
+                  className="flex flex-col items-center"
+                  initial={prefersReducedMotion ? false : { y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                >
+                  <div
+                    className="w-full max-w-[320px] rounded-[var(--radius-lg)] overflow-hidden"
+                    style={{ aspectRatio: "3/4" }}
+                  >
+                    <Image
+                      src={tryonImageUrl}
+                      alt="AI 착장 이미지"
+                      width={320}
+                      height={427}
+                      className="w-full h-full object-cover"
+                      unoptimized
+                    />
+                  </div>
+                  {tryonRemaining !== null && (
+                    <p className="font-body text-[12px] text-text-tertiary mt-[12px]">
+                      무료 {tryonRemaining}회 남음
+                    </p>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleTryOnClose}
+                    className="mt-[16px] w-full max-w-[320px] py-[14px] bg-accent text-white font-body text-[15px] font-medium rounded-[var(--radius-full)]"
+                  >
+                    닫기
+                  </button>
+                </motion.div>
+              )}
+
+              {tryonState === "error" && (
+                <div className="flex flex-col items-center py-[24px]">
+                  <p className="font-body text-[15px] text-text-primary mb-[4px]">
+                    이미지를 생성하지 못했어요
+                  </p>
+                  <p className="font-body text-[13px] text-text-secondary mb-[20px]">
+                    네트워크를 확인하고 다시 시도해주세요
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleTryOn}
+                    className="px-[24px] py-[12px] bg-accent text-white font-body text-[15px] font-medium rounded-[var(--radius-full)]"
+                  >
+                    다시 시도
+                  </button>
+                </div>
+              )}
+
+              {tryonState === "limit" && (
+                <div className="flex flex-col items-center py-[24px]">
+                  <p className="font-display text-[18px] text-text-primary mb-[4px]">
+                    무료 착장 생성 완료
+                  </p>
+                  <p className="font-body text-[14px] text-text-secondary text-center mb-[20px]">
+                    무료 착장 3회를 모두 사용했어요.
+                    <br />
+                    프리미엄으로 업그레이드하면 무제한 이용 가능해요.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleTryOnUpgrade}
+                    className="w-full max-w-[280px] py-[14px] bg-accent text-white font-body text-[15px] font-medium rounded-[var(--radius-full)]"
+                  >
+                    프리미엄으로 업그레이드
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleTryOnClose}
+                    className="mt-[12px] font-body text-[14px] text-text-tertiary"
+                  >
+                    나중에 할게요
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* ── 비교 대상 선택 바텀시트 ── */}
       <AnimatePresence>

@@ -801,12 +801,12 @@ W5 ─── 단독 실행 (통합 작업)
 - `frontend/src/app/(main)/profile/page.tsx`, `frontend/src/app/tone/[id]/page.tsx`
 - 해결하는 끊김: #6, #7, #8
 
-**Task 5.6 — 프리미엄 + 착장 연동**
-- [ ] 프리미엄 구독 버튼 → POST /api/subscribe 실제 호출 (현재 더미 1초 딜레이)
-- [ ] 구독 성공 시 화면 업데이트 + 잔여 횟수 갱신
-- [ ] 코디 상세 페이지에 "착장으로 보기" 버튼 추가 (현재 옷 분석 페이지에만 있음)
-- [ ] 무료 3회 소진 시 프리미엄 유도 바텀시트
-- `frontend/src/app/premium/page.tsx`, `frontend/src/app/(main)/outfit/[id]/page.tsx`
+**Task 5.6 — 프리미엄 + 착장 연동** ✅
+- [x] 프리미엄 구독 버튼 → POST /api/subscribe 실제 호출 (쿠폰 입력 필드 추가, MVP 코드: COLORFIT-BETA/PREMIUM-TEST)
+- [x] 구독 성공 시 화면 업데이트 + 잔여 횟수 갱신 (fetchSubscriptionStatus + fetchTryonUsage)
+- [x] 코디 상세 페이지에 "착장으로 보기" 버튼 추가 + TryOn 바텀시트 (loading/success/error/limit) 🔧 codex 리뷰 반영: tryonState==="loading" 중복 호출 가드 + 버튼 disable + tryonCancelRef로 닫기 시 응답 무시
+- [x] 무료 3회 소진 시 프리미엄 유도 바텀시트 (403 → limit 상태 → /premium 이동)
+- `frontend/src/app/premium/page.tsx`, `frontend/src/app/(main)/outfit/[id]/page.tsx`, `frontend/src/lib/api.ts`
 - 해결하는 끊김: #9, #10
 
 ### 🅒 폴리싱 (Task 5.7~5.9)
@@ -846,7 +846,7 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 온보딩 뒤로가기 동작 (Task 5.3)
 - [x] 옷장 저장 API 동작 (Task 5.4)
 - [x] 프로필 로그아웃/톤 변경 동작 (Task 5.5)
-- [ ] 프리미엄 구독 + 코디 상세 착장 동작 (Task 5.6)
+- [x] 프리미엄 구독 + 코디 상세 착장 동작 (Task 5.6)
 - [ ] 프로덕션 URL 접속 가능 (Task 5.10)
 - [ ] 데모 준비 완료 (Task 5.11)
 

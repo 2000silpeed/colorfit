@@ -533,6 +533,60 @@ export async function fetchTryonUsage(userId: string): Promise<TryonUsageRespons
   return res.json();
 }
 
+/* ── Subscription ── */
+
+export type SubscriptionPlan = "monthly" | "yearly";
+
+export interface SubscribeResponse {
+  subscription_id: string;
+  plan: string;
+  status: string;
+  price_krw: number;
+  expires_at: string | null;
+}
+
+export interface SubscriptionStatusResponse {
+  is_premium: boolean;
+  plan: string | null;
+  status: string | null;
+  expires_at: string | null;
+}
+
+export async function subscribe(
+  userId: string,
+  plan: SubscriptionPlan,
+  couponCode: string,
+): Promise<SubscribeResponse> {
+  const res = await fetch(`${API_BASE}/api/subscribe`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id: userId, plan, coupon_code: couponCode }),
+  });
+  if (!res.ok) {
+    let detail = "구독 처리 중 오류가 발생했어요.";
+    try {
+      const data = await res.json();
+      if (typeof data?.detail === "string") detail = data.detail;
+    } catch {
+      // ignore JSON parse error
+    }
+    throw new Error(detail);
+  }
+  return res.json();
+}
+
+export async function fetchSubscriptionStatus(
+  userId: string,
+): Promise<SubscriptionStatusResponse> {
+  const res = await fetch(
+    `${API_BASE}/api/subscription/status?user_id=${userId}`,
+  );
+  if (!res.ok) {
+    throw new Error(`Subscription status API error: ${res.status}`);
+  }
+  return res.json();
+}
+
 /* ── 저장 목록 ── */
 
 export interface SavedOutfit {
