@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence, useScroll, useTransform, useMotionValueEvent, useReducedMotion } from "framer-motion";
 import {
   fetchOutfitDetail,
   fetchSaved,
+  fetchClosetOutfits,
   postReaction,
   generateTryon,
   fetchTryonUsage,
@@ -14,6 +15,7 @@ import {
   type OutfitDetailResponse,
   type ScoresResponse,
   type SavedOutfit,
+  type ClosetOutfit,
 } from "@/lib/api";
 import PurchaseFeedbackSheet from "@/components/PurchaseFeedbackSheet";
 import { isLoggedIn } from "@/lib/auth";
@@ -252,8 +254,10 @@ function ComparePickerSheet({ currentOutfitId, onSelect, onClose }: ComparePicke
 export default function OutfitDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const prefersReducedMotion = useReducedMotion();
   const outfitId = params.id as string;
+  const closetItemId = searchParams.get("closet_item_id");
 
   const [outfit, setOutfit] = useState<OutfitDetailResponse | null>(null);
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
@@ -273,6 +277,9 @@ export default function OutfitDetailPage() {
   const [headerVisible, setHeaderVisible] = useState(false);
   useMotionValueEvent(headerOpacity, "change", (v) => setHeaderVisible(v > 0.1));
 
+  /* 옷장 매칭 데이터 (closet_item_id 쿼리파라미터 있을 때) */
+  const [closetOutfit, setClosetOutfit] = useState<ClosetOutfit | null>(null);
+
   /* 데이터 로드 */
   useEffect(() => {
     let cancelled = false;
@@ -291,6 +298,38 @@ export default function OutfitDetailPage() {
     return () => { cancelled = true; };
   }, [outfitId]);
 
+  /* 옷장 코디 매칭 로드 */
+  useEffect(() => {
+    if (!closetItemId) return;
+    const uid = localStorage.getItem("colorfit_user_id") ?? "";
+    if (!uid) return;
+    let cancelled = false;
+    async function loadClosetOutfit() {
+      try {
+        const res = await fetchClosetOutfits(uid, closetItemId!);
+        if (cancelled) return;
+        const match = res.outfits.find(
+          (o) => o.db_outfit_id === outfitId || o.id === outfitId,
+        );
+        if (match) setClosetOutfit(match);
+      } catch {
+        // 실패 시 일반 모드로 표시
+      }
+    }
+    loadClosetOutfit();
+    return () => { cancelled = true; };
+  }, [closetItemId, outfitId]);
+
+  /* 카탈로그(구매 필요) 아이템 ID Set */
+  const catalogItemIds = closetOutfit
+    ? new Set(
+        closetOutfit.items
+          .filter((i) => i.source === "catalog")
+          .map((i) => i.id),
+      )
+    : null;
+
+  const isClosetMode = closetItemId != null && closetOutfit != null;
 
   const userId =
     typeof window !== "undefined"
@@ -644,48 +683,96 @@ export default function OutfitDetailPage() {
               className="flex gap-[12px] overflow-x-auto pb-[8px]"
               style={{ scrollbarWidth: "none" }}
             >
-              {sortedItems.map((item) => (
-                <a
-                  key={item.id}
-                  href={item.mall_url ?? "#"}
-                  target={item.mall_url ? "_blank" : undefined}
-                  rel={item.mall_url ? "noopener noreferrer" : undefined}
-                  onClick={item.mall_url ? handleMallClick : undefined}
-                  className="shrink-0 w-[80px] group"
-                >
-                  <div className="w-[80px] h-[80px] rounded-[var(--radius-md)] overflow-hidden bg-bg-secondary border border-border">
-                    {item.image_url ? (
-                      <Image
-                        src={item.image_url}
-                        alt={item.name ?? "아이템"}
-                        width={80}
-                        height={80}
-                        className="object-cover w-full h-full"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-tertiary)" strokeWidth="1.5">
-                          <rect x="3" y="3" width="18" height="18" rx="2" />
-                          <circle cx="8.5" cy="8.5" r="1.5" />
-                          <path d="M21 15l-5-5L5 21" />
-                        </svg>
+              {sortedItems.map((item) => {
+                const isOwned = isClosetMode && catalogItemIds != null && !catalogItemIds.has(item.id);
+                const linkEnabled = !isOwned && !!item.mall_url;
+
+                return (
+                  <a
+                    key={item.id}
+                    href={linkEnabled ? item.mall_url! : undefined}
+                    target={linkEnabled ? "_blank" : undefined}
+                    rel={linkEnabled ? "noopener noreferrer" : undefined}
+                    onClick={linkEnabled ? handleMallClick : (e) => e.preventDefault()}
+                    className={`shrink-0 w-[80px] group ${isOwned ? "cursor-default" : ""}`}
+                  >
+                    <div className="relative">
+                      <div
+                        className={`w-[80px] h-[80px] rounded-[var(--radius-md)] overflow-hidden border border-border ${
+                          isOwned ? "bg-[#E8E5E0]" : "bg-bg-secondary"
+                        }`}
+                      >
+                        {item.image_url ? (
+                          <Image
+                            src={item.image_url}
+                            alt={item.name ?? "아이템"}
+                            width={80}
+                            height={80}
+                            className={`object-cover w-full h-full ${isOwned ? "opacity-80" : ""}`}
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-tertiary)" strokeWidth="1.5">
+                              <rect x="3" y="3" width="18" height="18" rx="2" />
+                              <circle cx="8.5" cy="8.5" r="1.5" />
+                              <path d="M21 15l-5-5L5 21" />
+                            </svg>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                  <p className="font-body text-[11px] text-text-secondary mt-[6px] line-clamp-2 group-hover:text-accent transition-colors">
-                    {item.brand && (
-                      <span className="text-text-tertiary">{item.brand} </span>
-                    )}
-                    {item.name ?? item.category ?? "아이템"}
-                  </p>
-                  {item.price != null && (
-                    <p className="font-body text-[11px] text-text-primary font-medium">
-                      {"\u20A9"}{formatPrice(item.price)}
+                      {isOwned && (
+                        <span className="absolute top-[4px] left-[4px] bg-[#6B5876]/90 text-white text-[9px] font-body font-medium px-[6px] py-[2px] rounded-full">
+                          보유 중
+                        </span>
+                      )}
+                    </div>
+                    <p className={`font-body text-[11px] mt-[6px] line-clamp-2 ${
+                      isOwned
+                        ? "text-text-tertiary"
+                        : "text-text-secondary group-hover:text-accent transition-colors"
+                    }`}>
+                      {item.brand && (
+                        <span className="text-text-tertiary">{item.brand} </span>
+                      )}
+                      {item.name ?? item.category ?? "아이템"}
                     </p>
-                  )}
-                </a>
-              ))}
+                    {item.price != null && (
+                      <p className={`font-body text-[11px] font-medium ${
+                        isOwned
+                          ? "text-text-tertiary line-through"
+                          : isClosetMode
+                            ? "text-accent"
+                            : "text-text-primary"
+                      }`}>
+                        {isOwned ? "보유" : `₩${formatPrice(item.price)}`}
+                      </p>
+                    )}
+                  </a>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* ── 추가 구매 합계 (옷장 모드) ── */}
+        {isClosetMode && closetOutfit.purchase_summary && (
+          <section className="mt-[24px] bg-bg-secondary rounded-[var(--radius-lg)] p-[16px]">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-body text-[13px] text-text-secondary">
+                  보유 {closetOutfit.purchase_summary.my_items_count}개 · 구매 필요 {closetOutfit.purchase_summary.purchase_items_count}개
+                </p>
+                <p className="font-body text-[11px] text-text-tertiary mt-[2px]">
+                  이미 가지고 있는 아이템 비용은 제외
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="font-body text-[11px] text-text-tertiary">추가 구매 합계</p>
+                <p className="font-display text-[20px] text-accent font-bold">
+                  ₩{formatPrice(closetOutfit.purchase_summary.purchase_total)}
+                </p>
+              </div>
             </div>
           </section>
         )}
@@ -805,13 +892,30 @@ export default function OutfitDetailPage() {
                       무료 {tryonRemaining}회 남음
                     </p>
                   )}
-                  <button
-                    type="button"
-                    onClick={handleTryOnClose}
-                    className="mt-[16px] w-full max-w-[320px] py-[14px] bg-accent text-white font-body text-[15px] font-medium rounded-[var(--radius-full)]"
-                  >
-                    닫기
-                  </button>
+                  <div className="flex gap-[12px] mt-[16px] w-full max-w-[320px]">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const saved: { outfitId: string; imageUrl: string; createdAt: string }[] =
+                          JSON.parse(localStorage.getItem("colorfit_tryon_images") ?? "[]");
+                        if (!saved.some((s) => s.imageUrl === tryonImageUrl)) {
+                          saved.unshift({ outfitId, imageUrl: tryonImageUrl, createdAt: new Date().toISOString() });
+                          localStorage.setItem("colorfit_tryon_images", JSON.stringify(saved.slice(0, 50)));
+                        }
+                        handleTryOnClose();
+                      }}
+                      className="flex-1 py-[14px] bg-accent text-white font-body text-[15px] font-medium rounded-[var(--radius-full)]"
+                    >
+                      이미지 저장
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleTryOnClose}
+                      className="flex-1 py-[14px] border border-border text-text-primary font-body text-[15px] font-medium rounded-[var(--radius-full)]"
+                    >
+                      닫기
+                    </button>
+                  </div>
                 </motion.div>
               )}
 
