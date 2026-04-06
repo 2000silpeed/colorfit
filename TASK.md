@@ -874,13 +874,16 @@ W5 ─── 단독 실행 (통합 작업)
 - 파일: `backend/app/services/closet_outfit_matcher.py`
 - 의존: `scoring.py`, `reason_generator.py`, `feed_service._feed_cache`
 
-**Task 6.2 — 동적 코디 조합 (Fallback)**
-- [ ] 전략 B: DB 매칭 결과 < 3개일 때 동적 조합 생성
-- [ ] 보완 카테고리별 최적 아이템 탐욕적 선택 (톤 기여도 순)
-- [ ] 조합별 5축 스코어 실시간 계산
-- [ ] 상위 5개 조합 반환
+**Task 6.2 — 동적 코디 조합 (Fallback)** ✅
+- [x] 전략 B: DB 매칭 결과 < 3개일 때 동적 조합 생성
+- [x] 보완 카테고리별 최적 아이템 탐욕적 선택 (톤 기여도 순)
+- [x] 조합별 5축 스코어 실시간 계산
+- [x] 상위 5개 조합 반환
+- [x] 복수 아이템 입력 지원 (closet_item_ids 파라미터) — 상의+가방 → 하의+신발 매칭 형태
+- pytest 테스트: 62개 통과 (기존 34 + 신규 28)
 - 파일: `backend/app/services/closet_outfit_matcher.py` (전략 B 함수)
-- 의존: `closet_recommender.py` (COMPLEMENTARY_CATEGORIES, _compute_recommendation_score 재사용)
+- 의존: `closet_recommender.py` (COMPLEMENTARY_CATEGORIES 재사용)
+- 🔧 codex 리뷰 반영: all_tone_ids/all_hex 빈문자열 필터 강화
 
 **Task 6.3 — API 엔드포인트**
 - [ ] `POST /api/closet/outfits` 엔드포인트 추가
