@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -443,6 +443,7 @@ export default function ClosetAnalyzeResultPage() {
 
   /* 옷장 추가 상태 */
   const [addingToCloset, setAddingToCloset] = useState(false);
+  const [closetItemId, setClosetItemId] = useState<string | null>(null);
   const [closetToast, setClosetToast] = useState<string | null>(null);
 
   /* Try-On 상태 */
@@ -555,31 +556,51 @@ export default function ClosetAnalyzeResultPage() {
     router.push("/premium");
   }, [router]);
 
-  const handleAddToCloset = useCallback(async () => {
-    if (addingToCloset) return;
+  const [navigatingToOutfit, setNavigatingToOutfit] = useState(false);
+  const addPromiseRef = useRef<Promise<string> | null>(null);
+  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const ensureClosetItem = useCallback(async (): Promise<string | null> => {
+    if (closetItemId) return closetItemId;
+    if (addPromiseRef.current) return addPromiseRef.current;
+
     const userId = localStorage.getItem("colorfit_user_id");
-    if (!userId) {
+    if (!userId || !analyzeResult) {
       setClosetToast("로그인이 필요해요");
       setTimeout(() => setClosetToast(null), 1800);
-      return;
+      return null;
     }
-    if (!analyzeResult) return;
 
+    const promise = addClosetItem({
+      user_id: userId,
+      image_url: imageUrl,
+      category,
+      dominant_color_hex: analyzeResult.dominant_colors[0]?.hex ?? null,
+      matched_tone_id: analyzeResult.matched_tone_id,
+      pcf_score: analyzeResult.pcf_score,
+      overall_score: analyzeResult.overall_score,
+      reasons: analyzeResult.reasons,
+    }).then((result) => {
+      setClosetItemId(result.id);
+      setAddingToCloset(true);
+      return result.id;
+    });
+
+    addPromiseRef.current = promise;
+    return promise;
+  }, [closetItemId, analyzeResult, imageUrl, category]);
+
+  const handleAddToCloset = useCallback(async () => {
+    if (addingToCloset || navigatingToOutfit) return;
     setAddingToCloset(true);
     try {
-      await addClosetItem({
-        user_id: userId,
-        image_url: imageUrl,
-        category,
-        dominant_color_hex: analyzeResult.dominant_colors[0]?.hex ?? null,
-        matched_tone_id: analyzeResult.matched_tone_id,
-        pcf_score: analyzeResult.pcf_score,
-        overall_score: analyzeResult.overall_score,
-        reasons: analyzeResult.reasons,
-      });
+      const itemId = await ensureClosetItem();
+      if (!itemId) {
+        setAddingToCloset(false);
+        return;
+      }
       setClosetToast("옷장에 추가되었어요");
-      // 성공: 버튼 비활성 상태 유지 + 자동 이동 (중복 POST 방지)
-      setTimeout(() => {
+      redirectTimerRef.current = setTimeout(() => {
         setClosetToast(null);
         router.push("/closet");
       }, 900);
@@ -587,8 +608,33 @@ export default function ClosetAnalyzeResultPage() {
       setClosetToast("옷장 추가에 실패했어요");
       setTimeout(() => setClosetToast(null), 1800);
       setAddingToCloset(false);
+      addPromiseRef.current = null;
     }
-  }, [addingToCloset, analyzeResult, category, imageUrl, router]);
+  }, [addingToCloset, navigatingToOutfit, ensureClosetItem, router]);
+
+  const handleFullOutfit = useCallback(async () => {
+    if (navigatingToOutfit || addingToCloset) return;
+    setNavigatingToOutfit(true);
+
+    if (redirectTimerRef.current) {
+      clearTimeout(redirectTimerRef.current);
+      redirectTimerRef.current = null;
+    }
+
+    try {
+      const itemId = await ensureClosetItem();
+      if (!itemId) {
+        setNavigatingToOutfit(false);
+        return;
+      }
+      router.push(`/closet/outfits?item_id=${itemId}`);
+    } catch {
+      setClosetToast("옷장 추가에 실패했어요");
+      setTimeout(() => setClosetToast(null), 1800);
+      setNavigatingToOutfit(false);
+      addPromiseRef.current = null;
+    }
+  }, [navigatingToOutfit, addingToCloset, ensureClosetItem, router]);
 
   const handleAnalyzeAnother = useCallback(() => {
     router.push("/closet/upload");
@@ -814,6 +860,25 @@ export default function ClosetAnalyzeResultPage() {
               ))}
             </div>
           </div>
+        )}
+
+        {/* ── 풀코디 만들기 CTA (추천 유무와 무관하게 항상 노출) ── */}
+        {analyzeResult && (
+          <motion.button
+            type="button"
+            onClick={handleFullOutfit}
+            disabled={navigatingToOutfit}
+            className="w-full mt-[24px] py-[16px] bg-accent text-white font-body text-[15px] font-medium rounded-[var(--radius-full)] disabled:opacity-60"
+            initial={prefersReducedMotion ? false : { y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={
+              prefersReducedMotion
+                ? { duration: 0 }
+                : { type: "spring", stiffness: 300, damping: 30, delay: 0.3 }
+            }
+          >
+            {navigatingToOutfit ? "준비 중..." : "이 옷으로 풀코디 만들기"}
+          </motion.button>
         )}
       </div>
 

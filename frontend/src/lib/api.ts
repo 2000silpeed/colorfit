@@ -760,6 +760,69 @@ export async function savePreferredBrands(userId: string, brands: string[]): Pro
   if (!res.ok) throw new Error(`Save brands API error: ${res.status}`);
 }
 
+/* ── 코디 완성 (옷장 매칭) ── */
+
+export interface ClosetOutfitItem {
+  id: string;
+  source: string; // "closet" | "catalog"
+  category: string | null;
+  image_url: string | null;
+  label: string | null; // "내 옷"
+  name: string | null;
+  brand: string | null;
+  price: number | null;
+  mall_url: string | null;
+}
+
+export interface PurchaseSummary {
+  my_items_count: number;
+  purchase_items_count: number;
+  purchase_total: number;
+}
+
+export interface ClosetOutfit {
+  id: string;
+  source: string; // "db_match" | "dynamic_combo"
+  db_outfit_id: string | null;
+  total_score: number;
+  scores: Record<string, number>;
+  reasons: string[];
+  items: ClosetOutfitItem[];
+  purchase_summary: PurchaseSummary;
+}
+
+export interface ClosetOutfitResponse {
+  outfits: ClosetOutfit[];
+  total_count: number;
+  strategy_used: string;
+}
+
+export async function fetchClosetOutfits(
+  userId: string,
+  closetItemId: string,
+  tpo?: string,
+  budgetMax?: number,
+  limit: number = 10,
+): Promise<ClosetOutfitResponse> {
+  const body: Record<string, unknown> = {
+    user_id: userId,
+    closet_item_id: closetItemId,
+    limit,
+  };
+  if (tpo) body.tpo = tpo;
+  if (budgetMax != null) body.budget_max = budgetMax;
+
+  const res = await fetch(`${API_BASE}/api/closet/outfits`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    throw new Error(`Closet outfits API error: ${res.status}`);
+  }
+  return res.json();
+}
+
 /* ── OAuth ── */
 
 export interface AuthTokenResponse {

@@ -28,6 +28,8 @@ from app.schemas.closet import (
     ClosetItemAddResponse,
     ClosetItemResponse,
     ClosetListResponse,
+    ClosetOutfitRequest,
+    ClosetOutfitResponse,
     ClosetStats,
 )
 from app.schemas.closet_recommendation import (
@@ -35,7 +37,9 @@ from app.schemas.closet_recommendation import (
     RecommendedProduct,
     TpoOutfitSuggestion,
 )
+from app.models.user import User
 from app.services.closet_analyzer import analyze_closet_item
+from app.services.closet_outfit_matcher import match_outfits_for_closet_item
 from app.services.closet_recommender import recommend_for_closet_item
 
 logger = logging.getLogger(__name__)
@@ -214,3 +218,47 @@ async def get_recommendations(
         recommendations=suggestions,
         total_count=total,
     )
+
+
+@router.post("/outfits", response_model=ClosetOutfitResponse)
+async def get_closet_outfits(
+    req: ClosetOutfitRequest,
+    db: AsyncSession = Depends(get_db),
+) -> ClosetOutfitResponse:
+    """내 옷장 아이템 기반 코디 매칭 (F-57).
+
+    단일 아이템: closet_item_id → 전략 A(DB 매칭) + B(동적 조합) fallback
+    복수 아이템: closet_item_ids → 전략 B(동적 조합) 직행
+    """
+    try:
+        user_uuid = uuid.UUID(req.user_id)
+    except ValueError:
+        raise HTTPException(status_code=422, detail="유효하지 않은 user_id 형식입니다")
+
+    user = (await db.execute(
+        select(User).where(User.id == user_uuid)
+    )).scalar_one_or_none()
+    if user is None:
+        raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다")
+
+    if not user.tone_id:
+        raise HTTPException(status_code=422, detail="퍼스널컬러 진단이 필요합니다 (tone_id 없음)")
+
+    try:
+        result = await match_outfits_for_closet_item(
+            db,
+            closet_item_id=req.closet_item_id,
+            closet_item_ids=req.closet_item_ids,
+            user_id=req.user_id,
+            user_tone_id=user.tone_id,
+            gender=user.gender,
+            age_group=user.age_group,
+            tpo=req.tpo,
+            budget_max=req.budget_max if req.budget_max is not None else user.budget_max,
+            limit=req.limit,
+        )
+    except Exception:
+        logger.exception("코디 매칭 실패")
+        raise HTTPException(status_code=500, detail="코디 매칭 중 오류가 발생했습니다")
+
+    return ClosetOutfitResponse(**result)

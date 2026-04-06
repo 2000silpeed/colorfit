@@ -118,20 +118,19 @@ function ClosetItemCard({
   item,
   index,
   onClick,
+  onOutfit,
 }: {
   item: ClosetItemData;
   index: number;
   onClick: () => void;
+  onOutfit: () => void;
 }) {
   const prefersReducedMotion = useReducedMotion();
   const badge = scoreBadgeStyle(item.overall_score);
 
   return (
-    <motion.button
-      type="button"
-      onClick={onClick}
-      className="w-full text-left"
-      aria-label={`${CATEGORY_LABEL[item.category ?? ""] ?? "\uB0B4 \uC637"} ${item.overall_score != null ? `${Math.round(item.overall_score)}\uC810` : ""}`}
+    <motion.div
+      className="w-full"
       initial={prefersReducedMotion ? false : { y: 30, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={
@@ -140,39 +139,54 @@ function ClosetItemCard({
           : { type: "spring", stiffness: 300, damping: 30, delay: index * 0.05 }
       }
     >
-      <div
-        className="relative w-full rounded-[var(--radius-md)] overflow-hidden bg-bg-secondary"
-        style={{ aspectRatio: "3/4" }}
+      <button
+        type="button"
+        onClick={onClick}
+        className="w-full text-left"
+        aria-label={`${CATEGORY_LABEL[item.category ?? ""] ?? "\uB0B4 \uC637"} ${item.overall_score != null ? `${Math.round(item.overall_score)}\uC810` : ""}`}
       >
-        {item.image_url ? (
-          <Image
-            src={item.image_url}
-            alt={CATEGORY_LABEL[item.category ?? ""] ?? "\uB0B4 \uC637"}
-            fill
-            sizes="(max-width: 768px) 33vw, 200px"
-            className="object-cover"
-            loading="lazy"
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-text-tertiary text-[11px] font-body">
-            No Image
-          </div>
+        <div
+          className="relative w-full rounded-[var(--radius-md)] overflow-hidden bg-bg-secondary"
+          style={{ aspectRatio: "3/4" }}
+        >
+          {item.image_url ? (
+            <Image
+              src={item.image_url}
+              alt={CATEGORY_LABEL[item.category ?? ""] ?? "\uB0B4 \uC637"}
+              fill
+              sizes="(max-width: 768px) 33vw, 200px"
+              className="object-cover"
+              loading="lazy"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center text-text-tertiary text-[11px] font-body">
+              No Image
+            </div>
+          )}
+          {item.overall_score != null && (
+            <span
+              className="absolute top-[6px] right-[6px] text-[11px] font-body font-medium rounded-full px-[8px] py-[2px]"
+              style={{ backgroundColor: badge.bg, color: badge.text }}
+            >
+              {Math.round(item.overall_score)}
+            </span>
+          )}
+        </div>
+        {item.category && (
+          <p className="font-body text-[11px] text-text-secondary mt-[4px]">
+            {CATEGORY_LABEL[item.category] ?? item.category}
+          </p>
         )}
-        {item.overall_score != null && (
-          <span
-            className="absolute top-[6px] right-[6px] text-[11px] font-body font-medium rounded-full px-[8px] py-[2px]"
-            style={{ backgroundColor: badge.bg, color: badge.text }}
-          >
-            {Math.round(item.overall_score)}
-          </span>
-        )}
-      </div>
-      {item.category && (
-        <p className="font-body text-[11px] text-text-secondary mt-[4px]">
-          {CATEGORY_LABEL[item.category] ?? item.category}
-        </p>
-      )}
-    </motion.button>
+      </button>
+      <button
+        type="button"
+        onClick={onOutfit}
+        aria-label={`${CATEGORY_LABEL[item.category ?? ""] ?? "\uB0B4 \uC637"} 코디 완성하기`}
+        className="w-full mt-[8px] min-h-[44px] py-[8px] text-[12px] font-body font-medium text-accent border border-accent rounded-[var(--radius-full)] hover:bg-accent/5 transition-colors"
+      >
+        코디 완성하기
+      </button>
+    </motion.div>
   );
 }
 
@@ -224,6 +238,13 @@ export default function ClosetPage() {
         category: item.category ?? "top",
       });
       router.push(`/closet/analyze?${params.toString()}`);
+    },
+    [router],
+  );
+
+  const handleOutfitClick = useCallback(
+    (item: ClosetItemData) => {
+      router.push(`/closet/outfits?item_id=${item.id}`);
     },
     [router],
   );
@@ -364,6 +385,7 @@ export default function ClosetPage() {
               item={item}
               index={idx}
               onClick={() => handleItemClick(item)}
+              onOutfit={() => handleOutfitClick(item)}
             />
           ))}
         </div>

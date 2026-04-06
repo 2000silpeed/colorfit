@@ -901,28 +901,30 @@ W5 ─── 단독 실행 (통합 작업)
 
 ### 🅑 프론트엔드 — 코디 완성 UI (Task 6.5~6.8)
 
-**Task 6.5 — 코디 완성 피드 페이지**
-- [ ] `/closet/outfits` 신규 페이지 생성
-- [ ] 쿼리파라미터: `item_id` (기준 옷장 아이템)
-- [ ] TPO 필터 바 (전체/출근/데이트/주말/면접...)
-- [ ] 코디 카드 리스트: 아이템 콜라주 + 스코어 + 추가 구매 비용 + 추천 이유
-- [ ] 내 아이템에 "내 옷" 뱃지 표시 (구분 보더)
-- [ ] "코디 상세 보기" → 기존 /outfit/[id] 이동 (closet_item_id 쿼리파라미터 전달)
-- [ ] 저장(하트) 기능 재사용
+**Task 6.5 — 코디 완성 피드 페이지** ✅
+- [x] `/closet/outfits` 신규 페이지 생성
+- [x] 쿼리파라미터: `item_id` (기준 옷장 아이템)
+- [x] TPO 필터 바 (전체/출근/데이트/주말/면접...)
+- [x] 코디 카드 리스트: 아이템 콜라주 + 스코어 + 추가 구매 비용 + 추천 이유
+- [x] 내 아이템에 "내 옷" 뱃지 표시 (구분 보더)
+- [x] "코디 상세 보기" → 기존 /outfit/[id] 이동 (closet_item_id 쿼리파라미터 전달)
+- [x] 저장(하트) 기능 재사용
 - 파일: `frontend/src/app/(main)/closet/outfits/page.tsx`
 - 의존: `lib/api.ts` (fetchClosetOutfits 함수 추가)
 
-**Task 6.6 — 코디 상세 페이지 확장**
-- [ ] /outfit/[id] 페이지에서 closet_item_id 쿼리파라미터 감지
-- [ ] 내 아이템: "보유 중" 뱃지 + 회색 배경 + 외부 링크 비활성화
-- [ ] 구매 추천 아이템: 기존 외부 링크 유지 + 가격 강조
-- [ ] 하단에 "추가 구매 합계 ₩OOO" 요약 표시
+**Task 6.6 — 코디 상세 페이지 확장** ✅
+- [x] /outfit/[id] 페이지에서 closet_item_id 쿼리파라미터 감지
+- [x] 내 아이템: "보유 중" 뱃지 + 회색 배경 + 외부 링크 비활성화
+- [x] 구매 추천 아이템: 기존 외부 링크 유지 + 가격 강조
+- [x] 하단에 "추가 구매 합계 ₩OOO" 요약 표시
 - 파일: `frontend/src/app/(main)/outfit/[id]/page.tsx`
+- 🔧 codex 리뷰 반영: closetOutfit stale 데이터 방지 (파라미터 변경 시 null 초기화)
 
 **Task 6.7 — 옷장 진입점 추가**
-- [ ] 옷장 메인 (/closet): 아이템 카드에 "코디 완성하기" 버튼 or 롱프레스 메뉴
-- [ ] 분석 결과 (/closet/analyze): 기존 TPO별 추천 하단에 "이 옷으로 풀코디 만들기" CTA 추가
+- [x] 옷장 메인 (/closet): 아이템 카드에 "코디 완성하기" 버튼 or 롱프레스 메뉴
+- [x] 분석 결과 (/closet/analyze): 기존 TPO별 추천 하단에 "이 옷으로 풀코디 만들기" CTA 추가
 - 파일: `frontend/src/app/(main)/closet/page.tsx`, `frontend/src/app/closet/analyze/page.tsx`
+- 🔧 codex 리뷰 반영: CTA 상호 잠금 (연속 탭 네비게이션 충돌 방지), 풀코디 CTA를 추천 블록 밖으로 분리 (추천 실패 시에도 노출), spacing 8px scale 준수
 
 **Task 6.8 — 프론트엔드 테스트**
 - [ ] 코디 완성 피드 페이지 vitest — 카드 렌더링 / TPO 필터 / 내 옷 뱃지 / 추가 구매 비용

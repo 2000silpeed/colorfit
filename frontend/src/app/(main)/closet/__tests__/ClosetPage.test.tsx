@@ -310,4 +310,26 @@ describe("ClosetPage", () => {
       expect(badge40.style.backgroundColor).toBe("var(--color-bg-secondary)");
     });
   });
+
+  it("renders '코디 완성하기' button for each item", async () => {
+    mockFetchCloset.mockResolvedValue(MOCK_RESPONSE);
+    render(<ClosetPage />);
+
+    await waitFor(() => {
+      const outfitButtons = screen.getAllByText("코디 완성하기");
+      expect(outfitButtons.length).toBe(3);
+    });
+  });
+
+  it("navigates to outfits page on '코디 완성하기' click", async () => {
+    mockFetchCloset.mockResolvedValue(MOCK_RESPONSE);
+    render(<ClosetPage />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText("코디 완성하기").length).toBe(3);
+    });
+
+    fireEvent.click(screen.getAllByText("코디 완성하기")[0]);
+    expect(mockPush).toHaveBeenCalledWith("/closet/outfits?item_id=item-1");
+  });
 });

@@ -21,6 +21,9 @@ vi.mock("framer-motion", () => ({
     div: ({ children, ...rest }: Record<string, unknown>) => (
       <div {...pickHtmlProps(rest)}>{children as React.ReactNode}</div>
     ),
+    button: ({ children, ...rest }: Record<string, unknown>) => (
+      <button {...pickHtmlProps(rest)}>{children as React.ReactNode}</button>
+    ),
     section: ({ children, ...rest }: Record<string, unknown>) => (
       <section {...pickHtmlProps(rest)}>{children as React.ReactNode}</section>
     ),
@@ -385,6 +388,40 @@ describe("ClosetAnalyzeResultPage", () => {
         undefined,
         3,
       );
+    });
+  });
+
+  it("renders '이 옷으로 풀코디 만들기' CTA when recommendations exist", async () => {
+    setParams("https://img.example.com/my-top.jpg", "autumn_warm_deep");
+    mockAnalyze.mockResolvedValue(MOCK_ANALYSIS);
+    mockRecommend.mockResolvedValue(MOCK_RECOMMENDATIONS);
+
+    render(<AnalyzePage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("이 옷으로 풀코디 만들기")).toBeInTheDocument();
+    });
+  });
+
+  it("navigates to outfits page on '풀코디 만들기' click after adding to closet", async () => {
+    setParams("https://img.example.com/my-top.jpg", "autumn_warm_deep");
+    mockAnalyze.mockResolvedValue(MOCK_ANALYSIS);
+    mockRecommend.mockResolvedValue(MOCK_RECOMMENDATIONS);
+    mockAddClosetItem.mockResolvedValue({ id: "new-item-123", message: "OK" });
+    localStorage.setItem("colorfit_user_id", "test-user");
+
+    render(<AnalyzePage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("이 옷으로 풀코디 만들기")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByText("이 옷으로 풀코디 만들기"));
+
+    await waitFor(() => {
+      expect(mockAddClosetItem).toHaveBeenCalledTimes(1);
+    });
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith("/closet/outfits?item_id=new-item-123");
     });
   });
 
