@@ -885,17 +885,19 @@ W5 ─── 단독 실행 (통합 작업)
 - 의존: `closet_recommender.py` (COMPLEMENTARY_CATEGORIES 재사용)
 - 🔧 codex 리뷰 반영: all_tone_ids/all_hex 빈문자열 필터 강화
 
-**Task 6.3 — API 엔드포인트**
-- [ ] `POST /api/closet/outfits` 엔드포인트 추가
-- [ ] 요청: `{ user_id, closet_item_id, tpo?, budget_max?, limit? }`
-- [ ] 응답: 코디 목록 (items에 source="closet"|"catalog" 구분, purchase_summary 포함)
-- [ ] 스키마: `ClosetOutfitRequest`, `ClosetOutfitResponse`, `ClosetOutfitItem` 정의
+**Task 6.3 — API 엔드포인트** ✅
+- [x] `POST /api/closet/outfits` 엔드포인트 추가
+- [x] 요청: `{ user_id, closet_item_id, tpo?, budget_max?, limit? }`
+- [x] 응답: 코디 목록 (items에 source="closet"|"catalog" 구분, purchase_summary 포함)
+- [x] 스키마: `ClosetOutfitRequest`, `ClosetOutfitResponse`, `ClosetOutfitItem` 정의
 - 파일: `backend/app/routers/closet.py`, `backend/app/schemas/closet.py`
+- 🔧 codex 리뷰 반영: closet_item_id/ids 상호배제 model_validator 추가, budget_max falsy→is not None 비교 수정
 
-**Task 6.4 — 백엔드 테스트**
-- [ ] closet_outfit_matcher.py 단위 테스트 — DB 매칭 / 동적 조합 / 스코어 재계산 검증
-- [ ] API 통합 테스트 — 정상 응답 / 빈 옷장 / 존재하지 않는 아이템 에러 처리
+**Task 6.4 — 백엔드 테스트** ✅
+- [x] closet_outfit_matcher.py 단위 테스트 — DB 매칭 / 동적 조합 / 스코어 재계산 검증 (기존 34개 + edge case 7개 = 41개)
+- [x] API 통합 테스트 — 정상 응답 / 빈 옷장 / 존재하지 않는 아이템 에러 처리 (19개)
 - 파일: `backend/tests/test_closet_outfit_matcher.py`, `backend/tests/test_closet_outfits_api.py`
+- 전체 88개 테스트 통과
 
 ### 🅑 프론트엔드 — 코디 완성 UI (Task 6.5~6.8)
 
