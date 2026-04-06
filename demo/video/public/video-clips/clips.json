@@ -1,0 +1,218 @@
+{
+  "a": [
+    {
+      "id": "login",
+      "start": 0,
+      "duration": 1.623,
+      "file": "video-clips/a_login.mp4"
+    },
+    {
+      "id": "onb1",
+      "start": 1.123,
+      "duration": 3.864,
+      "file": "video-clips/a_onb1.mp4"
+    },
+    {
+      "id": "onb2_tone",
+      "start": 4.487,
+      "duration": 7.808999999999999,
+      "file": "video-clips/a_onb2_tone.mp4"
+    },
+    {
+      "id": "feed",
+      "start": 11.796,
+      "duration": 1.9860000000000007,
+      "file": "video-clips/a_feed.mp4"
+    },
+    {
+      "id": "dislike_swipe",
+      "start": 13.282,
+      "duration": 2.0090000000000003,
+      "file": "video-clips/a_dislike_swipe.mp4"
+    },
+    {
+      "id": "save_heart",
+      "start": 14.791,
+      "duration": 4.399999999999999,
+      "file": "video-clips/a_save_heart.mp4"
+    },
+    {
+      "id": "detail",
+      "start": 18.691,
+      "duration": 1.5150000000000006,
+      "file": "video-clips/a_detail.mp4"
+    },
+    {
+      "id": "detail_items",
+      "start": 19.706,
+      "duration": 1.129999999999999,
+      "file": "video-clips/a_detail_items.mp4"
+    },
+    {
+      "id": "tryon_loading",
+      "start": 20.336,
+      "duration": 18.559000000000005,
+      "file": "video-clips/a_tryon_loading.mp4"
+    },
+    {
+      "id": "tryon_result",
+      "start": 38.395,
+      "duration": 3.5319999999999965,
+      "file": "video-clips/a_tryon_result.mp4"
+    },
+    {
+      "id": "compare_picker",
+      "start": 41.427,
+      "duration": 4.487000000000002,
+      "file": "video-clips/a_compare_picker.mp4"
+    },
+    {
+      "id": "saved_list",
+      "start": 45.414,
+      "duration": 3.245999999999995,
+      "file": "video-clips/a_saved_list.mp4"
+    },
+    {
+      "id": "profile",
+      "start": 48.16,
+      "duration": 2.5,
+      "file": "video-clips/a_profile.mp4"
+    }
+  ],
+  "b": [
+    {
+      "id": "feed_entry",
+      "start": 0,
+      "duration": 2.457,
+      "file": "video-clips/b_feed_entry.mp4"
+    },
+    {
+      "id": "tpo_commute",
+      "start": 1.957,
+      "duration": 1.8109999999999997,
+      "file": "video-clips/b_tpo_commute.mp4"
+    },
+    {
+      "id": "budget_open",
+      "start": 3.268,
+      "duration": 2.184,
+      "file": "video-clips/b_budget_open.mp4"
+    },
+    {
+      "id": "brand_filter",
+      "start": 4.952,
+      "duration": 4.895,
+      "file": "video-clips/b_brand_filter.mp4"
+    },
+    {
+      "id": "detail",
+      "start": 9.347,
+      "duration": 1.5060000000000002,
+      "file": "video-clips/b_detail.mp4"
+    },
+    {
+      "id": "detail_score",
+      "start": 10.353,
+      "duration": 3.601000000000001,
+      "file": "video-clips/b_detail_score.mp4"
+    },
+    {
+      "id": "save_multi",
+      "start": 13.454,
+      "duration": 5.155999999999999,
+      "file": "video-clips/b_save_multi.mp4"
+    },
+    {
+      "id": "saved_list",
+      "start": 18.11,
+      "duration": 3.6430000000000007,
+      "file": "video-clips/b_saved_list.mp4"
+    },
+    {
+      "id": "top_pick",
+      "start": 21.253,
+      "duration": 2.3659999999999997,
+      "file": "video-clips/b_top_pick.mp4"
+    },
+    {
+      "id": "saved_sort_score",
+      "start": 23.119,
+      "duration": 2.5,
+      "file": "video-clips/b_saved_sort_score.mp4"
+    }
+  ],
+  "c": [
+    {
+      "id": "closet_empty",
+      "start": 0,
+      "duration": 4.051,
+      "file": "video-clips/c_closet_empty.mp4"
+    },
+    {
+      "id": "closet_upload",
+      "start": 3.551,
+      "duration": 3.197,
+      "file": "video-clips/c_closet_upload.mp4"
+    },
+    {
+      "id": "closet_analyzing",
+      "start": 6.248,
+      "duration": 3.0889999999999995,
+      "file": "video-clips/c_closet_analyzing.mp4"
+    },
+    {
+      "id": "closet_analyze_result",
+      "start": 8.837,
+      "duration": 5.26,
+      "file": "video-clips/c_closet_analyze_result.mp4"
+    },
+    {
+      "id": "closet_with_item",
+      "start": 13.597,
+      "duration": 3.4940000000000015,
+      "file": "video-clips/c_closet_with_item.mp4"
+    },
+    {
+      "id": "closet_outfits_feed",
+      "start": 16.591,
+      "duration": 5.974999999999998,
+      "file": "video-clips/c_closet_outfits_feed.mp4"
+    },
+    {
+      "id": "closet_outfits_tpo",
+      "start": 22.066,
+      "duration": 4.524000000000001,
+      "file": "video-clips/c_closet_outfits_tpo.mp4"
+    },
+    {
+      "id": "outfit_detail_closet",
+      "start": 26.09,
+      "duration": 2.1050000000000004,
+      "file": "video-clips/c_outfit_detail_closet.mp4"
+    },
+    {
+      "id": "outfit_items_closet",
+      "start": 27.695,
+      "duration": 3.4819999999999993,
+      "file": "video-clips/c_outfit_items_closet.mp4"
+    },
+    {
+      "id": "feed",
+      "start": 30.677,
+      "duration": 2.433,
+      "file": "video-clips/c_feed.mp4"
+    },
+    {
+      "id": "feed_tpo_event",
+      "start": 32.61,
+      "duration": 2.908999999999999,
+      "file": "video-clips/c_feed_tpo_event.mp4"
+    },
+    {
+      "id": "profile",
+      "start": 35.019,
+      "duration": 2.5,
+      "file": "video-clips/c_profile.mp4"
+    }
+  ]
+}

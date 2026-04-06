@@ -2,7 +2,7 @@ import React from "react";
 import { AbsoluteFill, Audio, Sequence, staticFile } from "remotion";
 import { IntroScene } from "./components/IntroScene";
 import { PersonaIntroScene } from "./components/PersonaIntroScene";
-import { ScreenshotScene } from "./components/ScreenshotScene";
+import { VideoClipScene } from "./components/VideoClipScene";
 import { SubtitleOverlay } from "./components/SubtitleOverlay";
 import { OutroScene } from "./components/OutroScene";
 
@@ -11,14 +11,23 @@ import stepsB from "../data/steps_b.json";
 import stepsC from "../data/steps_c.json";
 import narrationScript from "../data/narration-script.json";
 import segmentsData from "../public/audio/segments.json";
+import clipsData from "../public/video-clips/clips.json";
 
 const FPS = 30;
 const sec = (s: number) => Math.round(s * FPS);
 
-// sceneId → { start, end } 맵
+// sceneId → { start, end } 맵 (나레이션 타이밍)
 const segMap: Record<string, { start: number; end: number }> = {};
 for (const s of segmentsData.segments) {
   segMap[s.sceneId] = { start: s.start, end: s.end };
+}
+
+// persona prefix + stepId → video clip 파일 맵
+const clipMap: Record<string, string> = {};
+for (const [prefix, clips] of Object.entries(clipsData)) {
+  for (const clip of clips as { id: string; file: string }[]) {
+    clipMap[`${prefix}_${clip.id}`] = clip.file;
+  }
 }
 
 interface SceneTiming {
@@ -26,8 +35,8 @@ interface SceneTiming {
   startFrame: number;
   durationFrames: number;
   subtitle: string;
-  screenshotFile?: string;
-  sceneType: "intro" | "persona_intro" | "screenshot" | "outro";
+  videoClipFile?: string;
+  sceneType: "intro" | "persona_intro" | "video_clip" | "outro";
   personaIndex?: number;
   personaName?: string;
   personaAge?: string;
@@ -71,10 +80,10 @@ function buildTimeline(): SceneTiming[] {
   });
 
   narrationScript.personaA.steps.forEach((step, i) => {
-    const ss = (stepsA[i] as { screenshot: string } | undefined)?.screenshot ?? "";
+    const clipFile = clipMap[`a_${step.id}`] ?? "";
     push(`a_${step.id}`, {
-      sceneType: "screenshot",
-      screenshotFile: ss,
+      sceneType: "video_clip",
+      videoClipFile: clipFile,
       subtitle: step.narration,
       accentColor: "#964F4C",
       personaName: (stepsA[i] as { title: string } | undefined)?.title ?? "",
@@ -94,10 +103,10 @@ function buildTimeline(): SceneTiming[] {
   });
 
   narrationScript.personaB.steps.forEach((step, i) => {
-    const ss = (stepsB[i] as { screenshot: string } | undefined)?.screenshot ?? "";
+    const clipFile = clipMap[`b_${step.id}`] ?? "";
     push(`b_${step.id}`, {
-      sceneType: "screenshot",
-      screenshotFile: ss,
+      sceneType: "video_clip",
+      videoClipFile: clipFile,
       subtitle: step.narration,
       accentColor: "#5C7A6E",
       personaName: (stepsB[i] as { title: string } | undefined)?.title ?? "",
@@ -117,10 +126,10 @@ function buildTimeline(): SceneTiming[] {
   });
 
   narrationScript.personaC.steps.forEach((step, i) => {
-    const ss = (stepsC[i] as { screenshot: string } | undefined)?.screenshot ?? "";
+    const clipFile = clipMap[`c_${step.id}`] ?? "";
     push(`c_${step.id}`, {
-      sceneType: "screenshot",
-      screenshotFile: ss,
+      sceneType: "video_clip",
+      videoClipFile: clipFile,
       subtitle: step.narration,
       accentColor: "#4A6B8A",
       personaName: (stepsC[i] as { title: string } | undefined)?.title ?? "",
@@ -167,9 +176,9 @@ export const ColorFitDemoComposition: React.FC = () => {
               />
             )}
 
-            {scene.sceneType === "screenshot" && scene.screenshotFile && (
-              <ScreenshotScene
-                screenshotPath={scene.screenshotFile}
+            {scene.sceneType === "video_clip" && scene.videoClipFile && (
+              <VideoClipScene
+                videoClipPath={scene.videoClipFile}
                 title={scene.personaName ?? ""}
                 subtitle={scene.subtitle}
                 accentColor={scene.accentColor}
