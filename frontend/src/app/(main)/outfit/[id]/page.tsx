@@ -300,6 +300,7 @@ export default function OutfitDetailPage() {
 
   /* 옷장 코디 매칭 로드 */
   useEffect(() => {
+    setClosetOutfit(null);
     if (!closetItemId) return;
     const uid = localStorage.getItem("colorfit_user_id") ?? "";
     if (!uid) return;
@@ -311,9 +312,9 @@ export default function OutfitDetailPage() {
         const match = res.outfits.find(
           (o) => o.db_outfit_id === outfitId || o.id === outfitId,
         );
-        if (match) setClosetOutfit(match);
+        setClosetOutfit(match ?? null);
       } catch {
-        // 실패 시 일반 모드로 표시
+        if (!cancelled) setClosetOutfit(null);
       }
     }
     loadClosetOutfit();
