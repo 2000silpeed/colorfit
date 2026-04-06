@@ -856,6 +856,95 @@ W5 ─── 단독 실행 (통합 작업)
 
 ---
 
+## W6 ─── 내 아이템 기반 코디 완성 (F-57 Closet-to-Outfit)
+
+> **목표**: 옷장에 등록된 내 아이템을 기반으로 최적의 풀코디 조합을 생성하고, 부족한 아이템의 구매를 유도한다.
+> **기획서**: F-57 상세 설계 (v1.7, ColorFit_상세기획서_v1.3.md)
+
+### 🅐 백엔드 — 코디 매칭 엔진 (Task 6.1~6.4)
+
+**Task 6.1 — DB 코디 매칭 서비스**
+- [x] `closet_outfit_matcher.py` 신규 서비스 생성
+- [x] 전략 A: DB 코디 매칭 — outfits 테이블에서 내 아이템과 유사 색상(RGB 거리 < 60) 아이템 포함 코디 탐색
+- [x] 성별/연령대/시즌 Hard Filter 적용
+- [x] 내 아이템 포함 5축 스코어 재계산 (PCF: 실측 반영, PE: 추가 구매 비용 기준, CH: 내 색상 포함 재계산)
+- [x] 상위 10개 코디 반환 + 정렬 (종합 스코어 내림차순)
+- [x] pytest 테스트: 34개 신규 통과
+- 🔧 codex 리뷰 반영: PE 0원 구매비용 만점 처리, limit 하드캡(10), matched_slot 중복 ID 안전 제거
+- 파일: `backend/app/services/closet_outfit_matcher.py`
+- 의존: `scoring.py`, `reason_generator.py`, `feed_service._feed_cache`
+
+**Task 6.2 — 동적 코디 조합 (Fallback)**
+- [ ] 전략 B: DB 매칭 결과 < 3개일 때 동적 조합 생성
+- [ ] 보완 카테고리별 최적 아이템 탐욕적 선택 (톤 기여도 순)
+- [ ] 조합별 5축 스코어 실시간 계산
+- [ ] 상위 5개 조합 반환
+- 파일: `backend/app/services/closet_outfit_matcher.py` (전략 B 함수)
+- 의존: `closet_recommender.py` (COMPLEMENTARY_CATEGORIES, _compute_recommendation_score 재사용)
+
+**Task 6.3 — API 엔드포인트**
+- [ ] `POST /api/closet/outfits` 엔드포인트 추가
+- [ ] 요청: `{ user_id, closet_item_id, tpo?, budget_max?, limit? }`
+- [ ] 응답: 코디 목록 (items에 source="closet"|"catalog" 구분, purchase_summary 포함)
+- [ ] 스키마: `ClosetOutfitRequest`, `ClosetOutfitResponse`, `ClosetOutfitItem` 정의
+- 파일: `backend/app/routers/closet.py`, `backend/app/schemas/closet.py`
+
+**Task 6.4 — 백엔드 테스트**
+- [ ] closet_outfit_matcher.py 단위 테스트 — DB 매칭 / 동적 조합 / 스코어 재계산 검증
+- [ ] API 통합 테스트 — 정상 응답 / 빈 옷장 / 존재하지 않는 아이템 에러 처리
+- 파일: `backend/tests/test_closet_outfit_matcher.py`, `backend/tests/test_closet_outfits_api.py`
+
+### 🅑 프론트엔드 — 코디 완성 UI (Task 6.5~6.8)
+
+**Task 6.5 — 코디 완성 피드 페이지**
+- [ ] `/closet/outfits` 신규 페이지 생성
+- [ ] 쿼리파라미터: `item_id` (기준 옷장 아이템)
+- [ ] TPO 필터 바 (전체/출근/데이트/주말/면접...)
+- [ ] 코디 카드 리스트: 아이템 콜라주 + 스코어 + 추가 구매 비용 + 추천 이유
+- [ ] 내 아이템에 "내 옷" 뱃지 표시 (구분 보더)
+- [ ] "코디 상세 보기" → 기존 /outfit/[id] 이동 (closet_item_id 쿼리파라미터 전달)
+- [ ] 저장(하트) 기능 재사용
+- 파일: `frontend/src/app/(main)/closet/outfits/page.tsx`
+- 의존: `lib/api.ts` (fetchClosetOutfits 함수 추가)
+
+**Task 6.6 — 코디 상세 페이지 확장**
+- [ ] /outfit/[id] 페이지에서 closet_item_id 쿼리파라미터 감지
+- [ ] 내 아이템: "보유 중" 뱃지 + 회색 배경 + 외부 링크 비활성화
+- [ ] 구매 추천 아이템: 기존 외부 링크 유지 + 가격 강조
+- [ ] 하단에 "추가 구매 합계 ₩OOO" 요약 표시
+- 파일: `frontend/src/app/(main)/outfit/[id]/page.tsx`
+
+**Task 6.7 — 옷장 진입점 추가**
+- [ ] 옷장 메인 (/closet): 아이템 카드에 "코디 완성하기" 버튼 or 롱프레스 메뉴
+- [ ] 분석 결과 (/closet/analyze): 기존 TPO별 추천 하단에 "이 옷으로 풀코디 만들기" CTA 추가
+- 파일: `frontend/src/app/(main)/closet/page.tsx`, `frontend/src/app/closet/analyze/page.tsx`
+
+**Task 6.8 — 프론트엔드 테스트**
+- [ ] 코디 완성 피드 페이지 vitest — 카드 렌더링 / TPO 필터 / 내 옷 뱃지 / 추가 구매 비용
+- [ ] 코디 상세 확장 vitest — 보유 중 뱃지 / 외부 링크 조건부 표시
+- 파일: `frontend/src/app/(main)/closet/outfits/__tests__/`, `frontend/src/app/(main)/outfit/__tests__/`
+
+### 🅒 폴리싱 + 데모 (Task 6.9~6.10)
+
+**Task 6.9 — E2E 시나리오 추가**
+- [ ] 페르소나 C에 코디 완성 시나리오 추가 (옷장 아이템 → 풀코디 → 구매 링크 확인)
+- [ ] 스크린샷 추가 + 리포트 재생성
+- 파일: `demo/e2e/03-persona-c.spec.ts`
+
+**Task 6.10 — Remotion 데모 영상 업데이트**
+- [ ] 코디 완성 씬 추가 (스크린샷 + TTS 나레이션)
+- [ ] 재렌더링
+- 파일: `demo/video/`
+
+### W6 완료 기준
+- [ ] POST /api/closet/outfits API 정상 동작 (DB 매칭 + 동적 Fallback)
+- [ ] 코디 완성 피드 페이지 렌더링 (TPO 필터 + 내 옷 뱃지 + 추가 구매 비용)
+- [ ] 코디 상세에서 보유 중 / 구매 추천 구분 표시
+- [ ] 옷장 → 코디 완성 진입점 3곳 연결
+- [ ] E2E 시나리오 통과
+
+---
+
 ## MVP 핵심 지표 (W5 기준)
 
 | 지표 | 목표 |
