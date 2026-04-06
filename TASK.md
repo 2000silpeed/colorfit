@@ -926,22 +926,29 @@ W5 ─── 단독 실행 (통합 작업)
 - 파일: `frontend/src/app/(main)/closet/page.tsx`, `frontend/src/app/closet/analyze/page.tsx`
 - 🔧 codex 리뷰 반영: CTA 상호 잠금 (연속 탭 네비게이션 충돌 방지), 풀코디 CTA를 추천 블록 밖으로 분리 (추천 실패 시에도 노출), spacing 8px scale 준수
 
-**Task 6.8 — 프론트엔드 테스트**
-- [ ] 코디 완성 피드 페이지 vitest — 카드 렌더링 / TPO 필터 / 내 옷 뱃지 / 추가 구매 비용
-- [ ] 코디 상세 확장 vitest — 보유 중 뱃지 / 외부 링크 조건부 표시
-- 파일: `frontend/src/app/(main)/closet/outfits/__tests__/`, `frontend/src/app/(main)/outfit/__tests__/`
+**Task 6.8 — 프론트엔드 테스트** ✅
+- [x] 코디 완성 피드 페이지 vitest — 카드 렌더링 / TPO 필터 / 내 옷 뱃지 / 추가 구매 비용 (23개)
+- [x] 코디 상세 확장 vitest — 보유 중 뱃지 / 외부 링크 조건부 표시 / ID 불일치 폴백 (14개)
+- 파일: `frontend/src/app/(main)/closet/outfits/__tests__/ClosetOutfitsPage.test.tsx`, `frontend/src/app/(main)/outfit/__tests__/OutfitDetailCloset.test.tsx`
+- 전체 프론트엔드 133개 테스트 통과
+- 🔧 codex 리뷰 반영: TPO 해제 동작 직접 검증, catalog scope 단위 뱃지 부재 검증, ID 불일치 폴백 케이스 추가
 
 ### 🅒 폴리싱 + 데모 (Task 6.9~6.10)
 
-**Task 6.9 — E2E 시나리오 추가**
-- [ ] 페르소나 C에 코디 완성 시나리오 추가 (옷장 아이템 → 풀코디 → 구매 링크 확인)
-- [ ] 스크린샷 추가 + 리포트 재생성
-- 파일: `demo/e2e/03-persona-c.spec.ts`
+**Task 6.9 — E2E 시나리오 추가** ✅
+- [x] 페르소나 C에 코디 완성 시나리오 추가 (옷장 빈 상태 → 업로드 → 분석 → 옷장 추가 → 코디 완성 피드 → TPO 필터 → 코디 상세 → 아이템 구성 → 구매 링크 확인)
+- [x] 스크린샷 12장 + 리포트 재생성 (3 페르소나, 35 스텝)
+- 파일: `demo/e2e/03-persona-c.spec.ts`, `demo/e2e/fixtures/sample_top_coral.png`
+- ⚠️ closet page의 MOCK_USER_ID를 localStorage 기반으로 수정 (`frontend/src/app/(main)/closet/page.tsx`)
+- ⚠️ 코디 상세에서 보유 중 뱃지는 closet outfit ID 매칭 의존 — E2E에서 외부 구매 링크(네이버 쇼핑) 3개 정상 확인
 
-**Task 6.10 — Remotion 데모 영상 업데이트**
-- [ ] 코디 완성 씬 추가 (스크린샷 + TTS 나레이션)
-- [ ] 재렌더링
+**Task 6.10 — Remotion 데모 영상 업데이트** ✅
+- [x] 코디 완성 씬 추가 (스크린샷 + TTS 나레이션)
+- [x] 재렌더링
 - 파일: `demo/video/`
+- Persona C 전면 개편: 옷장(빈) → 업로드 → 분석 → 결과 → 아이템 보유 → 코디 완성 피드 → TPO 필터 → 코디 상세 → 아이템 구성 → 메인 피드 → 행사 TPO → 프로필 (12씬)
+- TTS 1.4x 속도 적용 (ffmpeg atempo, 피치 유지) — 총 3분 22초 (기존 4분 24초 → 30% 단축)
+- Gemini TTS rate limit 대처: API 호출 간 7초 딜레이 + 실패 시 30초 단위 재시도
 
 ### W6 완료 기준
 - [ ] POST /api/closet/outfits API 정상 동작 (DB 매칭 + 동적 Fallback)

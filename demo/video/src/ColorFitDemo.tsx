@@ -104,14 +104,14 @@ function buildTimeline(): SceneTiming[] {
     });
   });
 
-  // PERSONA C
+  // PERSONA C — 옷장 → 코디 완성 풀플로우
   push("persona_c_intro", {
     sceneType: "persona_intro",
     personaIndex: 2,
     personaName: "여성 40+",
     personaAge: "40대 이상",
     personaTone: "겨울쿨 딥",
-    personaTpo: "하객/이벤트",
+    personaTpo: "옷장→코디 완성",
     accentColor: "#4A6B8A",
     subtitle: narrationScript.personaC.intro_narration,
   });

@@ -1,280 +1,280 @@
 {
-  "totalDuration": 264.187375,
-  "totalFrames": 7926,
+  "totalDuration": 201.931875,
+  "totalFrames": 6058,
   "fps": 30,
   "scenes": [
     {
       "id": "intro",
       "anchor_time": 0,
-      "end_time": 8.890958333333334,
-      "duration_frames": 267,
+      "end_time": 7.133125000000001,
+      "duration_frames": 214,
       "start_frame": 0
     },
     {
       "id": "persona_a_intro",
-      "anchor_time": 8.890958333333334,
-      "end_time": 16.341916666666666,
-      "duration_frames": 224,
-      "start_frame": 267
+      "anchor_time": 7.133125000000001,
+      "end_time": 12.243625,
+      "duration_frames": 153,
+      "start_frame": 214
     },
     {
       "id": "a_login",
-      "anchor_time": 16.341916666666666,
-      "end_time": 20.992874999999998,
-      "duration_frames": 140,
-      "start_frame": 490
+      "anchor_time": 12.243625,
+      "end_time": 15.801166666666667,
+      "duration_frames": 107,
+      "start_frame": 367
     },
     {
       "id": "a_onb1",
-      "anchor_time": 20.992874999999998,
-      "end_time": 28.68383333333333,
-      "duration_frames": 231,
-      "start_frame": 630
+      "anchor_time": 15.801166666666667,
+      "end_time": 20.878083333333333,
+      "duration_frames": 152,
+      "start_frame": 474
     },
     {
       "id": "a_onb2_tone",
-      "anchor_time": 28.68383333333333,
-      "end_time": 37.65479166666666,
-      "duration_frames": 269,
-      "start_frame": 861
+      "anchor_time": 20.878083333333333,
+      "end_time": 27.717666666666666,
+      "duration_frames": 205,
+      "start_frame": 626
     },
     {
       "id": "a_feed",
-      "anchor_time": 37.65479166666666,
-      "end_time": 47.705749999999995,
-      "duration_frames": 302,
-      "start_frame": 1130
+      "anchor_time": 27.717666666666666,
+      "end_time": 35.59166666666666,
+      "duration_frames": 236,
+      "start_frame": 832
     },
     {
       "id": "a_dislike_swipe",
-      "anchor_time": 47.705749999999995,
-      "end_time": 52.956708333333324,
-      "duration_frames": 158,
-      "start_frame": 1431
+      "anchor_time": 35.59166666666666,
+      "end_time": 39.276999999999994,
+      "duration_frames": 111,
+      "start_frame": 1068
     },
     {
       "id": "a_save_heart",
-      "anchor_time": 52.956708333333324,
-      "end_time": 56.60766666666665,
-      "duration_frames": 110,
-      "start_frame": 1589
+      "anchor_time": 39.276999999999994,
+      "end_time": 42.11637499999999,
+      "duration_frames": 85,
+      "start_frame": 1178
     },
     {
       "id": "a_detail",
-      "anchor_time": 56.60766666666665,
-      "end_time": 72.49862499999999,
-      "duration_frames": 477,
-      "start_frame": 1698
+      "anchor_time": 42.11637499999999,
+      "end_time": 53.091624999999986,
+      "duration_frames": 329,
+      "start_frame": 1263
     },
     {
       "id": "a_detail_items",
-      "anchor_time": 72.49862499999999,
-      "end_time": 80.10958333333333,
-      "duration_frames": 228,
-      "start_frame": 2175
+      "anchor_time": 53.091624999999986,
+      "end_time": 58.847749999999984,
+      "duration_frames": 173,
+      "start_frame": 1593
     },
     {
       "id": "a_tryon_loading",
-      "anchor_time": 80.10958333333333,
-      "end_time": 85.36054166666668,
-      "duration_frames": 158,
-      "start_frame": 2403
+      "anchor_time": 58.847749999999984,
+      "end_time": 62.60983333333331,
+      "duration_frames": 113,
+      "start_frame": 1765
     },
     {
       "id": "a_tryon_result",
-      "anchor_time": 85.36054166666668,
-      "end_time": 92.61150000000002,
-      "duration_frames": 218,
-      "start_frame": 2561
+      "anchor_time": 62.60983333333331,
+      "end_time": 68.16729166666666,
+      "duration_frames": 167,
+      "start_frame": 1878
     },
     {
       "id": "a_compare_picker",
-      "anchor_time": 92.61150000000002,
-      "end_time": 97.66245833333336,
-      "duration_frames": 152,
-      "start_frame": 2778
+      "anchor_time": 68.16729166666666,
+      "end_time": 72.03983333333333,
+      "duration_frames": 116,
+      "start_frame": 2045
     },
     {
       "id": "a_saved_list",
-      "anchor_time": 97.66245833333336,
-      "end_time": 107.7934166666667,
-      "duration_frames": 304,
-      "start_frame": 2930
+      "anchor_time": 72.03983333333333,
+      "end_time": 79.376125,
+      "duration_frames": 220,
+      "start_frame": 2161
     },
     {
       "id": "persona_b_intro",
-      "anchor_time": 107.7934166666667,
-      "end_time": 115.72437500000004,
-      "duration_frames": 238,
-      "start_frame": 3234
+      "anchor_time": 79.376125,
+      "end_time": 85.5665,
+      "duration_frames": 186,
+      "start_frame": 2381
     },
     {
       "id": "b_feed_entry",
-      "anchor_time": 115.72437500000004,
-      "end_time": 121.29533333333337,
-      "duration_frames": 167,
-      "start_frame": 3472
+      "anchor_time": 85.5665,
+      "end_time": 89.92362500000002,
+      "duration_frames": 131,
+      "start_frame": 2567
     },
     {
       "id": "b_tpo_commute",
-      "anchor_time": 121.29533333333337,
-      "end_time": 127.14629166666671,
-      "duration_frames": 176,
-      "start_frame": 3639
+      "anchor_time": 89.92362500000002,
+      "end_time": 94.47933333333336,
+      "duration_frames": 137,
+      "start_frame": 2698
     },
     {
       "id": "b_budget_open",
-      "anchor_time": 127.14629166666671,
-      "end_time": 134.63725000000005,
-      "duration_frames": 225,
-      "start_frame": 3814
+      "anchor_time": 94.47933333333336,
+      "end_time": 101.29204166666669,
+      "duration_frames": 204,
+      "start_frame": 2834
     },
     {
       "id": "b_brand_filter",
-      "anchor_time": 134.63725000000005,
-      "end_time": 140.3682083333334,
-      "duration_frames": 172,
-      "start_frame": 4039
+      "anchor_time": 101.29204166666669,
+      "end_time": 105.79504166666669,
+      "duration_frames": 135,
+      "start_frame": 3039
     },
     {
       "id": "b_detail",
-      "anchor_time": 140.3682083333334,
-      "end_time": 145.65916666666675,
-      "duration_frames": 159,
-      "start_frame": 4211
+      "anchor_time": 105.79504166666669,
+      "end_time": 109.65758333333336,
+      "duration_frames": 116,
+      "start_frame": 3174
     },
     {
       "id": "b_detail_score",
-      "anchor_time": 145.65916666666675,
-      "end_time": 150.6701250000001,
-      "duration_frames": 150,
-      "start_frame": 4370
+      "anchor_time": 109.65758333333336,
+      "end_time": 113.17225000000003,
+      "duration_frames": 105,
+      "start_frame": 3290
     },
     {
       "id": "b_save_multi",
-      "anchor_time": 150.6701250000001,
-      "end_time": 156.88108333333344,
-      "duration_frames": 186,
-      "start_frame": 4520
+      "anchor_time": 113.17225000000003,
+      "end_time": 117.43762500000004,
+      "duration_frames": 128,
+      "start_frame": 3395
     },
     {
       "id": "b_saved_list",
-      "anchor_time": 156.88108333333344,
-      "end_time": 161.01204166666676,
-      "duration_frames": 124,
-      "start_frame": 4706
+      "anchor_time": 117.43762500000004,
+      "end_time": 120.74033333333338,
+      "duration_frames": 99,
+      "start_frame": 3523
     },
     {
       "id": "b_top_pick",
-      "anchor_time": 161.01204166666676,
-      "end_time": 167.8230000000001,
-      "duration_frames": 204,
-      "start_frame": 4830
+      "anchor_time": 120.74033333333338,
+      "end_time": 125.84575000000005,
+      "duration_frames": 153,
+      "start_frame": 3622
     },
     {
       "id": "b_saved_sort_score",
-      "anchor_time": 167.8230000000001,
-      "end_time": 173.67395833333345,
-      "duration_frames": 176,
-      "start_frame": 5035
+      "anchor_time": 125.84575000000005,
+      "end_time": 130.1700833333334,
+      "duration_frames": 130,
+      "start_frame": 3775
     },
     {
       "id": "persona_c_intro",
-      "anchor_time": 173.67395833333345,
-      "end_time": 182.64491666666677,
-      "duration_frames": 269,
-      "start_frame": 5210
+      "anchor_time": 130.1700833333334,
+      "end_time": 138.50479166666673,
+      "duration_frames": 250,
+      "start_frame": 3905
     },
     {
-      "id": "c_feed",
-      "anchor_time": 182.64491666666677,
-      "end_time": 189.0158750000001,
-      "duration_frames": 191,
-      "start_frame": 5479
-    },
-    {
-      "id": "c_tpo_event",
-      "anchor_time": 189.0158750000001,
-      "end_time": 194.02683333333346,
-      "duration_frames": 150,
-      "start_frame": 5670
-    },
-    {
-      "id": "c_profile",
-      "anchor_time": 194.02683333333346,
-      "end_time": 199.9177916666668,
-      "duration_frames": 177,
-      "start_frame": 5821
-    },
-    {
-      "id": "c_tone_detail",
-      "anchor_time": 199.9177916666668,
-      "end_time": 207.44875000000013,
-      "duration_frames": 226,
-      "start_frame": 5998
-    },
-    {
-      "id": "c_tone_change",
-      "anchor_time": 207.44875000000013,
-      "end_time": 211.33970833333348,
-      "duration_frames": 117,
-      "start_frame": 6223
-    },
-    {
-      "id": "c_premium",
-      "anchor_time": 211.33970833333348,
-      "end_time": 216.79066666666682,
-      "duration_frames": 164,
-      "start_frame": 6340
-    },
-    {
-      "id": "c_closet",
-      "anchor_time": 216.79066666666682,
-      "end_time": 221.64162500000018,
-      "duration_frames": 146,
-      "start_frame": 6504
+      "id": "c_closet_empty",
+      "anchor_time": 138.50479166666673,
+      "end_time": 143.3112083333334,
+      "duration_frames": 144,
+      "start_frame": 4155
     },
     {
       "id": "c_closet_upload",
-      "anchor_time": 221.64162500000018,
-      "end_time": 226.77258333333353,
-      "duration_frames": 154,
-      "start_frame": 6649
+      "anchor_time": 143.3112083333334,
+      "end_time": 148.52529166666676,
+      "duration_frames": 156,
+      "start_frame": 4299
     },
     {
       "id": "c_closet_analyzing",
-      "anchor_time": 226.77258333333353,
-      "end_time": 233.38354166666687,
-      "duration_frames": 198,
-      "start_frame": 6803
+      "anchor_time": 148.52529166666676,
+      "end_time": 152.6946250000001,
+      "duration_frames": 125,
+      "start_frame": 4456
     },
     {
-      "id": "c_closet_analyze",
-      "anchor_time": 233.38354166666687,
-      "end_time": 241.1545000000002,
-      "duration_frames": 233,
-      "start_frame": 7002
+      "id": "c_closet_analyze_result",
+      "anchor_time": 152.6946250000001,
+      "end_time": 157.9768750000001,
+      "duration_frames": 158,
+      "start_frame": 4581
     },
     {
-      "id": "c_brands",
-      "anchor_time": 241.1545000000002,
-      "end_time": 247.56545833333354,
-      "duration_frames": 192,
-      "start_frame": 7235
+      "id": "c_closet_with_item",
+      "anchor_time": 157.9768750000001,
+      "end_time": 163.53620833333343,
+      "duration_frames": 167,
+      "start_frame": 4739
     },
     {
-      "id": "c_preference",
-      "anchor_time": 247.56545833333354,
-      "end_time": 254.45641666666688,
-      "duration_frames": 207,
-      "start_frame": 7427
+      "id": "c_closet_outfits_feed",
+      "anchor_time": 163.53620833333343,
+      "end_time": 168.78766666666678,
+      "duration_frames": 158,
+      "start_frame": 4906
+    },
+    {
+      "id": "c_closet_outfits_tpo",
+      "anchor_time": 168.78766666666678,
+      "end_time": 173.00095833333344,
+      "duration_frames": 126,
+      "start_frame": 5064
+    },
+    {
+      "id": "c_outfit_detail_closet",
+      "anchor_time": 173.00095833333344,
+      "end_time": 176.84812500000012,
+      "duration_frames": 115,
+      "start_frame": 5190
+    },
+    {
+      "id": "c_outfit_items_closet",
+      "anchor_time": 176.84812500000012,
+      "end_time": 182.7211666666668,
+      "duration_frames": 176,
+      "start_frame": 5305
+    },
+    {
+      "id": "c_feed",
+      "anchor_time": 182.7211666666668,
+      "end_time": 188.15920833333345,
+      "duration_frames": 163,
+      "start_frame": 5482
+    },
+    {
+      "id": "c_feed_tpo_event",
+      "anchor_time": 188.15920833333345,
+      "end_time": 191.9807916666668,
+      "duration_frames": 115,
+      "start_frame": 5645
+    },
+    {
+      "id": "c_profile",
+      "anchor_time": 191.9807916666668,
+      "end_time": 195.4055416666668,
+      "duration_frames": 103,
+      "start_frame": 5759
     },
     {
       "id": "outro",
-      "anchor_time": 254.45641666666688,
-      "end_time": 264.187375,
-      "duration_frames": 292,
-      "start_frame": 7634
+      "anchor_time": 195.4055416666668,
+      "end_time": 201.931875,
+      "duration_frames": 196,
+      "start_frame": 5862
     }
   ]
 }
