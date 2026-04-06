@@ -123,7 +123,8 @@ class TestTryonGenerate:
             )
 
         assert result["outfit_id"] == TEST_OUTFIT_ID
-        assert result["image_url"].startswith("data:image/png;base64,")
+        assert "/static/tryon/" in result["image_url"]
+        assert result["image_url"].endswith(".png")
         assert result["cached"] is False
 
     @pytest.mark.asyncio
@@ -157,7 +158,8 @@ class TestTryonGenerate:
             )
 
         assert result["cached"] is False
-        assert result["image_url"].startswith("data:image/png;base64,")
+        assert "/static/tryon/" in result["image_url"]
+        assert result["image_url"].endswith(".png")
 
     @pytest.mark.asyncio
     async def test_cache_hit(self, db_session, seed_data):

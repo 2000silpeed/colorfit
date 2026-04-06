@@ -200,3 +200,13 @@ async def db_session(db_engine):
     )
     async with session_factory() as session:
         yield session
+
+
+@pytest_asyncio.fixture(autouse=True)
+async def _reset_feed_cache():
+    """테스트 간 피드 캐시 오염을 방지한다."""
+    yield
+    from app.services.feed_service import _feed_cache
+    _feed_cache["outfits"] = None
+    _feed_cache["item_map"] = None
+    _feed_cache["expires_at"] = 0.0
