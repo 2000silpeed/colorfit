@@ -2,26 +2,28 @@ import React from "react";
 import {
   useCurrentFrame,
   interpolate,
-  Video,
+  OffthreadVideo,
   staticFile,
-  useVideoConfig,
 } from "remotion";
 
 interface VideoClipSceneProps {
-  videoClipPath: string;
+  videoSrc: string;
+  startFromSec: number;
+  playbackRate?: number;
   title: string;
   subtitle?: string;
   accentColor?: string;
 }
 
 export const VideoClipScene: React.FC<VideoClipSceneProps> = ({
-  videoClipPath,
+  videoSrc,
+  startFromSec,
+  playbackRate = 1,
   title,
   subtitle,
   accentColor = "#964F4C",
 }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
 
   const opacity = interpolate(frame, [0, 10], [0, 1], {
     extrapolateRight: "clamp",
@@ -35,6 +37,10 @@ export const VideoClipScene: React.FC<VideoClipSceneProps> = ({
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
+
+  // startFrom은 컴포지션 fps 기준 (Remotion 스펙)
+  const COMP_FPS = 30;
+  const startFromFrame = Math.round(startFromSec * COMP_FPS);
 
   return (
     <div
@@ -143,15 +149,16 @@ export const VideoClipScene: React.FC<VideoClipSceneProps> = ({
               background: "#ffffff",
             }}
           >
-            <Video
-              src={staticFile(videoClipPath)}
+            <OffthreadVideo
+              src={staticFile(videoSrc)}
               style={{
                 width: "100%",
                 height: "100%",
                 objectFit: "cover",
                 objectPosition: "top",
               }}
-              startFrom={0}
+              startFrom={startFromFrame}
+              playbackRate={playbackRate}
               volume={0}
             />
           </div>

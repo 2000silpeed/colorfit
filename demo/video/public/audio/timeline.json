@@ -1,6 +1,6 @@
 {
-  "totalDuration": 201.931875,
-  "totalFrames": 6058,
+  "totalDuration": 194.64783333333332,
+  "totalFrames": 5840,
   "fps": 30,
   "scenes": [
     {
@@ -230,51 +230,37 @@
     {
       "id": "c_closet_outfits_tpo",
       "anchor_time": 168.78766666666678,
-      "end_time": 173.00095833333344,
-      "duration_frames": 126,
+      "end_time": 174.9771666666668,
+      "duration_frames": 186,
       "start_frame": 5064
     },
     {
-      "id": "c_outfit_detail_closet",
-      "anchor_time": 173.00095833333344,
-      "end_time": 176.84812500000012,
-      "duration_frames": 115,
-      "start_frame": 5190
-    },
-    {
-      "id": "c_outfit_items_closet",
-      "anchor_time": 176.84812500000012,
-      "end_time": 182.7211666666668,
-      "duration_frames": 176,
-      "start_frame": 5305
-    },
-    {
       "id": "c_feed",
-      "anchor_time": 182.7211666666668,
-      "end_time": 188.15920833333345,
+      "anchor_time": 174.9771666666668,
+      "end_time": 180.41520833333345,
       "duration_frames": 163,
-      "start_frame": 5482
+      "start_frame": 5249
     },
     {
       "id": "c_feed_tpo_event",
-      "anchor_time": 188.15920833333345,
-      "end_time": 191.9807916666668,
+      "anchor_time": 180.41520833333345,
+      "end_time": 184.2367916666668,
       "duration_frames": 115,
-      "start_frame": 5645
+      "start_frame": 5412
     },
     {
       "id": "c_profile",
-      "anchor_time": 191.9807916666668,
-      "end_time": 195.4055416666668,
+      "anchor_time": 184.2367916666668,
+      "end_time": 187.6615416666668,
       "duration_frames": 103,
-      "start_frame": 5759
+      "start_frame": 5527
     },
     {
       "id": "outro",
-      "anchor_time": 195.4055416666668,
-      "end_time": 201.931875,
-      "duration_frames": 196,
-      "start_frame": 5862
+      "anchor_time": 187.6615416666668,
+      "end_time": 194.64783333333332,
+      "duration_frames": 210,
+      "start_frame": 5630
     }
   ]
 }

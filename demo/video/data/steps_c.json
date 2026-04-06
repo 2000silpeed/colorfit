@@ -51,30 +51,14 @@
     "persona": "페르소나 C (여성 40+·겨울쿨딥·코디완성)",
     "id": "closet_outfits_tpo",
     "title": "⑦ TPO 필터 (행사)",
-    "desc": "행사 TPO로 필터링된 코디",
+    "desc": "행사 TPO로 필터링된 코디 + 추가 구매 비용",
     "url": "/closet/outfits",
     "screenshot": "screenshots/C_07_closet_outfits_tpo.png"
   },
   {
     "persona": "페르소나 C (여성 40+·겨울쿨딥·코디완성)",
-    "id": "outfit_detail_closet",
-    "title": "⑧ 코디 상세 (옷장 모드)",
-    "desc": "5축 스코어 + 추천 이유",
-    "url": "/outfit",
-    "screenshot": "screenshots/C_08_outfit_detail_closet.png"
-  },
-  {
-    "persona": "페르소나 C (여성 40+·겨울쿨딥·코디완성)",
-    "id": "outfit_items_closet",
-    "title": "⑨ 아이템 구성",
-    "desc": "보유 중 뱃지 + 외부 쇼핑몰 링크 + 추가 구매 합계",
-    "url": "/outfit",
-    "screenshot": "screenshots/C_09_outfit_items_closet.png"
-  },
-  {
-    "persona": "페르소나 C (여성 40+·겨울쿨딥·코디완성)",
     "id": "feed",
-    "title": "⑩ 메인 피드",
+    "title": "⑧ 메인 피드",
     "desc": "겨울쿨딥 + 40+ 여성 하객룩 피드",
     "url": "/feed",
     "screenshot": "screenshots/C_10_feed.png"
@@ -82,7 +66,7 @@
   {
     "persona": "페르소나 C (여성 40+·겨울쿨딥·코디완성)",
     "id": "feed_tpo_event",
-    "title": "⑪ 행사 TPO 피드",
+    "title": "⑨ 행사 TPO 피드",
     "desc": "격식있는 하객룩 우선 노출",
     "url": "/feed",
     "screenshot": "screenshots/C_11_feed_tpo_event.png"
@@ -90,7 +74,7 @@
   {
     "persona": "페르소나 C (여성 40+·겨울쿨딥·코디완성)",
     "id": "profile",
-    "title": "⑫ 프로필",
+    "title": "⑩ 프로필",
     "desc": "톤 정보 · 선호도 관리",
     "url": "/profile",
     "screenshot": "screenshots/C_12_profile.png"

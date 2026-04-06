@@ -2,7 +2,7 @@ import React from "react";
 import { AbsoluteFill, Audio, Sequence, staticFile } from "remotion";
 import { IntroScene } from "./components/IntroScene";
 import { PersonaIntroScene } from "./components/PersonaIntroScene";
-import { VideoClipScene } from "./components/VideoClipScene";
+import { ContinuousPhoneScene } from "./components/ContinuousPhoneScene";
 import { SubtitleOverlay } from "./components/SubtitleOverlay";
 import { OutroScene } from "./components/OutroScene";
 
@@ -11,193 +11,205 @@ import stepsB from "../data/steps_b.json";
 import stepsC from "../data/steps_c.json";
 import narrationScript from "../data/narration-script.json";
 import segmentsData from "../public/audio/segments.json";
-import clipsData from "../public/video-clips/clips.json";
 
 const FPS = 30;
 const sec = (s: number) => Math.round(s * FPS);
 
-// sceneId → { start, end } 맵 (나레이션 타이밍)
+// sceneId → { start, end }
 const segMap: Record<string, { start: number; end: number }> = {};
 for (const s of segmentsData.segments) {
   segMap[s.sceneId] = { start: s.start, end: s.end };
 }
 
-// persona prefix + stepId → video clip 파일 맵
-const clipMap: Record<string, string> = {};
-for (const [prefix, clips] of Object.entries(clipsData)) {
-  for (const clip of clips as { id: string; file: string }[]) {
-    clipMap[`${prefix}_${clip.id}`] = clip.file;
-  }
-}
-
-interface SceneTiming {
-  id: string;
+interface StepTiming {
   startFrame: number;
   durationFrames: number;
+  screenshotFile: string;
+  videoStartSec: number;
+  title: string;
   subtitle: string;
-  videoClipFile?: string;
-  sceneType: "intro" | "persona_intro" | "video_clip" | "outro";
-  personaIndex?: number;
-  personaName?: string;
-  personaAge?: string;
-  personaTone?: string;
-  personaTpo?: string;
-  accentColor?: string;
 }
 
-function buildTimeline(): SceneTiming[] {
-  const scenes: SceneTiming[] = [];
-
-  const push = (id: string, extra: Partial<SceneTiming>) => {
-    const seg = segMap[id];
-    if (!seg) return;
-    scenes.push({
-      id,
-      startFrame: sec(seg.start),
-      durationFrames: Math.max(sec(seg.end - seg.start), 1),
-      subtitle: "",
-      sceneType: "intro",
-      ...extra,
-    });
+interface PersonaBlock {
+  introId: string;
+  introProps: {
+    personaLabel: string;
+    name: string;
+    age: string;
+    tone: string;
+    tpo: string;
+    accentColor: string;
+    index: number;
+    subtitle: string;
   };
-
-  // INTRO
-  push("intro", {
-    sceneType: "intro",
-    subtitle: narrationScript.intro.narration,
-  });
-
-  // PERSONA A
-  push("persona_a_intro", {
-    sceneType: "persona_intro",
-    personaIndex: 0,
-    personaName: "여성 20대",
-    personaAge: "20대",
-    personaTone: "여름쿨 소프트",
-    personaTpo: "소개팅",
-    accentColor: "#964F4C",
-    subtitle: narrationScript.personaA.intro_narration,
-  });
-
-  narrationScript.personaA.steps.forEach((step, i) => {
-    const clipFile = clipMap[`a_${step.id}`] ?? "";
-    push(`a_${step.id}`, {
-      sceneType: "video_clip",
-      videoClipFile: clipFile,
-      subtitle: step.narration,
-      accentColor: "#964F4C",
-      personaName: (stepsA[i] as { title: string } | undefined)?.title ?? "",
-    });
-  });
-
-  // PERSONA B
-  push("persona_b_intro", {
-    sceneType: "persona_intro",
-    personaIndex: 1,
-    personaName: "남성 30대",
-    personaAge: "30대",
-    personaTone: "가을웜 딥",
-    personaTpo: "출근",
-    accentColor: "#5C7A6E",
-    subtitle: narrationScript.personaB.intro_narration,
-  });
-
-  narrationScript.personaB.steps.forEach((step, i) => {
-    const clipFile = clipMap[`b_${step.id}`] ?? "";
-    push(`b_${step.id}`, {
-      sceneType: "video_clip",
-      videoClipFile: clipFile,
-      subtitle: step.narration,
-      accentColor: "#5C7A6E",
-      personaName: (stepsB[i] as { title: string } | undefined)?.title ?? "",
-    });
-  });
-
-  // PERSONA C — 옷장 → 코디 완성 풀플로우
-  push("persona_c_intro", {
-    sceneType: "persona_intro",
-    personaIndex: 2,
-    personaName: "여성 40+",
-    personaAge: "40대 이상",
-    personaTone: "겨울쿨 딥",
-    personaTpo: "옷장→코디 완성",
-    accentColor: "#4A6B8A",
-    subtitle: narrationScript.personaC.intro_narration,
-  });
-
-  narrationScript.personaC.steps.forEach((step, i) => {
-    const clipFile = clipMap[`c_${step.id}`] ?? "";
-    push(`c_${step.id}`, {
-      sceneType: "video_clip",
-      videoClipFile: clipFile,
-      subtitle: step.narration,
-      accentColor: "#4A6B8A",
-      personaName: (stepsC[i] as { title: string } | undefined)?.title ?? "",
-    });
-  });
-
-  // OUTRO
-  push("outro", {
-    sceneType: "outro",
-    subtitle: narrationScript.outro.narration,
-  });
-
-  return scenes;
+  steps: StepTiming[];
+  accentColor: string;
+  blockStartFrame: number;
+  blockDurationFrames: number;
 }
 
-const TIMELINE = buildTimeline();
-export const TOTAL_FRAMES =
-  TIMELINE[TIMELINE.length - 1].startFrame +
-  TIMELINE[TIMELINE.length - 1].durationFrames;
+function buildPersonaBlock(
+  prefix: string,
+  introId: string,
+  introNarration: string,
+  narrationSteps: { id: string; narration: string }[],
+  stepsData: { screenshot: string; title: string }[],
+  introProps: Omit<PersonaBlock["introProps"], "subtitle">,
+  accentColor: string,
+): PersonaBlock {
+  const introSeg = segMap[introId];
+  const steps: StepTiming[] = [];
+
+  const firstStepId = `${prefix}_${narrationSteps[0].id}`;
+  const lastStepId = `${prefix}_${narrationSteps[narrationSteps.length - 1].id}`;
+  const blockStart = introSeg ? introSeg.start : 0;
+
+  narrationSteps.forEach((ns, i) => {
+    const sceneId = `${prefix}_${ns.id}`;
+    const seg = segMap[sceneId];
+    if (!seg) return;
+
+    const ss = stepsData[i]?.screenshot ?? "";
+    steps.push({
+      // 블록 내부 기준 프레임 (블록 시작 = 0)
+      startFrame: sec(seg.start - blockStart) - (introSeg ? sec(introSeg.end - introSeg.start) : 0),
+      durationFrames: Math.max(sec(seg.end - seg.start), 1),
+      screenshotFile: ss,
+      videoStartSec: 0,
+      title: stepsData[i]?.title ?? "",
+      subtitle: ns.narration,
+    });
+  });
+
+  // 블록: persona_intro 끝 ~ 마지막 스텝 끝
+  const introEnd = introSeg ? sec(introSeg.end) : 0;
+  const lastSeg = segMap[lastStepId];
+  const blockEnd = lastSeg ? sec(lastSeg.end) : introEnd;
+
+  return {
+    introId,
+    introProps: { ...introProps, subtitle: introNarration },
+    steps,
+    accentColor,
+    blockStartFrame: introEnd,
+    blockDurationFrames: blockEnd - introEnd,
+  };
+}
+
+// 빌드
+const personaA = buildPersonaBlock(
+  "a", "persona_a_intro",
+  narrationScript.personaA.intro_narration,
+  narrationScript.personaA.steps,
+  stepsA as { screenshot: string; title: string }[],
+  { personaLabel: "Persona A", name: "여성 20대", age: "20대", tone: "여름쿨 소프트", tpo: "소개팅", accentColor: "#964F4C", index: 0 },
+  "#964F4C",
+);
+
+const personaB = buildPersonaBlock(
+  "b", "persona_b_intro",
+  narrationScript.personaB.intro_narration,
+  narrationScript.personaB.steps,
+  stepsB as { screenshot: string; title: string }[],
+  { personaLabel: "Persona B", name: "남성 30대", age: "30대", tone: "가을웜 딥", tpo: "출근", accentColor: "#5C7A6E", index: 1 },
+  "#5C7A6E",
+);
+
+const personaC = buildPersonaBlock(
+  "c", "persona_c_intro",
+  narrationScript.personaC.intro_narration,
+  narrationScript.personaC.steps,
+  stepsC as { screenshot: string; title: string }[],
+  { personaLabel: "Persona C", name: "여성 40+", age: "40대 이상", tone: "겨울쿨 딥", tpo: "옷장→코디 완성", accentColor: "#4A6B8A", index: 2 },
+  "#4A6B8A",
+);
+
+const personas = [personaA, personaB, personaC];
+
+// intro / outro
+const introSeg = segMap["intro"];
+const outroSeg = segMap["outro"];
+
+// 전체 프레임 계산
+const allSegs = segmentsData.segments;
+const lastSeg = allSegs[allSegs.length - 1];
+export const TOTAL_FRAMES = sec(lastSeg.start + (lastSeg.end - lastSeg.start));
 
 export const ColorFitDemoComposition: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: "#F8F6F3" }}>
       <Audio src={staticFile("audio/full.wav")} volume={1} />
 
-      {TIMELINE.map((scene) => (
-        <Sequence
-          key={scene.id}
-          from={scene.startFrame}
-          durationInFrames={scene.durationFrames}
-        >
-          <AbsoluteFill>
-            {scene.sceneType === "intro" && <IntroScene />}
-
-            {scene.sceneType === "persona_intro" && (
-              <PersonaIntroScene
-                personaLabel={`Persona ${String.fromCharCode(65 + (scene.personaIndex ?? 0))}`}
-                name={scene.personaName ?? ""}
-                age={scene.personaAge ?? ""}
-                tone={scene.personaTone ?? ""}
-                tpo={scene.personaTpo ?? ""}
-                accentColor={scene.accentColor ?? "#964F4C"}
-                index={scene.personaIndex ?? 0}
-              />
-            )}
-
-            {scene.sceneType === "video_clip" && scene.videoClipFile && (
-              <VideoClipScene
-                videoClipPath={scene.videoClipFile}
-                title={scene.personaName ?? ""}
-                subtitle={scene.subtitle}
-                accentColor={scene.accentColor}
-              />
-            )}
-
-            {scene.sceneType === "outro" && <OutroScene />}
-
-            {scene.sceneType !== "intro" &&
-              scene.sceneType !== "outro" &&
-              scene.subtitle && (
-                <SubtitleOverlay
-                  text={scene.subtitle}
-                  accentColor={scene.accentColor}
-                />
-              )}
-          </AbsoluteFill>
+      {/* INTRO */}
+      {introSeg && (
+        <Sequence from={sec(introSeg.start)} durationInFrames={sec(introSeg.end - introSeg.start)}>
+          <IntroScene />
+          <SubtitleOverlay text={narrationScript.intro.narration} />
         </Sequence>
-      ))}
+      )}
+
+      {/* PERSONAS */}
+      {personas.map((p) => {
+        const introSegData = segMap[p.introId];
+        if (!introSegData) return null;
+
+        return (
+          <React.Fragment key={p.introId}>
+            {/* Persona Intro */}
+            <Sequence
+              from={sec(introSegData.start)}
+              durationInFrames={sec(introSegData.end - introSegData.start)}
+            >
+              <PersonaIntroScene
+                personaLabel={p.introProps.personaLabel}
+                name={p.introProps.name}
+                age={p.introProps.age}
+                tone={p.introProps.tone}
+                tpo={p.introProps.tpo}
+                accentColor={p.introProps.accentColor}
+                index={p.introProps.index}
+              />
+              <SubtitleOverlay
+                text={p.introProps.subtitle}
+                accentColor={p.accentColor}
+              />
+            </Sequence>
+
+            {/* 스텝들: 하나의 연속 Sequence */}
+            <Sequence
+              from={p.blockStartFrame}
+              durationInFrames={p.blockDurationFrames}
+            >
+              <ContinuousPhoneScene
+                steps={p.steps}
+                accentColor={p.accentColor}
+                mode="screenshot"
+              />
+              {/* 자막 오버레이 — 씬별로 변경 */}
+              {p.steps.map((step, i) => (
+                <Sequence
+                  key={`sub-${i}`}
+                  from={step.startFrame}
+                  durationInFrames={step.durationFrames}
+                >
+                  <SubtitleOverlay
+                    text={step.subtitle}
+                    accentColor={p.accentColor}
+                  />
+                </Sequence>
+              ))}
+            </Sequence>
+          </React.Fragment>
+        );
+      })}
+
+      {/* OUTRO */}
+      {outroSeg && (
+        <Sequence from={sec(outroSeg.start)} durationInFrames={sec(outroSeg.end - outroSeg.start)}>
+          <OutroScene />
+          <SubtitleOverlay text={narrationScript.outro.narration} />
+        </Sequence>
+      )}
     </AbsoluteFill>
   );
 };

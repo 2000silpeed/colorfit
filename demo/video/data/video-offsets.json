@@ -1,0 +1,192 @@
+{
+  "a": {
+    "fps": 25,
+    "offsets": [
+      {
+        "id": "login",
+        "videoOffset": 4,
+        "nextOffset": 5.426
+      },
+      {
+        "id": "onb1",
+        "videoOffset": 5.426,
+        "nextOffset": 8.774000000000001
+      },
+      {
+        "id": "onb2_tone",
+        "videoOffset": 8.774000000000001,
+        "nextOffset": 15.825
+      },
+      {
+        "id": "feed",
+        "videoOffset": 15.825,
+        "nextOffset": 17.308999999999997
+      },
+      {
+        "id": "dislike_swipe",
+        "videoOffset": 17.308999999999997,
+        "nextOffset": 18.785
+      },
+      {
+        "id": "save_heart",
+        "videoOffset": 18.785,
+        "nextOffset": 22.599
+      },
+      {
+        "id": "detail",
+        "videoOffset": 22.599,
+        "nextOffset": 23.606
+      },
+      {
+        "id": "detail_items",
+        "videoOffset": 23.606,
+        "nextOffset": 24.219
+      },
+      {
+        "id": "tryon_loading",
+        "videoOffset": 24.219,
+        "nextOffset": 46.832
+      },
+      {
+        "id": "tryon_result",
+        "videoOffset": 46.832,
+        "nextOffset": 49.908
+      },
+      {
+        "id": "compare_picker",
+        "videoOffset": 49.908,
+        "nextOffset": 53.986
+      },
+      {
+        "id": "saved_list",
+        "videoOffset": 53.986,
+        "nextOffset": 56.846
+      },
+      {
+        "id": "profile",
+        "videoOffset": 56.846,
+        "nextOffset": null
+      }
+    ]
+  },
+  "b": {
+    "fps": 25,
+    "offsets": [
+      {
+        "id": "feed_entry",
+        "videoOffset": 4,
+        "nextOffset": 5.947
+      },
+      {
+        "id": "tpo_commute",
+        "videoOffset": 5.947,
+        "nextOffset": 7.269
+      },
+      {
+        "id": "budget_open",
+        "videoOffset": 7.269,
+        "nextOffset": 8.931000000000001
+      },
+      {
+        "id": "brand_filter",
+        "videoOffset": 8.931000000000001,
+        "nextOffset": 14.01
+      },
+      {
+        "id": "detail",
+        "videoOffset": 14.01,
+        "nextOffset": 15.011
+      },
+      {
+        "id": "detail_score",
+        "videoOffset": 15.011,
+        "nextOffset": 18.070999999999998
+      },
+      {
+        "id": "save_multi",
+        "videoOffset": 18.070999999999998,
+        "nextOffset": 22.7
+      },
+      {
+        "id": "saved_list",
+        "videoOffset": 22.7,
+        "nextOffset": 25.867
+      },
+      {
+        "id": "top_pick",
+        "videoOffset": 25.867,
+        "nextOffset": 27.656
+      },
+      {
+        "id": "saved_sort_score",
+        "videoOffset": 27.656,
+        "nextOffset": null
+      }
+    ]
+  },
+  "c": {
+    "fps": 25,
+    "offsets": [
+      {
+        "id": "closet_empty",
+        "videoOffset": 4,
+        "nextOffset": 8.176
+      },
+      {
+        "id": "closet_upload",
+        "videoOffset": 8.176,
+        "nextOffset": 11.15
+      },
+      {
+        "id": "closet_analyzing",
+        "videoOffset": 11.15,
+        "nextOffset": 13.749
+      },
+      {
+        "id": "closet_analyze_result",
+        "videoOffset": 13.749,
+        "nextOffset": 19.112000000000002
+      },
+      {
+        "id": "closet_with_item",
+        "videoOffset": 19.112000000000002,
+        "nextOffset": 22.426
+      },
+      {
+        "id": "closet_outfits_feed",
+        "videoOffset": 22.426,
+        "nextOffset": 28.38
+      },
+      {
+        "id": "closet_outfits_tpo",
+        "videoOffset": 28.38,
+        "nextOffset": 45.041
+      },
+      {
+        "id": "outfit_detail_closet",
+        "videoOffset": 45.041,
+        "nextOffset": 46.619
+      },
+      {
+        "id": "outfit_items_closet",
+        "videoOffset": 46.619,
+        "nextOffset": 49.624
+      },
+      {
+        "id": "feed",
+        "videoOffset": 49.624,
+        "nextOffset": 51.552
+      },
+      {
+        "id": "feed_tpo_event",
+        "videoOffset": 51.552,
+        "nextOffset": 53.958
+      },
+      {
+        "id": "profile",
+        "videoOffset": 53.958,
+        "nextOffset": null
+      }
+    ]
+  }
+}

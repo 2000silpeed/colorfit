@@ -1,5 +1,5 @@
 {
-  "totalDuration": 201.931875,
+  "totalDuration": 194.64783333333332,
   "silenceGap": 0.4,
   "segments": [
     {
@@ -196,45 +196,33 @@
     },
     {
       "sceneId": "c_closet_outfits_tpo",
-      "speechDuration": 3.8132916666666667,
+      "speechDuration": 5.7895,
       "start": 168.78766666666678,
-      "end": 172.60095833333344
-    },
-    {
-      "sceneId": "c_outfit_detail_closet",
-      "speechDuration": 3.4471666666666665,
-      "start": 173.00095833333344,
-      "end": 176.44812500000012
-    },
-    {
-      "sceneId": "c_outfit_items_closet",
-      "speechDuration": 5.473041666666667,
-      "start": 176.84812500000012,
-      "end": 182.32116666666678
+      "end": 174.57716666666678
     },
     {
       "sceneId": "c_feed",
       "speechDuration": 5.0380416666666665,
-      "start": 182.7211666666668,
-      "end": 187.75920833333345
+      "start": 174.9771666666668,
+      "end": 180.01520833333345
     },
     {
       "sceneId": "c_feed_tpo_event",
       "speechDuration": 3.4215833333333334,
-      "start": 188.15920833333345,
-      "end": 191.58079166666678
+      "start": 180.41520833333345,
+      "end": 183.83679166666678
     },
     {
       "sceneId": "c_profile",
       "speechDuration": 3.02475,
-      "start": 191.9807916666668,
-      "end": 195.0055416666668
+      "start": 184.2367916666668,
+      "end": 187.2615416666668
     },
     {
       "sceneId": "outro",
-      "speechDuration": 6.5263333333333335,
-      "start": 195.4055416666668,
-      "end": 201.93187500000013
+      "speechDuration": 6.986291666666666,
+      "start": 187.6615416666668,
+      "end": 194.64783333333347
     }
   ]
 }
