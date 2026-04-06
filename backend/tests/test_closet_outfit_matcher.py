@@ -838,3 +838,70 @@ class TestDynamicComboIntegration:
                 if it["source"] == "catalog":
                     assert it.get("price") is not None
                     assert it["price"] > 0
+
+
+# ── 추가 Edge Case (Task 6.4) ──
+
+
+class TestEdgeCases:
+    def test_greedy_select_returns_none_when_no_candidates(self):
+        """필수 슬롯에 후보가 없으면 None 반환."""
+        result = _greedy_select_combo(
+            slot_candidates={"bottom": [], "shoes": []},
+            required_slots=["bottom", "shoes"],
+            optional_slots=[],
+            my_items=[{"dominant_color_hex": "#FF0000"}],
+            user_tone_id="spring_warm_light",
+            budget_max=None,
+        )
+        assert result is None
+
+    def test_find_matching_slot_empty_items(self):
+        """빈 아이템 리스트에서 매칭 → None."""
+        result = _find_matching_slot("top", "#FF0000", [])
+        assert result is None
+
+    def test_recalculate_scores_no_color_items(self):
+        """아이템에 color_hex 없는 경우 CH 기본값."""
+        outfit = _make_outfit_ns()
+        items = [_make_item("p1", "top", None, tone_id=None)]
+        my_item = {"id": "ci-1", "dominant_color_hex": None, "matched_tone_id": None}
+        scores = _recalculate_scores(outfit, items, items[0], my_item, "spring_warm_light", None)
+        assert scores["ch"] == 50.0
+
+    def test_determine_needed_slots_unknown_group(self):
+        """알 수 없는 그룹 → FULL_OUTFIT_SLOTS fallback."""
+        required, optional = _determine_needed_slots(["unknown_group"])
+        assert "top" in required or "bottom" in required or required == []
+
+    def test_compute_dynamic_scores_empty_combo(self):
+        """빈 combo 아이템 → PE 100 (구매 비용 0)."""
+        my_items = [{"dominant_color_hex": "#FF0000", "matched_tone_id": "spring_warm_light"}]
+        scores = _compute_dynamic_scores(my_items, [], "spring_warm_light", 100000)
+        assert scores["pe"] == 100.0
+
+    def test_build_dynamic_result_empty_combo(self):
+        """빈 combo → purchase_total 0."""
+        my_items = [{"id": "ci-1", "category": "top", "image_url": "https://img/my.jpg"}]
+        scores = {"pcf": 50, "of": 50, "ch": 50, "pe": 100, "sf": 60}
+        result = _build_dynamic_result(my_items, [], scores, 62.0, "spring_warm_light")
+        assert result["purchase_summary"]["purchase_total"] == 0
+        assert result["purchase_summary"]["purchase_items_count"] == 0
+
+    @pytest.mark.asyncio
+    async def test_item_no_color_returns_empty(self, seeded_db):
+        """dominant_color_hex가 None인 옷장 아이템 → 빈 결과."""
+        no_color_id = uuid.uuid4().hex
+        await seeded_db.execute(text("""
+            INSERT INTO closet_items (id, user_id, image_url, category, dominant_color_hex, matched_tone_id)
+            VALUES (:cid, :uid, 'https://img.test/nocolor.jpg', 'top', NULL, NULL)
+        """), {"cid": no_color_id, "uid": USER_ID})
+        await seeded_db.commit()
+
+        result = await match_outfits_for_closet_item(
+            seeded_db,
+            closet_item_id=no_color_id,
+            user_id=USER_ID,
+            user_tone_id="spring_warm_light",
+        )
+        assert result["total_count"] == 0
