@@ -1,110 +1,110 @@
 [
   {
-    "persona": "페르소나 C (여성 40+·겨울쿨딥·이벤트)",
-    "id": "feed",
-    "title": "① 피드 진입",
-    "desc": "겨울쿨딥 + 40+ 여성 하객룩",
-    "url": "/feed",
-    "screenshot": "screenshots/C_01_feed.png",
-    "timestamp": "2026-04-05T22:59:05.693Z"
+    "persona": "페르소나 C (여성 40+·겨울쿨딥·코디완성)",
+    "id": "closet_empty",
+    "title": "① 옷장 (빈 상태)",
+    "desc": "아직 분석한 옷이 없어요 → 첫 번째 옷 분석하기 CTA",
+    "url": "/closet",
+    "screenshot": "screenshots/C_01_closet_empty.png",
+    "timestamp": "2026-04-06T11:35:39.324Z"
   },
   {
-    "persona": "페르소나 C (여성 40+·겨울쿨딥·이벤트)",
-    "id": "tpo_event",
-    "title": "② 행사 TPO",
+    "persona": "페르소나 C (여성 40+·겨울쿨딥·코디완성)",
+    "id": "closet_upload",
+    "title": "② 옷장 업로드 (프리뷰)",
+    "desc": "코랄 톤 상의 이미지 + 분석 시작 버튼",
+    "url": "/closet/upload",
+    "screenshot": "screenshots/C_02_closet_upload.png",
+    "timestamp": "2026-04-06T11:35:43.135Z"
+  },
+  {
+    "persona": "페르소나 C (여성 40+·겨울쿨딥·코디완성)",
+    "id": "closet_analyzing",
+    "title": "③ 옷장 분석 중",
+    "desc": "Gemini Vision — 색상/카테고리/톤 호환성 분석",
+    "url": "/closet/analyze?image_url=http%3A%2F%2Flocalhost%3A8000%2Fstatic%2Fcloset%2F038be562684c654c_c755f027.png&user_tone_id=autumn_warm_deep&category=top",
+    "screenshot": "screenshots/C_03_closet_analyzing.png",
+    "timestamp": "2026-04-06T11:35:45.834Z"
+  },
+  {
+    "persona": "페르소나 C (여성 40+·겨울쿨딥·코디완성)",
+    "id": "closet_analyze_result",
+    "title": "④ 옷장 분석 결과",
+    "desc": "PCF 스코어 + 톤 매칭 + 카테고리 분류",
+    "url": "/closet/analyze?image_url=http%3A%2F%2Flocalhost%3A8000%2Fstatic%2Fcloset%2F038be562684c654c_c755f027.png&user_tone_id=autumn_warm_deep&category=top",
+    "screenshot": "screenshots/C_04_closet_analyze_result.png",
+    "timestamp": "2026-04-06T11:35:48.448Z"
+  },
+  {
+    "persona": "페르소나 C (여성 40+·겨울쿨딥·코디완성)",
+    "id": "closet_with_item",
+    "title": "⑤ 옷장 (아이템 보유)",
+    "desc": "분석 완료된 아이템 + 점수 뱃지",
+    "url": "/closet",
+    "screenshot": "screenshots/C_05_closet_with_item.png",
+    "timestamp": "2026-04-06T11:35:53.258Z"
+  },
+  {
+    "persona": "페르소나 C (여성 40+·겨울쿨딥·코디완성)",
+    "id": "closet_outfits_feed",
+    "title": "⑥ 코디 완성 피드",
+    "desc": "내 옷 기반 매칭 코디 + TPO 필터 + 내 옷 뱃지 + 추가 구매 비용",
+    "url": "/closet/outfits?item_id=8b4d1b70-8144-4a83-8cd6-c647317a3911",
+    "screenshot": "screenshots/C_06_closet_outfits_feed.png",
+    "timestamp": "2026-04-06T11:36:01.274Z"
+  },
+  {
+    "persona": "페르소나 C (여성 40+·겨울쿨딥·코디완성)",
+    "id": "closet_outfits_tpo",
+    "title": "⑦ TPO 필터 (행사)",
+    "desc": "행사 TPO로 필터링된 코디",
+    "url": "/closet/outfits?item_id=8b4d1b70-8144-4a83-8cd6-c647317a3911",
+    "screenshot": "screenshots/C_07_closet_outfits_tpo.png",
+    "timestamp": "2026-04-06T11:36:07.247Z"
+  },
+  {
+    "persona": "페르소나 C (여성 40+·겨울쿨딥·코디완성)",
+    "id": "outfit_detail_closet",
+    "title": "⑧ 코디 상세 (옷장 모드)",
+    "desc": "5축 스코어 + 추천 이유",
+    "url": "/outfit/536db547-203b-4525-9180-ee017fcb05d6?closet_item_id=8b4d1b70-8144-4a83-8cd6-c647317a3911",
+    "screenshot": "screenshots/C_08_outfit_detail_closet.png",
+    "timestamp": "2026-04-06T11:36:23.923Z"
+  },
+  {
+    "persona": "페르소나 C (여성 40+·겨울쿨딥·코디완성)",
+    "id": "outfit_items_closet",
+    "title": "⑨ 아이템 구성 (보유 중/구매)",
+    "desc": "보유 중 뱃지 + 카탈로그 아이템 외부 링크 + 추가 구매 합계",
+    "url": "/outfit/536db547-203b-4525-9180-ee017fcb05d6?closet_item_id=8b4d1b70-8144-4a83-8cd6-c647317a3911",
+    "screenshot": "screenshots/C_09_outfit_items_closet.png",
+    "timestamp": "2026-04-06T11:36:25.506Z"
+  },
+  {
+    "persona": "페르소나 C (여성 40+·겨울쿨딥·코디완성)",
+    "id": "feed",
+    "title": "⑪ 피드 진입",
+    "desc": "겨울쿨딥 + 40+ 여성 하객룩 피드",
+    "url": "/feed",
+    "screenshot": "screenshots/C_10_feed.png",
+    "timestamp": "2026-04-06T11:36:28.497Z"
+  },
+  {
+    "persona": "페르소나 C (여성 40+·겨울쿨딥·코디완성)",
+    "id": "feed_tpo_event",
+    "title": "⑫ 행사 TPO 피드",
     "desc": "격식있는 하객룩 우선 노출",
     "url": "/feed",
-    "screenshot": "screenshots/C_02_tpo_event.png",
-    "timestamp": "2026-04-05T22:59:07.627Z"
+    "screenshot": "screenshots/C_11_feed_tpo_event.png",
+    "timestamp": "2026-04-06T11:36:30.432Z"
   },
   {
-    "persona": "페르소나 C (여성 40+·겨울쿨딥·이벤트)",
+    "persona": "페르소나 C (여성 40+·겨울쿨딥·코디완성)",
     "id": "profile",
-    "title": "③ 프로필",
-    "desc": "톤 · 선호도 · 브랜드 · 로그아웃",
+    "title": "⑬ 프로필",
+    "desc": "겨울쿨딥 톤 · 선호도 · 브랜드 · 로그아웃",
     "url": "/profile",
-    "screenshot": "screenshots/C_03_profile.png",
-    "timestamp": "2026-04-05T22:59:10.060Z"
-  },
-  {
-    "persona": "페르소나 C (여성 40+·겨울쿨딥·이벤트)",
-    "id": "tone_detail",
-    "title": "④ 톤 상세 페이지",
-    "desc": "겨울쿨딥 팔레트 · 추천 컬러 · 회피 컬러",
-    "url": "/tone/winter_cool_deep",
-    "screenshot": "screenshots/C_04_tone_detail.png",
-    "timestamp": "2026-04-05T22:59:12.192Z"
-  },
-  {
-    "persona": "페르소나 C (여성 40+·겨울쿨딥·이벤트)",
-    "id": "tone_change",
-    "title": "⑤ 톤 변경 모드",
-    "desc": "온보딩 Step2 재진입 (mode=change)",
-    "url": "/onboarding/step2?mode=change",
-    "screenshot": "screenshots/C_05_tone_change.png",
-    "timestamp": "2026-04-05T22:59:14.105Z"
-  },
-  {
-    "persona": "페르소나 C (여성 40+·겨울쿨딥·이벤트)",
-    "id": "premium",
-    "title": "⑥ 프리미엄 구독",
-    "desc": "Free vs Premium 비교 · 착장샷 무제한 · 광고 제거",
-    "url": "/premium",
-    "screenshot": "screenshots/C_06_premium.png",
-    "timestamp": "2026-04-05T22:59:17.817Z"
-  },
-  {
-    "persona": "페르소나 C (여성 40+·겨울쿨딥·이벤트)",
-    "id": "closet",
-    "title": "⑦ 옷장",
-    "desc": "내 옷 업로드 · 분석 · 추천 엔진 통합",
-    "url": "/closet",
-    "screenshot": "screenshots/C_07_closet.png",
-    "timestamp": "2026-04-05T22:59:21.214Z"
-  },
-  {
-    "persona": "페르소나 C (여성 40+·겨울쿨딥·이벤트)",
-    "id": "closet_upload",
-    "title": "⑧ 옷장 업로드 (프리뷰)",
-    "desc": "상의(top) 카테고리 · 프리뷰 + 분석 시작 버튼",
-    "url": "/closet/upload",
-    "screenshot": "screenshots/C_08_closet_upload.png",
-    "timestamp": "2026-04-05T22:59:25.357Z"
-  },
-  {
-    "persona": "페르소나 C (여성 40+·겨울쿨딥·이벤트)",
-    "id": "closet_analyzing",
-    "title": "⑨ 옷장 분석 중",
-    "desc": "Gemini Vision 호출 — 색상/카테고리/톤 호환성 분석",
-    "url": "/closet/analyze?image_url=http%3A%2F%2Flocalhost%3A8000%2Fstatic%2Fcloset%2Fb3b15c8a571a9280_f9ca0fa8.jpg&user_tone_id=autumn_warm_deep&category=top",
-    "screenshot": "screenshots/C_09_closet_analyzing.png",
-    "timestamp": "2026-04-05T22:59:28.454Z"
-  },
-  {
-    "persona": "페르소나 C (여성 40+·겨울쿨딥·이벤트)",
-    "id": "closet_analyze",
-    "title": "⑩ 옷장 분석 결과",
-    "desc": "Gemini Vision 결과 + 웜톤 적합도 + 추천 코디",
-    "url": "/closet/analyze?image_url=http%3A%2F%2Flocalhost%3A8000%2Fstatic%2Fcloset%2Fb3b15c8a571a9280_f9ca0fa8.jpg&user_tone_id=autumn_warm_deep&category=top",
-    "screenshot": "screenshots/C_10_closet_analyze.png",
-    "timestamp": "2026-04-05T22:59:31.139Z"
-  },
-  {
-    "persona": "페르소나 C (여성 40+·겨울쿨딥·이벤트)",
-    "id": "brands",
-    "title": "⑨ 브랜드 선호 설정",
-    "desc": "추천 브랜드 선택 → 피드 필터에 반영",
-    "url": "/brands",
-    "screenshot": "screenshots/C_11_brands.png",
-    "timestamp": "2026-04-05T22:59:34.519Z"
-  },
-  {
-    "persona": "페르소나 C (여성 40+·겨울쿨딥·이벤트)",
-    "id": "preference",
-    "title": "⑩ 선호도 설정",
-    "desc": "가중치 자동 조정 (PCF·OF·CH·PE·SF) · 선호 누적 시각화",
-    "url": "/preference",
-    "screenshot": "screenshots/C_12_preference.png",
-    "timestamp": "2026-04-05T22:59:38.352Z"
+    "screenshot": "screenshots/C_12_profile.png",
+    "timestamp": "2026-04-06T11:36:33.133Z"
   }
 ]

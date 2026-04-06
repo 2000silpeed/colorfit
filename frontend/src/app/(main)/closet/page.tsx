@@ -8,7 +8,6 @@ import { fetchCloset, type ClosetItemData, type ClosetStats } from "@/lib/api";
 
 type PageState = "loading" | "empty" | "success" | "error";
 
-const MOCK_USER_ID = "00000000-0000-0000-0000-000000000001";
 const FREE_ANALYSIS_LIMIT = 5;
 
 /* -- Score badge color -- */
@@ -207,7 +206,12 @@ export default function ClosetPage() {
 
     async function load() {
       try {
-        const data = await fetchCloset(MOCK_USER_ID);
+        let userId = localStorage.getItem("colorfit_user_id");
+        if (!userId) {
+          userId = crypto.randomUUID();
+          localStorage.setItem("colorfit_user_id", userId);
+        }
+        const data = await fetchCloset(userId);
         if (cancelled) return;
         setItems(data.items);
         setStats(data.stats);

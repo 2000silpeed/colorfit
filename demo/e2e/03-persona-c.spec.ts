@@ -1,17 +1,34 @@
-import { test } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import path from "path";
 import { Recorder, BASE_URL, issueGuestToken, injectAuth } from "./lib/helpers";
 
-test("페르소나 C — 여성 40+ · 겨울쿨딥 · 하객/이벤트룩", async ({ page, request }) => {
+
+test("페르소나 C — 여성 40+ · 겨울쿨딥 · 옷장 → 코디 완성 풀플로우", async ({ page, request }) => {
   test.setTimeout(180_000);
-  const rec = new Recorder("C", "페르소나 C (여성 40+·겨울쿨딥·이벤트)");
+  const rec = new Recorder("C", "페르소나 C (여성 40+·겨울쿨딥·코디완성)");
   page.on("pageerror", (e) => console.log(`  [pageerror] ${e.message}`));
   page.on("console", (m) => { if (m.type() === "error") console.log(`  [console:err] ${m.text()}`); });
 
-  // 게스트 JWT + 프리셋
-  const guest = await issueGuestToken(request);
+  // ── 온보딩 API로 유저 생성 (백엔드에 프로필 등록) ──
+  const onboardRes = await request.post(`${BASE_URL.replace("3000", "8000")}/api/onboarding`, {
+    data: {
+      gender: "female",
+      age_group: "40plus",
+      tone_id: "winter_cool_deep",
+      tpo_list: ["event"],
+      style_moods: [],
+      budget_min: 150000,
+      budget_max: 300000,
+    },
+  });
+  const onboardData = await onboardRes.json() as { user_id: string };
+  const userId = onboardData.user_id;
+  console.log(`  [demo] onboarded user_id: ${userId}`);
+
+  // 게스트 JWT 발급 (해당 user_id로)
+  const guest = await issueGuestToken(request, userId);
   await page.goto(`${BASE_URL}/login`, { waitUntil: "networkidle" });
-  await injectAuth(page, guest.user_id, guest.access_token, {
+  await injectAuth(page, userId, guest.access_token, {
     colorfit_gender: "female",
     colorfit_tone: "winter_cool_deep",
     colorfit_tone_id: "winter_cool_deep",
@@ -21,83 +38,148 @@ test("페르소나 C — 여성 40+ · 겨울쿨딥 · 하객/이벤트룩", asy
   });
   await page.reload({ waitUntil: "networkidle" });
 
-  // 1. 피드 진입
-  await page.goto(`${BASE_URL}/feed`, { waitUntil: "networkidle" });
-  await page.waitForTimeout(1500);
-  await rec.shoot(page, "feed", "① 피드 진입", "겨울쿨딥 + 40+ 여성 하객룩");
-
-  // 2. 이벤트 TPO
-  const eventTab = page.getByRole("button", { name: "행사" }).first();
-  if (await eventTab.count()) {
-    await eventTab.click();
-    await page.waitForTimeout(1200);
-    await rec.shoot(page, "tpo_event", "② 행사 TPO", "격식있는 하객룩 우선 노출");
-  }
-
-  // 3. 프로필 진입
-  await page.goto(`${BASE_URL}/profile`, { waitUntil: "networkidle" });
-  await page.waitForTimeout(1000);
-  await rec.shoot(page, "profile", "③ 프로필", "톤 · 선호도 · 브랜드 · 로그아웃");
-
-  // 4. 톤 상세 (프로필에서 톤 카드 클릭)
-  const toneCard = page.locator("button").filter({ hasText: /겨울|winter|딥/ }).first();
-  if (await toneCard.count()) {
-    await toneCard.click({ force: true }).catch(() => {});
-    await page.waitForTimeout(1500);
-    if (page.url().includes("/tone/")) {
-      await rec.shoot(page, "tone_detail", "④ 톤 상세 페이지", "겨울쿨딥 팔레트 · 추천 컬러 · 회피 컬러");
-
-      // 톤 변경 버튼
-      const changeToneBtn = page.getByRole("button", { name: /다른 톤으로 변경/ });
-      if (await changeToneBtn.count()) {
-        await changeToneBtn.click();
-        await page.waitForURL(/step2/, { timeout: 5000 }).catch(() => {});
-        await page.waitForTimeout(1000);
-        await rec.shoot(page, "tone_change", "⑤ 톤 변경 모드", "온보딩 Step2 재진입 (mode=change)");
-      }
-    }
-  }
-
-  // 5. 프리미엄 페이지
-  await page.goto(`${BASE_URL}/premium`, { waitUntil: "networkidle" });
-  await page.waitForTimeout(1000);
-  await rec.shoot(page, "premium", "⑥ 프리미엄 구독", "Free vs Premium 비교 · 착장샷 무제한 · 광고 제거");
-
-  // 6. 옷장 (closet)
+  // ① 옷장 진입 (빈 상태)
   await page.goto(`${BASE_URL}/closet`, { waitUntil: "networkidle" });
-  await page.waitForTimeout(1000);
-  await rec.shoot(page, "closet", "⑦ 옷장", "내 옷 업로드 · 분석 · 추천 엔진 통합");
+  await page.waitForTimeout(1500);
+  await rec.shoot(page, "closet_empty", "① 옷장 (빈 상태)", "아직 분석한 옷이 없어요 → 첫 번째 옷 분석하기 CTA");
 
-  // 7. 옷장 업로드 — 실제 샘플 이미지 업로드
+  // ② 옷장 업로드 — 샘플 이미지 업로드
   await page.goto(`${BASE_URL}/closet/upload`, { waitUntil: "networkidle" });
   await page.waitForTimeout(800);
   const fixturePath = path.resolve(__dirname, "fixtures/sample_top_coral.png");
   await page.locator('input[data-testid="gallery-input"]').setInputFiles(fixturePath);
-  await page.waitForTimeout(1500); // 프리뷰 렌더
-  await rec.shoot(page, "closet_upload", "⑧ 옷장 업로드 (프리뷰)", "상의(top) 카테고리 · 프리뷰 + 분석 시작 버튼");
+  await page.waitForTimeout(1500);
+  await rec.shoot(page, "closet_upload", "② 옷장 업로드 (프리뷰)", "코랄 톤 상의 이미지 + 분석 시작 버튼");
 
-  // 분석 시작
+  // ③ 분석 시작 → 분석 중
   const analyzeBtn = page.getByRole("button", { name: /분석 시작하기/ });
   await analyzeBtn.click();
-  // 업로드 + Gemini Vision 분석 대기 (최대 45초)
   await page.waitForURL(/\/closet\/analyze/, { timeout: 45_000 }).catch(() => {});
   await page.waitForTimeout(2000);
-  await rec.shoot(page, "closet_analyzing", "⑨ 옷장 분석 중", "Gemini Vision 호출 — 색상/카테고리/톤 호환성 분석");
+  await rec.shoot(page, "closet_analyzing", "③ 옷장 분석 중", "Gemini Vision — 색상/카테고리/톤 호환성 분석");
 
-  // 분석 결과 대기
-  await page.waitForSelector("text=/분석 결과|추천 코디|다시|결과/", { timeout: 60_000 }).catch(() => {});
+  // ④ 분석 결과 대기
+  await page.waitForSelector("text=/분석 결과|추천 코디|다시|결과|훌륭|좋아요|아쉬워요/", { timeout: 60_000 }).catch(() => {});
   await page.waitForTimeout(2000);
-  await rec.shoot(page, "closet_analyze", "⑩ 옷장 분석 결과", "Gemini Vision 결과 + 웜톤 적합도 + 추천 코디");
+  await rec.shoot(page, "closet_analyze_result", "④ 옷장 분석 결과", "PCF 스코어 + 톤 매칭 + 카테고리 분류");
 
-  // 8. 브랜드 설정
-  await page.goto(`${BASE_URL}/brands`, { waitUntil: "networkidle" });
-  await page.waitForTimeout(1000);
-  await rec.shoot(page, "brands", "⑨ 브랜드 선호 설정", "추천 브랜드 선택 → 피드 필터에 반영");
+  // ④-1 "옷장에 추가" 버튼 클릭 → 자동 리다이렉트 대기
+  const addToClosetBtn = page.locator("button").filter({ hasText: "옷장에 추가" });
+  if (await addToClosetBtn.count()) {
+    await addToClosetBtn.click();
+    await page.waitForSelector("text=옷장에 추가되었어요", { timeout: 10_000 }).catch(() => {});
+    await page.waitForURL(/closet(?:\?|$)/, { timeout: 10_000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+  }
 
-  // 9. 선호도 설정
-  await page.goto(`${BASE_URL}/preference`, { waitUntil: "networkidle" });
+  // ⑤ 옷장 목록 (분석된 아이템 확인)
+  if (!page.url().match(/\/closet(\?|$)/)) {
+    await page.goto(`${BASE_URL}/closet`, { waitUntil: "networkidle" });
+  }
+  // 아이템 로드 대기
+  await page.waitForSelector("text=/내 옷장|코디 완성하기/", { timeout: 10_000 }).catch(() => {});
+  const hasItems = await page.locator("text=코디 완성하기").count();
+  if (hasItems === 0) {
+    await page.reload({ waitUntil: "networkidle" });
+    await page.waitForSelector("text=/내 옷장|코디 완성하기/", { timeout: 10_000 }).catch(() => {});
+  }
   await page.waitForTimeout(1000);
-  await rec.shoot(page, "preference", "⑩ 선호도 설정", "가중치 자동 조정 (PCF·OF·CH·PE·SF) · 선호 누적 시각화");
+  await rec.shoot(page, "closet_with_item", "⑤ 옷장 (아이템 보유)", "분석 완료된 아이템 + 점수 뱃지");
+
+  // ⑥ '코디 완성하기' 클릭 → 코디 완성 피드
+  const outfitBtn = page.getByRole("button", { name: /코디 완성하기/ }).first();
+  if (await outfitBtn.count()) {
+    await outfitBtn.click();
+    await page.waitForURL(/\/closet\/outfits/, { timeout: 10_000 }).catch(() => {});
+  } else {
+    // 직접 URL로 진입 (아이템 ID 필요)
+    const itemId = await page.evaluate(() => {
+      const btn = document.querySelector("button[aria-label*='코디 완성하기']");
+      return btn?.closest("[data-item-id]")?.getAttribute("data-item-id") ?? "";
+    });
+    if (itemId) {
+      await page.goto(`${BASE_URL}/closet/outfits?item_id=${itemId}`, { waitUntil: "networkidle" });
+    }
+  }
+  // 코디 카드 실제 렌더링 대기 (스켈레톤 → 카드 or 빈 상태 or 에러)
+  await page.waitForSelector("text=/코디를 찾았어요|매칭되는 코디가 없어요|불러오지 못했어요/", { timeout: 15_000 }).catch(() => {});
+  await page.waitForTimeout(1000);
+  await rec.shoot(page, "closet_outfits_feed", "⑥ 코디 완성 피드", "내 옷 기반 매칭 코디 + TPO 필터 + 내 옷 뱃지 + 추가 구매 비용");
+
+  // ⑦ TPO 필터 — 행사 탭
+  const eventTab = page.getByRole("button", { name: "행사" }).first();
+  if (await eventTab.count()) {
+    await eventTab.click();
+    await page.waitForSelector("text=/코디를 찾았어요|매칭되는 코디가 없어요|불러오지 못했어요/", { timeout: 10_000 }).catch(() => {});
+    await page.waitForTimeout(1000);
+    await rec.shoot(page, "closet_outfits_tpo", "⑦ TPO 필터 (행사)", "행사 TPO로 필터링된 코디");
+
+    // 행사 결과 없으면 전체로 복귀
+    const hasEvent = await page.locator("article").count();
+    if (hasEvent === 0) {
+      const allTab = page.getByRole("button", { name: "전체" }).first();
+      if (await allTab.count()) {
+        await allTab.click();
+        await page.waitForSelector("text=/코디를 찾았어요/", { timeout: 10_000 }).catch(() => {});
+        await page.waitForTimeout(1000);
+      }
+    }
+  }
+
+  // ⑧ 코디 카드 탭 → 코디 상세 (closet 모드)
+  const outfitCard = page.locator("article").first();
+  if (await outfitCard.count()) {
+    await outfitCard.click();
+    await page.waitForURL(/\/outfit\/.*closet_item_id/, { timeout: 10_000 }).catch(() => {});
+    // 스켈레톤 → 실제 콘텐츠 로드 대기
+    await page.locator("h1").first().waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
+    await page.waitForTimeout(1000);
+    await rec.shoot(page, "outfit_detail_closet", "⑧ 코디 상세 (옷장 모드)", "5축 스코어 + 추천 이유");
+
+    // ⑨ 아이템 구성 — 보유 중 뱃지 + 구매 링크 확인
+    await page.mouse.wheel(0, 600);
+    await page.waitForTimeout(1000);
+    await rec.shoot(page, "outfit_items_closet", "⑨ 아이템 구성 (보유 중/구매)", "보유 중 뱃지 + 카탈로그 아이템 외부 링크 + 추가 구매 합계");
+
+    // 보유 중 뱃지 존재 확인
+    const ownedBadges = page.locator("text=보유 중");
+    const badgeCount = await ownedBadges.count();
+    console.log(`  [demo] 보유 중 뱃지: ${badgeCount}개`);
+
+    // 구매 합계 섹션 확인
+    const purchaseSummary = page.locator("text=추가 구매 합계");
+    if (await purchaseSummary.count()) {
+      await page.mouse.wheel(0, 300);
+      await page.waitForTimeout(500);
+      await rec.shoot(page, "purchase_summary", "⑩ 추가 구매 합계", "보유 N개 · 구매 필요 N개 · 합계 금액");
+    }
+
+    // 카탈로그 아이템 외부 링크 확인
+    const externalLinks = page.locator('a[target="_blank"][href*="http"]');
+    const linkCount = await externalLinks.count();
+    console.log(`  [demo] 외부 구매 링크: ${linkCount}개`);
+    if (linkCount > 0) {
+      const href = await externalLinks.first().getAttribute("href");
+      console.log(`  [demo] 첫 번째 구매 링크: ${href}`);
+    }
+  }
+
+  // ⑬ 피드로 이동 — 행사 TPO
+  await page.goto(`${BASE_URL}/feed`, { waitUntil: "networkidle" });
+  await page.waitForTimeout(1500);
+  await rec.shoot(page, "feed", "⑪ 피드 진입", "겨울쿨딥 + 40+ 여성 하객룩 피드");
+
+  const feedEventTab = page.getByRole("button", { name: "행사" }).first();
+  if (await feedEventTab.count()) {
+    await feedEventTab.click();
+    await page.waitForTimeout(1200);
+    await rec.shoot(page, "feed_tpo_event", "⑫ 행사 TPO 피드", "격식있는 하객룩 우선 노출");
+  }
+
+  // ⑭ 프로필
+  await page.goto(`${BASE_URL}/profile`, { waitUntil: "networkidle" });
+  await page.waitForTimeout(1000);
+  await rec.shoot(page, "profile", "⑬ 프로필", "겨울쿨딥 톤 · 선호도 · 브랜드 · 로그아웃");
 
   rec.save();
 });

@@ -35,18 +35,6 @@ TRYON_MODEL = "gemini-2.5-flash-image"
 TRYON_STORAGE = Path(__file__).resolve().parents[2] / "storage" / "tryon"
 TRYON_STORAGE.mkdir(parents=True, exist_ok=True)
 
-TRYON_PROMPT = (
-    "이 사람이 위 패션 아이템들을 착용한 전신 패션 사진을 생성해주세요. "
-    "자연스러운 포즈, 심플한 배경, 패션 매거진 에디토리얼 스타일. "
-    "아이템의 색상과 디테일을 최대한 유지해주세요."
-)
-
-TRYON_PROMPT_NO_MODEL = (
-    "위 패션 아이템들을 착용한 사람의 전신 패션 사진을 생성해주세요. "
-    "20대 아시아인 모델, 자연스러운 포즈, 심플한 밝은 회색 배경, "
-    "패션 매거진 에디토리얼 스타일, 고품질 실사. "
-    "아이템의 색상과 디테일을 최대한 정확히 반영해주세요."
-)
 
 DEFAULT_MODEL_IMAGES: dict[str, str] = {
     "male": "https://storage.googleapis.com/colorfit-assets/models/male_default.jpg",
@@ -84,9 +72,17 @@ async def _fetch_image_bytes(url: str) -> bytes:
         return resp.content
 
 
-async def _get_item_image_urls(
+class _ItemInfo:
+    def __init__(self, image_url: str, name: str, category: str, color: str):
+        self.image_url = image_url
+        self.name = name
+        self.category = category
+        self.color = color
+
+
+async def _get_item_infos(
     db: AsyncSession, outfit_id: str
-) -> list[str]:
+) -> list[_ItemInfo]:
     stmt = select(Outfit).where(Outfit.id == outfit_id)
     result = await db.execute(stmt)
     outfit = result.scalar_one_or_none()
@@ -96,10 +92,19 @@ async def _get_item_image_urls(
     if not outfit.item_ids:
         raise ValueError(f"코디에 아이템이 없습니다: {outfit_id}")
 
-    stmt = select(Product.image_url).where(Product.id.in_(outfit.item_ids))
+    stmt = select(Product).where(Product.id.in_(outfit.item_ids))
     result = await db.execute(stmt)
-    urls = result.scalars().all()
-    return [u for u in urls if u]
+    products = result.scalars().all()
+    return [
+        _ItemInfo(
+            image_url=p.image_url or "",
+            name=p.name or "",
+            category=p.category or "",
+            color=p.color_hex or "",
+        )
+        for p in products
+        if p.image_url
+    ]
 
 
 async def _check_cache(
@@ -156,30 +161,58 @@ async def generate_tryon_image(
     if cached_url:
         return {"image_url": cached_url, "outfit_id": outfit_id, "cached": True}
 
-    item_image_urls = await _get_item_image_urls(db, outfit_id)
+    item_infos = await _get_item_infos(db, outfit_id)
 
     if closet_item_id:
-        stmt = select(ClosetItem.image_url).where(ClosetItem.id == closet_item_id)
+        stmt = select(ClosetItem).where(ClosetItem.id == closet_item_id)
         result = await db.execute(stmt)
-        closet_url = result.scalar_one_or_none()
-        if closet_url:
-            item_image_urls.append(closet_url)
+        closet_item = result.scalar_one_or_none()
+        if closet_item and closet_item.image_url:
+            item_infos.append(_ItemInfo(
+                image_url=closet_item.image_url,
+                name="내 옷",
+                category=closet_item.category or "top",
+                color=closet_item.dominant_color_hex or "",
+            ))
 
     image_parts: list[types.Part] = []
-    for url in item_image_urls:
-        img_bytes = await _fetch_image_bytes(url)
+    item_descriptions: list[str] = []
+    for i, info in enumerate(item_infos, 1):
+        img_bytes = await _fetch_image_bytes(info.image_url)
         image_parts.append(
             types.Part.from_bytes(data=img_bytes, mime_type="image/jpeg")
         )
+        desc = f"아이템 {i}: {info.category}"
+        if info.color:
+            desc += f" ({info.color})"
+        if info.name:
+            desc += f" - {info.name}"
+        item_descriptions.append(desc)
 
-    prompt_text = TRYON_PROMPT_NO_MODEL
+    items_text = "\n".join(item_descriptions)
+    prompt_text = (
+        f"다음 {len(item_infos)}개 패션 아이템으로 구성된 코디 착장 사진을 생성해주세요.\n\n"
+        f"{items_text}\n\n"
+        "모든 아이템을 빠짐없이 착용한 전신 사진을 생성해주세요. "
+        "각 아이템의 색상, 소재, 디테일을 정확히 반영해야 합니다. "
+        "20대 아시아인 모델, 자연스러운 포즈, 심플한 밝은 회색 배경, "
+        "패션 매거진 에디토리얼 스타일, 고품질 실사."
+    )
+
     if model_image_url:
         try:
             model_bytes = await _fetch_image_bytes(model_image_url)
             image_parts.append(
                 types.Part.from_bytes(data=model_bytes, mime_type="image/jpeg")
             )
-            prompt_text = TRYON_PROMPT
+            prompt_text = (
+                f"다음 {len(item_infos)}개 패션 아이템으로 구성된 코디 착장 사진을 생성해주세요.\n\n"
+                f"{items_text}\n\n"
+                "위 모델 사진의 인물이 모든 아이템을 빠짐없이 착용한 전신 사진을 생성해주세요. "
+                "각 아이템의 색상, 소재, 디테일을 정확히 반영해야 합니다. "
+                "자연스러운 포즈, 심플한 밝은 회색 배경, "
+                "패션 매거진 에디토리얼 스타일, 고품질 실사."
+            )
         except Exception as exc:
             logger.warning("model image fetch failed (%s), falling back to prompt-only", exc)
 

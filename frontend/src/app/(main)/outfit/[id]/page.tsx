@@ -842,7 +842,7 @@ export default function OutfitDetailPage() {
               role="dialog"
               aria-modal="true"
               aria-label="AI 착장 미리보기"
-              className="fixed bottom-0 left-0 right-0 z-50 bg-bg-primary rounded-t-[var(--radius-xl)] px-[20px] pt-[16px] pb-[32px]"
+              className="fixed bottom-0 left-0 right-0 z-50 bg-bg-primary rounded-t-[var(--radius-xl)] px-[20px] pt-[16px] pb-[calc(env(safe-area-inset-bottom,0px)+48px)] max-h-[85vh] overflow-y-auto"
               initial={prefersReducedMotion ? false : { y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}

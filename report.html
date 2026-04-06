@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ColorFit -- 중간 보고</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F8F6F3;
+    --surface: #F0EDE8;
+    --accent: #964F4C;
+    --text-primary: #222222;
+    --text-secondary: #8C8578;
+    --border: #E5E1DA;
+    --pcf: #964F4C;
+    --of: #4F97A3;
+    --ch: #DDB67D;
+    --pe: #D1933F;
+    --sf: #6B5876;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Pretendard Variable', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  .slide {
+    min-height: 100vh;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 80px;
+    position: relative;
+    animation: fadeSlideUp 0.6s ease-out both;
+  }
+
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .slide-number {
+    position: absolute;
+    bottom: 32px;
+    right: 48px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-family: 'Pretendard Variable', sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Nanum Myeongjo', serif;
+    font-weight: 700;
+  }
+
+  h1 { font-size: 36px; line-height: 1.15; }
+  h2 { font-size: 24px; line-height: 1.25; }
+  h3 { font-size: 18px; line-height: 1.3; }
+
+  .caption {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .inner {
+    max-width: 1100px;
+    width: 100%;
+  }
+
+  /* ---- Slide 1: Title ---- */
+  .slide--title { text-align: center; }
+  .slide--title h1 {
+    font-size: 72px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+    color: var(--accent);
+  }
+  .slide--title .subtitle {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+  .slide--title .desc {
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+  .slide--title .date {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 32px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .slide--title .line {
+    width: 48px;
+    height: 2px;
+    background: var(--accent);
+    margin: 24px auto 0;
+  }
+
+  /* ---- Slide 2: Pain Points ---- */
+  .pain-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 48px;
+  }
+  .pain-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 36px 28px;
+    transition: transform 0.2s ease;
+  }
+  .pain-card:hover { transform: translateY(-4px); }
+  .pain-card .num {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--accent);
+    opacity: 0.2;
+    margin-bottom: 12px;
+  }
+  .pain-card h3 { margin-bottom: 8px; }
+  .pain-card .quote {
+    font-size: 14px;
+    color: var(--accent);
+    font-style: italic;
+    margin-bottom: 12px;
+  }
+  .pain-card p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .section-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  /* ---- Slide 3: White Space ---- */
+  .whitespace-chart {
+    position: relative;
+    width: 600px;
+    height: 500px;
+    margin: 40px auto 0;
+  }
+  .axis-label {
+    position: absolute;
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+  .axis-x { bottom: -28px; left: 50%; transform: translateX(-50%); }
+  .axis-y { top: 50%; left: -80px; transform: translateY(-50%) rotate(-90deg); }
+  .axis-z-label {
+    position: absolute;
+    top: -24px;
+    right: 0;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  .comp-dot {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: transform 0.2s;
+  }
+  .comp-dot:hover { transform: scale(1.1); }
+  .comp-dot .dot {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .comp-dot .name {
+    font-size: 11px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+  .comp-dot .missing {
+    font-size: 10px;
+    color: var(--text-secondary);
+    opacity: 0.7;
+  }
+  .comp-dot.colorfit .dot {
+    width: 56px;
+    height: 56px;
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    box-shadow: 0 4px 24px rgba(150,79,76,0.25);
+  }
+  .comp-dot.colorfit .name {
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 12px;
+  }
+  .chart-axes {
+    position: absolute;
+    inset: 0;
+  }
+  .chart-axes::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--border);
+  }
+  .chart-axes::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    top: 0;
+    width: 1px;
+    background: var(--border);
+  }
+  .chart-grid-line {
+    position: absolute;
+    background: var(--border);
+    opacity: 0.4;
+  }
+  .chart-grid-h { left: 0; right: 0; height: 1px; }
+  .chart-grid-v { top: 0; bottom: 0; width: 1px; }
+
+  /* ---- Slide 4: Features ---- */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 40px;
+  }
+  .feature-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 24px;
+    transition: transform 0.2s;
+  }
+  .feature-card:hover { transform: translateY(-3px); }
+  .feature-card .feature-num {
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+  .feature-card h3 {
+    font-size: 17px;
+    margin-bottom: 8px;
+  }
+  .feature-card p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* ---- Slide 5: Scoring ---- */
+  .score-axes {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    margin-top: 48px;
+    max-width: 800px;
+    width: 100%;
+  }
+  .score-axis {
+    display: grid;
+    grid-template-columns: 60px 130px 1fr;
+    gap: 12px;
+    align-items: center;
+  }
+  .score-axis .axis-code {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .score-axis .axis-name {
+    font-size: 14px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+  .score-bar-track {
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    animation: barGrow 1.2s ease-out both;
+  }
+  @keyframes barGrow {
+    from { width: 0; }
+  }
+  .score-desc {
+    grid-column: 1 / -1;
+    font-size: 13px;
+    color: var(--text-secondary);
+    padding-left: 202px;
+    margin-top: -4px;
+  }
+
+  /* ---- Slide 6: Pipeline ---- */
+  .pipeline {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 48px auto 0;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .pipeline-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .pipeline-box {
+    padding: 16px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background 0.2s;
+  }
+  .pipeline-box.highlight {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .pipeline-arrow {
+    font-size: 20px;
+    color: var(--text-secondary);
+    margin: 0 4px;
+    line-height: 1;
+  }
+  .pipeline-tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .pipeline-tag.hard {
+    background: rgba(150,79,76,0.12);
+    color: var(--accent);
+  }
+  .pipeline-tag.soft {
+    background: rgba(79,151,163,0.12);
+    color: var(--of);
+  }
+  .pipeline-explain {
+    max-width: 700px;
+    text-align: center;
+    margin-top: 48px;
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+  }
+  .pipeline-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 32px;
+    width: 100%;
+    max-width: 700px;
+  }
+  .pipeline-divider span {
+    font-size: 12px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+  .pipeline-divider::before,
+  .pipeline-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ---- Slide 7: Personas ---- */
+  .persona-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 48px;
+  }
+  .persona-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px 28px;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+  }
+  .persona-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+  }
+  .persona-card:nth-child(1)::before { background: var(--accent); }
+  .persona-card:nth-child(2)::before { background: #5C7A6E; }
+  .persona-card:nth-child(3)::before { background: #4A6B8A; }
+  .persona-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .persona-card:nth-child(1) .persona-label { color: var(--accent); }
+  .persona-card:nth-child(2) .persona-label { color: #5C7A6E; }
+  .persona-card:nth-child(3) .persona-label { color: #4A6B8A; }
+  .persona-card h3 { margin-bottom: 6px; }
+  .persona-meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+  .persona-journey {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+
+  /* ---- Slide 8: Data ---- */
+  .data-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 48px;
+  }
+  .data-item {
+    text-align: center;
+    padding: 24px;
+  }
+  .data-number {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .data-number.accent { color: var(--accent); }
+  .data-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  /* ---- Slide 9: Tech Stack ---- */
+  .stack-columns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 48px;
+    margin-top: 48px;
+  }
+  .stack-group { }
+  .stack-group-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .stack-items { display: flex; flex-direction: column; gap: 12px; }
+  .stack-item {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font-size: 15px;
+  }
+  .stack-item .dot-marker {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+    margin-top: 8px;
+  }
+
+  /* ---- Slide 10: Roadmap ---- */
+  .roadmap-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-top: 48px;
+    max-width: 600px;
+  }
+  .roadmap-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px 24px;
+    background: var(--surface);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .roadmap-num {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent);
+    opacity: 0.4;
+    flex-shrink: 0;
+    width: 32px;
+  }
+  .roadmap-item h3 {
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+  .roadmap-item p {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  /* ---- Slide 11: Closing ---- */
+  .slide--closing { text-align: center; }
+  .slide--closing .closing-text {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 40px;
+    line-height: 1.4;
+  }
+  .slide--closing .logo-text {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+  .slide--closing .line {
+    width: 48px;
+    height: 2px;
+    background: var(--accent);
+    margin: 24px auto;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .slide { padding: 40px 24px; }
+    .pain-cards, .feature-grid, .persona-cards, .data-grid { grid-template-columns: 1fr; }
+    .stack-columns { grid-template-columns: 1fr; }
+    .slide--title h1 { font-size: 48px; }
+    .whitespace-chart { width: 100%; height: 400px; }
+    .pipeline { flex-direction: column; }
+    .pipeline-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Slide 1: Title -->
+<section class="slide slide--title">
+  <div class="inner" style="display:flex;flex-direction:column;align-items:center;">
+    <h1>ColorFit</h1>
+    <p class="subtitle">내 색을 아는 순간, 선택이 쉬워진다</p>
+    <p class="desc">AI 퍼스널컬러 기반 패션 의사결정 엔진</p>
+    <p class="date">중간 보고 &middot; 2026.04</p>
+    <div class="line"></div>
+  </div>
+  <span class="slide-number">01 / 11</span>
+</section>
+
+<!-- Slide 2: Pain Points -->
+<section class="slide">
+  <div class="inner">
+    <p class="section-label">Problem</p>
+    <h2>문제 정의 &mdash; 왜 필요한가</h2>
+    <div class="pain-cards">
+      <div class="pain-card">
+        <div class="num">01</div>
+        <h3>Fit &amp; Harmony</h3>
+        <p class="quote">"이 옷이 나한테 어울릴까?"</p>
+        <p>퍼스널컬러 진단을 받았지만, 실제 쇼핑에서 활용하지 못한다. 진단 결과와 옷 사이의 연결 고리가 없다.</p>
+      </div>
+      <div class="pain-card">
+        <div class="num">02</div>
+        <h3>Logical Curation</h3>
+        <p class="quote">"왜 나에게 어울리는데?"</p>
+        <p>기존 추천은 "이것도 좋아요"일 뿐, 왜 어울리는지 납득할 수 있는 스타일링 논리가 부재하다.</p>
+      </div>
+      <div class="pain-card">
+        <div class="num">03</div>
+        <h3>Smart Consumption</h3>
+        <p class="quote">"동일한 무드, 더 합리적인 대안은?"</p>
+        <p>여러 쇼핑몰을 돌아다니며 비교하는 데 시간을 소비한다. 가격 대비 최적의 선택이 어렵다.</p>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">02 / 11</span>
+</section>
+
+<!-- Slide 3: White Space -->
+<section class="slide">
+  <div class="inner" style="display:flex;flex-direction:column;align-items:center;">
+    <p class="section-label">Market</p>
+    <h2>시장의 빈자리</h2>
+    <div class="whitespace-chart">
+      <div class="chart-axes">
+        <div class="chart-grid-line chart-grid-h" style="bottom:33%"></div>
+        <div class="chart-grid-line chart-grid-h" style="bottom:66%"></div>
+        <div class="chart-grid-line chart-grid-v" style="left:33%"></div>
+        <div class="chart-grid-line chart-grid-v" style="left:66%"></div>
+      </div>
+      <div class="axis-label" style="bottom:-32px;left:50%;transform:translateX(-50%)">설명 가능성 (Why)</div>
+      <div class="axis-label" style="left:-48px;top:50%;transform:translateY(-50%) rotate(-90deg);white-space:nowrap;">초개인화 (Fit)</div>
+      <div class="axis-label axis-z-label" style="top:-28px;right:0;transform:none;">원 크기 = 가격 효율 (Price)</div>
+
+      <div class="comp-dot" style="left:15%;bottom:72%;">
+        <div class="dot">L</div>
+        <span class="name">Lyst</span>
+        <span class="missing">Why 부재</span>
+      </div>
+      <div class="comp-dot" style="left:22%;bottom:55%;">
+        <div class="dot">SF</div>
+        <span class="name">Stitch Fix</span>
+        <span class="missing">Price 부재</span>
+      </div>
+      <div class="comp-dot" style="left:62%;bottom:25%;">
+        <div class="dot">LTK</div>
+        <span class="name">LTK</span>
+        <span class="missing">Fit 부재</span>
+      </div>
+      <div class="comp-dot" style="left:72%;bottom:38%;">
+        <div class="dot">MS</div>
+        <span class="name">ModeSens</span>
+        <span class="missing">Fit 부재</span>
+      </div>
+      <div class="comp-dot" style="left:38%;bottom:48%;">
+        <div class="dot" style="width:48px;height:48px;">무신사</div>
+        <span class="name">무신사</span>
+        <span class="missing">Why 부재</span>
+      </div>
+
+      <div class="comp-dot colorfit" style="left:60%;bottom:70%;">
+        <div class="dot">CF</div>
+        <span class="name">ColorFit</span>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">03 / 11</span>
+</section>
+
+<!-- Slide 4: Features -->
+<section class="slide">
+  <div class="inner">
+    <p class="section-label">Features</p>
+    <h2>핵심 기능 &mdash; 무엇을 하는가</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-num">01</div>
+        <h3>퍼스널컬러 온보딩</h3>
+        <p>13가지 톤 선택과 5단계 온보딩으로 사용자의 퍼스널컬러, 선호 스타일, 예산을 수집한다.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-num">02</div>
+        <h3>AI 맞춤 코디 피드</h3>
+        <p>5,031개 코디를 5축 스코어링으로 개인화 정렬하여, 나에게 맞는 순서대로 보여준다.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-num">03</div>
+        <h3>추천 이유 설명</h3>
+        <p>"왜 이 코디인지" 5축 스코어와 자연어 설명으로 논리적으로 설명한다.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-num">04</div>
+        <h3>A vs B 비교 / Top Pick</h3>
+        <p>저장한 코디 중 두 개를 나란히 비교하거나, 최적의 1개를 자동으로 추천한다.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-num">05</div>
+        <h3>내 옷장 코디 완성</h3>
+        <p>보유한 옷을 업로드하면 AI가 분석하고, 나머지 아이템을 매칭하여 풀코디를 완성한다.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-num">06</div>
+        <h3>AI 가상 피팅</h3>
+        <p>Gemini AI로 선택한 코디의 착장 이미지를 생성하여 구매 전 미리 확인할 수 있다.</p>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">04 / 11</span>
+</section>
+
+<!-- Slide 5: Scoring -->
+<section class="slide">
+  <div class="inner" style="display:flex;flex-direction:column;align-items:center;">
+    <p class="section-label">Scoring</p>
+    <h2>5축 스코어링 시스템</h2>
+    <div class="score-axes">
+      <div class="score-axis">
+        <span class="axis-code" style="color:var(--pcf)">PCF</span>
+        <span class="axis-name">퍼스널컬러 적합도</span>
+        <div>
+          <div class="score-bar-track">
+            <div class="score-bar-fill" style="width:85%;background:var(--pcf)"></div>
+          </div>
+          <p class="score-desc">톤 팔레트 RGB 거리 기반 산출</p>
+        </div>
+      </div>
+      <div class="score-axis">
+        <span class="axis-code" style="color:var(--of)">OF</span>
+        <span class="axis-name">상황 적합도</span>
+        <div>
+          <div class="score-bar-track">
+            <div class="score-bar-fill" style="width:78%;background:var(--of)"></div>
+          </div>
+          <p class="score-desc">TPO 유사도 매트릭스 (정확 100 / 유사 65~93 / 무관 30)</p>
+        </div>
+      </div>
+      <div class="score-axis">
+        <span class="axis-code" style="color:var(--ch)">CH</span>
+        <span class="axis-name">색상 조화</span>
+        <div>
+          <div class="score-bar-track">
+            <div class="score-bar-fill" style="width:72%;background:var(--ch)"></div>
+          </div>
+          <p class="score-desc">RGB 거리 + 채도 분산 (동일색 d&lt;15 감점)</p>
+        </div>
+      </div>
+      <div class="score-axis">
+        <span class="axis-code" style="color:var(--pe)">PE</span>
+        <span class="axis-name">가격 효율</span>
+        <div>
+          <div class="score-bar-track">
+            <div class="score-bar-fill" style="width:65%;background:var(--pe)"></div>
+          </div>
+          <p class="score-desc">사용자 예산 범위 내 위치 매핑</p>
+        </div>
+      </div>
+      <div class="score-axis">
+        <span class="axis-code" style="color:var(--sf)">SF</span>
+        <span class="axis-name">스타일 핏</span>
+        <div>
+          <div class="score-bar-track">
+            <div class="score-bar-fill" style="width:70%;background:var(--sf)"></div>
+          </div>
+          <p class="score-desc">카테고리 궁합 + 실루엣 + 포멀도</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">05 / 11</span>
+</section>
+
+<!-- Slide 6: Pipeline -->
+<section class="slide">
+  <div class="inner" style="display:flex;flex-direction:column;align-items:center;">
+    <p class="section-label">Architecture</p>
+    <h2>추천 파이프라인</h2>
+    <div class="pipeline">
+      <div class="pipeline-step">
+        <div class="pipeline-box">Profile</div>
+      </div>
+      <span class="pipeline-arrow">&rarr;</span>
+      <div class="pipeline-step">
+        <div class="pipeline-box">Filter</div>
+        <span class="pipeline-tag hard">Hard Filter</span>
+      </div>
+      <span class="pipeline-arrow">&rarr;</span>
+      <div class="pipeline-step">
+        <div class="pipeline-box">StyleFilter</div>
+        <span class="pipeline-tag hard">Hard Filter</span>
+      </div>
+      <span class="pipeline-arrow">&rarr;</span>
+      <div class="pipeline-step">
+        <div class="pipeline-box highlight">Score (5축)</div>
+        <span class="pipeline-tag soft">Soft Score</span>
+      </div>
+      <span class="pipeline-arrow">&rarr;</span>
+      <div class="pipeline-step">
+        <div class="pipeline-box">Rerank</div>
+        <span class="pipeline-tag soft">Soft Score</span>
+      </div>
+      <span class="pipeline-arrow">&rarr;</span>
+      <div class="pipeline-step">
+        <div class="pipeline-box">Reason</div>
+      </div>
+    </div>
+    <div class="pipeline-divider">
+      <span>Hard Filter (탈락) vs Soft Score (순위) 분리</span>
+    </div>
+    <p class="pipeline-explain">
+      Hard Filter로 부적합한 코디를 걸러내고,<br>
+      5축 스코어로 순위를 매기며,<br>
+      자연어로 이유를 설명합니다.
+    </p>
+  </div>
+  <span class="slide-number">06 / 11</span>
+</section>
+
+<!-- Slide 7: Personas -->
+<section class="slide">
+  <div class="inner">
+    <p class="section-label">User Journey</p>
+    <h2>사용자 여정 &mdash; 3가지 페르소나</h2>
+    <div class="persona-cards">
+      <div class="persona-card">
+        <div class="persona-label">PERSONA A</div>
+        <h3>여성 20대, 여름쿨 소프트</h3>
+        <p class="persona-meta">소개팅 룩</p>
+        <p class="persona-journey">
+          온보딩에서 여름쿨 소프트 톤과 소개팅 TPO를 설정한다. 피드에서 파스텔 블루, 라벤더 조합의 코디를 발견하고, 추천 이유를 확인한 뒤 저장한다. Top Pick으로 최적의 코디를 선택하고, 외부 링크로 구매를 완료한다.
+        </p>
+      </div>
+      <div class="persona-card">
+        <div class="persona-label">PERSONA B</div>
+        <h3>남성 30대, 가을웜 딥</h3>
+        <p class="persona-meta">출근룩</p>
+        <p class="persona-journey">
+          가을웜 딥 톤과 출근 TPO로 온보딩을 마친다. 버건디, 카키, 브라운 계열의 비즈니스 캐주얼 코디를 피드에서 탐색한다. A vs B 비교로 두 코디를 나란히 비교하고, 가격 효율이 높은 쪽을 최종 선택한다.
+        </p>
+      </div>
+      <div class="persona-card">
+        <div class="persona-label">PERSONA C</div>
+        <h3>여성 40+, 겨울쿨 딥</h3>
+        <p class="persona-meta">옷장에서 코디 완성</p>
+        <p class="persona-journey">
+          옷장에 보유 중인 네이비 코트를 업로드한다. AI가 색상과 카테고리를 분석한 뒤, 어울리는 이너, 하의, 액세서리를 매칭하여 풀코디를 완성한다. 이미 가진 옷을 활용하면서도 새로운 스타일을 발견한다.
+        </p>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">07 / 11</span>
+</section>
+
+<!-- Slide 8: Data -->
+<section class="slide">
+  <div class="inner" style="display:flex;flex-direction:column;align-items:center;">
+    <p class="section-label">Data</p>
+    <h2>데이터 현황</h2>
+    <div class="data-grid">
+      <div class="data-item">
+        <div class="data-number accent">167,391</div>
+        <div class="data-label">상품</div>
+      </div>
+      <div class="data-item">
+        <div class="data-number accent">5,031</div>
+        <div class="data-label">코디</div>
+      </div>
+      <div class="data-item">
+        <div class="data-number">13</div>
+        <div class="data-label">퍼스널컬러 톤</div>
+      </div>
+      <div class="data-item">
+        <div class="data-number">8</div>
+        <div class="data-label">TPO 카테고리</div>
+      </div>
+      <div class="data-item">
+        <div class="data-number">3</div>
+        <div class="data-label">연령대 구간</div>
+      </div>
+      <div class="data-item">
+        <div class="data-number">88 / 133</div>
+        <div class="data-label">백엔드 / 프론트엔드 테스트</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">08 / 11</span>
+</section>
+
+<!-- Slide 9: Tech Stack -->
+<section class="slide">
+  <div class="inner">
+    <p class="section-label">Technology</p>
+    <h2>기술 스택</h2>
+    <div class="stack-columns">
+      <div class="stack-group">
+        <div class="stack-group-label">Frontend</div>
+        <div class="stack-items">
+          <div class="stack-item"><div class="dot-marker"></div>Next.js 15 + React 19</div>
+          <div class="stack-item"><div class="dot-marker"></div>TypeScript</div>
+          <div class="stack-item"><div class="dot-marker"></div>TailwindCSS</div>
+          <div class="stack-item"><div class="dot-marker"></div>Framer Motion</div>
+        </div>
+      </div>
+      <div class="stack-group">
+        <div class="stack-group-label">Backend</div>
+        <div class="stack-items">
+          <div class="stack-item"><div class="dot-marker"></div>Python 3.13 + FastAPI</div>
+          <div class="stack-item"><div class="dot-marker"></div>SQLAlchemy 2.0 + Pydantic v2</div>
+          <div class="stack-item"><div class="dot-marker"></div>PostgreSQL 17 (Supabase)</div>
+        </div>
+      </div>
+      <div class="stack-group">
+        <div class="stack-group-label">AI / ML</div>
+        <div class="stack-items">
+          <div class="stack-item"><div class="dot-marker"></div>Gemini API (Vision + TTS + Image)</div>
+          <div class="stack-item"><div class="dot-marker"></div>5축 스코어링 엔진</div>
+        </div>
+      </div>
+      <div class="stack-group">
+        <div class="stack-group-label">Infrastructure</div>
+        <div class="stack-items">
+          <div class="stack-item"><div class="dot-marker"></div>Vercel (프론트엔드)</div>
+          <div class="stack-item"><div class="dot-marker"></div>Railway (백엔드)</div>
+          <div class="stack-item"><div class="dot-marker"></div>Naver Shopping API</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">09 / 11</span>
+</section>
+
+<!-- Slide 10: Roadmap -->
+<section class="slide">
+  <div class="inner" style="display:flex;flex-direction:column;align-items:center;">
+    <p class="section-label">Roadmap</p>
+    <h2>향후 계획</h2>
+    <div class="roadmap-list">
+      <div class="roadmap-item">
+        <div class="roadmap-num">01</div>
+        <div>
+          <h3>프로덕션 배포</h3>
+          <p>Vercel + Railway 기반 프로덕션 환경 구축 및 공개 배포</p>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-num">02</div>
+        <div>
+          <h3>AI 셀카 기반 퍼스널컬러 자동 진단</h3>
+          <p>얼굴 사진 한 장으로 퍼스널컬러 톤을 자동 분석하는 기능</p>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-num">03</div>
+        <div>
+          <h3>날씨 연동 추천</h3>
+          <p>현재 위치 날씨를 반영하여 TPO와 계절감을 자동 조정</p>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-num">04</div>
+        <div>
+          <h3>프리미엄 구독 런칭</h3>
+          <p>가상 피팅, 무제한 비교, 전문가 큐레이션 등 프리미엄 기능 구독 모델</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">10 / 11</span>
+</section>
+
+<!-- Slide 11: Closing -->
+<section class="slide slide--closing">
+  <div class="inner" style="display:flex;flex-direction:column;align-items:center;">
+    <p class="closing-text">당신의 색을 찾아드립니다.</p>
+    <div class="line"></div>
+    <p class="logo-text">ColorFit</p>
+  </div>
+  <span class="slide-number">11 / 11</span>
+</section>
+
+</body>
+</html>
