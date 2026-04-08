@@ -27,10 +27,80 @@ from app.models.closet_item import ClosetItem
 from app.models.outfit import Outfit
 from app.models.product import Product
 from app.models.tryon_cache import TryonCache
+from app.models.user import User
 
 logger = logging.getLogger(__name__)
 
 TRYON_MODEL = "gemini-2.5-flash-image"
+
+# 퍼스널컬러 톤별 피부톤 + 조명 가이드 (nanobanana 테크닉 적용)
+TONE_PROFILE: dict[str, dict[str, str]] = {
+    "spring_warm_light": {
+        "skin": "warm ivory skin with peachy-pink undertone, bright and clear complexion",
+        "lighting": "5200K natural daylight with soft warm fill, enhancing peachy glow",
+        "season": "spring",
+    },
+    "spring_warm_vivid": {
+        "skin": "warm beige skin with golden undertone, vibrant and healthy glow",
+        "lighting": "5000K golden hour warmth, slight amber rim light for radiance",
+        "season": "spring",
+    },
+    "spring_warm_mute": {
+        "skin": "warm ivory-beige skin with soft golden undertone, gentle warm glow",
+        "lighting": "5500K soft diffused daylight, low contrast for muted harmony",
+        "season": "spring",
+    },
+    "summer_cool_light": {
+        "skin": "fair pinkish skin with cool rosy undertone, delicate and translucent",
+        "lighting": "6500K cool daylight, soft overcast quality preserving pink undertone",
+        "season": "summer",
+    },
+    "summer_cool_mute": {
+        "skin": "light beige skin with soft lavender-pink undertone, muted and elegant",
+        "lighting": "6000K diffused cloudy light, minimal shadows for soft muted effect",
+        "season": "summer",
+    },
+    "summer_cool_soft": {
+        "skin": "fair skin with subtle cool pink undertone, soft and refined complexion",
+        "lighting": "6200K gentle overcast, soft fill light preserving cool undertone",
+        "season": "summer",
+    },
+    "autumn_warm_mute": {
+        "skin": "medium warm beige skin with olive-gold undertone, earthy and natural",
+        "lighting": "4500K warm tungsten fill with natural window light, earthy warmth",
+        "season": "autumn",
+    },
+    "autumn_warm_deep": {
+        "skin": "medium-tan skin with rich golden-bronze undertone, deep warm glow",
+        "lighting": "4000K warm golden light, slight amber tint accentuating bronze depth",
+        "season": "autumn",
+    },
+    "autumn_warm_strong": {
+        "skin": "warm honey-tan skin with strong golden undertone, rich and vibrant",
+        "lighting": "4200K rich warm light with amber highlights, strong golden radiance",
+        "season": "autumn",
+    },
+    "winter_cool_vivid": {
+        "skin": "clear porcelain skin with blue-cool undertone, high contrast features",
+        "lighting": "7000K crisp cool daylight, high contrast ratio for vivid clarity",
+        "season": "winter",
+    },
+    "winter_cool_deep": {
+        "skin": "medium skin with cool blue-brown undertone, deep and striking",
+        "lighting": "6500K neutral-cool studio light, controlled shadows for depth",
+        "season": "winter",
+    },
+    "winter_cool_strong": {
+        "skin": "fair to medium skin with strong cool undertone, bold contrast",
+        "lighting": "6800K cool studio key light, defined shadows for strong impact",
+        "season": "winter",
+    },
+    "winter_cool_mute": {
+        "skin": "cool beige skin with subtle blue undertone, smooth and refined",
+        "lighting": "6200K soft cool light, even diffusion for refined muted quality",
+        "season": "winter",
+    },
+}
 
 TRYON_STORAGE = Path(__file__).resolve().parents[2] / "storage" / "tryon"
 TRYON_STORAGE.mkdir(parents=True, exist_ok=True)
@@ -107,11 +177,19 @@ async def _get_item_infos(
     ]
 
 
+def _make_profile_hash(
+    tone_id: str | None, gender: str | None, age_group: str | None
+) -> str:
+    key = f"{tone_id or ''}:{gender or ''}:{age_group or ''}"
+    return hashlib.md5(key.encode()).hexdigest()
+
+
 async def _check_cache(
     db: AsyncSession,
     outfit_id: str,
     closet_item_id: uuid.UUID | None,
     user_id: uuid.UUID,
+    profile_hash: str | None = None,
 ) -> str | None:
     stmt = select(TryonCache.image_url).where(
         TryonCache.outfit_id == outfit_id,
@@ -121,6 +199,8 @@ async def _check_cache(
         stmt = stmt.where(TryonCache.closet_item_id == closet_item_id)
     else:
         stmt = stmt.where(TryonCache.closet_item_id.is_(None))
+    if profile_hash:
+        stmt = stmt.where(TryonCache.profile_hash == profile_hash)
 
     result = await db.execute(stmt)
     return result.scalar_one_or_none()
@@ -132,12 +212,14 @@ async def _save_cache(
     closet_item_id: uuid.UUID | None,
     user_id: uuid.UUID,
     image_url: str,
+    profile_hash: str | None = None,
 ) -> None:
     cache = TryonCache(
         outfit_id=outfit_id,
         closet_item_id=closet_item_id,
         user_id=user_id,
         image_url=image_url,
+        profile_hash=profile_hash,
     )
     db.add(cache)
     await db.commit()
@@ -157,7 +239,17 @@ async def generate_tryon_image(
     3. Gemini API로 합성 이미지 생성
     4. 결과 캐싱 후 반환
     """
-    cached_url = await _check_cache(db, outfit_id, closet_item_id, user_id)
+    # 사용자 톤 조회 (캐시 키에 필요하므로 먼저 조회)
+    user_stmt = select(User.tone_id, User.gender, User.age_group).where(User.id == user_id)
+    user_result = await db.execute(user_stmt)
+    user_row = user_result.first()
+    user_tone_id = user_row.tone_id if user_row else None
+    user_gender = user_row.gender if user_row else None
+    user_age_group = user_row.age_group if user_row else None
+
+    profile_hash = _make_profile_hash(user_tone_id, user_gender, user_age_group)
+
+    cached_url = await _check_cache(db, outfit_id, closet_item_id, user_id, profile_hash)
     if cached_url:
         return {"image_url": cached_url, "outfit_id": outfit_id, "cached": True}
 
@@ -190,13 +282,58 @@ async def generate_tryon_image(
         item_descriptions.append(desc)
 
     items_text = "\n".join(item_descriptions)
+
+    # 톤 프로필 조회
+    tone_profile = TONE_PROFILE.get(user_tone_id or "", {})
+    skin_desc = tone_profile.get("skin", "")
+    lighting_desc = tone_profile.get("lighting", "5500K neutral daylight")
+    gender_text = "female" if user_gender == "female" else "male" if user_gender == "male" else None
+    age_text = {"20s": "early-to-mid 20s", "30s": "early-to-mid 30s", "40plus": "early 40s"}.get(
+        user_age_group or "", None
+    )
+
+    # nanobanana 구조화 프롬프트: Subject → Wardrobe → Skin/Lighting → Camera → Style
+    skin_block = ""
+    if skin_desc:
+        skin_block = (
+            f"\n[SKIN TONE — CRITICAL]\n"
+            f"Personal color type: {user_tone_id}\n"
+            f"Skin: {skin_desc}\n"
+            f"The model's face and body skin tone MUST precisely match this description. "
+            f"This is essential — the image demonstrates outfit-skin harmony.\n"
+        )
+
+    lighting_block = (
+        f"\n[LIGHTING]\n"
+        f"Key light: {lighting_desc}\n"
+        f"Soft diffused fill light from 45-degree angle, subtle rim light for depth separation. "
+        f"No harsh shadows on face. Even illumination on garments to show true colors.\n"
+    )
+
+    camera_block = (
+        "\n[CAMERA & COMPOSITION]\n"
+        "Eye-level full-body shot at 1.6m height, 85mm equivalent focal length. "
+        "Subject centered, 3:4 portrait aspect ratio. "
+        "Shallow depth of field (f/2.8) with garments in sharp focus. "
+        "Simple seamless light gray (#E8E8E8) studio backdrop.\n"
+    )
+
     prompt_text = (
-        f"다음 {len(item_infos)}개 패션 아이템으로 구성된 코디 착장 사진을 생성해주세요.\n\n"
-        f"{items_text}\n\n"
-        "모든 아이템을 빠짐없이 착용한 전신 사진을 생성해주세요. "
-        "각 아이템의 색상, 소재, 디테일을 정확히 반영해야 합니다. "
-        "20대 아시아인 모델, 자연스러운 포즈, 심플한 밝은 회색 배경, "
-        "패션 매거진 에디토리얼 스타일, 고품질 실사."
+        f"[TASK] Generate a photorealistic fashion editorial full-body photo.\n"
+        f"\n[SUBJECT]\n"
+        f"East Asian{f' {gender_text}' if gender_text else ''} model"
+        f"{f', {age_text} age range' if age_text else ''}, natural relaxed standing pose "
+        f"with slight weight shift. Confident but approachable expression.\n"
+        f"\n[WARDROBE — {len(item_infos)} ITEMS, ALL MUST BE WORN]\n"
+        f"{items_text}\n"
+        f"IMPORTANT: Every listed item must be clearly visible and correctly worn. "
+        f"Preserve the exact color, fabric texture, and design details from each item image.\n"
+        f"{skin_block}"
+        f"{lighting_block}"
+        f"{camera_block}"
+        f"[STYLE]\n"
+        f"High-end fashion magazine editorial (COS, SSENSE lookbook quality). "
+        f"Clean, minimal, professional. No text overlays or watermarks."
     )
 
     if model_image_url:
@@ -206,12 +343,21 @@ async def generate_tryon_image(
                 types.Part.from_bytes(data=model_bytes, mime_type="image/jpeg")
             )
             prompt_text = (
-                f"다음 {len(item_infos)}개 패션 아이템으로 구성된 코디 착장 사진을 생성해주세요.\n\n"
-                f"{items_text}\n\n"
-                "위 모델 사진의 인물이 모든 아이템을 빠짐없이 착용한 전신 사진을 생성해주세요. "
-                "각 아이템의 색상, 소재, 디테일을 정확히 반영해야 합니다. "
-                "자연스러운 포즈, 심플한 밝은 회색 배경, "
-                "패션 매거진 에디토리얼 스타일, 고품질 실사."
+                f"[TASK] Generate a photorealistic fashion editorial full-body photo "
+                f"using the reference model photo provided.\n"
+                f"\n[SUBJECT]\n"
+                f"Use the exact face and body proportions from the reference photo. "
+                f"Natural relaxed standing pose with slight weight shift.\n"
+                f"\n[WARDROBE — {len(item_infos)} ITEMS, ALL MUST BE WORN]\n"
+                f"{items_text}\n"
+                f"IMPORTANT: Every listed item must be clearly visible and correctly worn. "
+                f"Preserve the exact color, fabric texture, and design details from each item image.\n"
+                f"{skin_block}"
+                f"{lighting_block}"
+                f"{camera_block}"
+                f"[STYLE]\n"
+                f"High-end fashion magazine editorial (COS, SSENSE lookbook quality). "
+                f"Clean, minimal, professional. No text overlays or watermarks."
             )
         except Exception as exc:
             logger.warning("model image fetch failed (%s), falling back to prompt-only", exc)
@@ -239,7 +385,7 @@ async def generate_tryon_image(
     filepath.write_bytes(generated_image)
     image_url = f"{settings.api_url.rstrip('/')}/static/tryon/{filename}" if getattr(settings, "api_url", "") else f"/static/tryon/{filename}"
 
-    await _save_cache(db, outfit_id, closet_item_id, user_id, image_url)
+    await _save_cache(db, outfit_id, closet_item_id, user_id, image_url, profile_hash)
 
     return {"image_url": image_url, "outfit_id": outfit_id, "cached": False}
 

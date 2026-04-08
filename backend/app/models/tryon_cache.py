@@ -20,6 +20,7 @@ class TryonCache(Base):
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), index=True, nullable=False
     )
+    profile_hash: Mapped[str | None] = mapped_column(String(32), nullable=True)
     image_url: Mapped[str] = mapped_column(Text, nullable=False)
     created_at: Mapped[str | None] = mapped_column(
         TIMESTAMP(timezone=True), server_default=sa_text("NOW()")

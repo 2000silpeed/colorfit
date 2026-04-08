@@ -727,6 +727,17 @@ export default function OutfitDetailPage() {
                           보유 중
                         </span>
                       )}
+                      {item.color_hex && (
+                        <div className="absolute bottom-[4px] left-[4px] flex items-center gap-[4px] bg-black/40 backdrop-blur-sm rounded-full px-[8px] py-[4px]">
+                          <div
+                            className="w-[12px] h-[12px] rounded-full border border-white/30"
+                            style={{ backgroundColor: item.color_hex }}
+                          />
+                          <span className="text-white text-[10px] font-body font-medium">
+                            {item.color_hex}
+                          </span>
+                        </div>
+                      )}
                     </div>
                     <p className={`font-body text-[11px] mt-[6px] line-clamp-2 ${
                       isOwned

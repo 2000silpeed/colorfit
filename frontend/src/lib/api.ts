@@ -89,6 +89,7 @@ export interface ProductBrief {
   mall_url: string | null;
   style_tag: string | null;
   is_verified_brand: boolean;
+  color_hex: string | null;
 }
 
 export interface OutfitDetailResponse {
