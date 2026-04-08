@@ -10,6 +10,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import ipaddress
+import json
 import logging
 import secrets
 import uuid
@@ -288,21 +289,24 @@ async def generate_tryon_image(
                 color=closet_item.dominant_color_hex or "",
             ))
 
-    image_parts: list[types.Part] = []
-    item_descriptions: list[str] = []
+    # 아이템 이미지 + JSON 라벨을 번갈아 배치
+    content_parts: list[types.Part] = []
+    items_json: list[dict] = []
     for i, info in enumerate(item_infos, 1):
         img_bytes = await _fetch_image_bytes(info.image_url)
-        image_parts.append(
+        item_meta = {
+            "item": i,
+            "category": info.category,
+            "name": info.name or None,
+            "color": info.color or None,
+        }
+        items_json.append(item_meta)
+        content_parts.append(types.Part.from_text(text=json.dumps(item_meta, ensure_ascii=False)))
+        content_parts.append(
             types.Part.from_bytes(data=img_bytes, mime_type="image/jpeg")
         )
-        desc = f"아이템 {i}: {info.category}"
-        if info.color:
-            desc += f" ({info.color})"
-        if info.name:
-            desc += f" - {info.name}"
-        item_descriptions.append(desc)
 
-    items_text = "\n".join(item_descriptions)
+    items_text = json.dumps(items_json, ensure_ascii=False, indent=2)
 
     # 톤 프로필 조회
     tone_profile = TONE_PROFILE.get(user_tone_id or "", {})
@@ -348,6 +352,7 @@ async def generate_tryon_image(
         f"{f', {age_text} age range' if age_text else ''}, natural relaxed standing pose "
         f"with slight weight shift. Confident but approachable expression.\n"
         f"\n[WARDROBE — {len(item_infos)} ITEMS, ALL MUST BE WORN]\n"
+        f"Dress the model in ALL the items shown above. Each item image is labeled.\n"
         f"{items_text}\n"
         f"IMPORTANT: Every listed item must be clearly visible and correctly worn. "
         f"Preserve the exact color, fabric texture, and design details from each item image.\n"
@@ -371,38 +376,37 @@ async def generate_tryon_image(
         model_bytes = _get_default_model_bytes(user_gender, user_age_group)
 
     if model_bytes:
-        try:
-            image_parts.append(
-                types.Part.from_bytes(data=model_bytes, mime_type="image/jpeg")
-            )
-            prompt_text = (
-                f"[TASK] Generate a photorealistic fashion editorial full-body photo "
-                f"using the reference model photo provided.\n"
-                f"\n[SUBJECT]\n"
-                f"Use the exact face and body proportions from the reference photo. "
-                f"Natural relaxed standing pose with slight weight shift. "
-                f"Full body from head to toe — shoes and feet MUST be fully visible.\n"
-                f"\n[WARDROBE — {len(item_infos)} ITEMS, ALL MUST BE WORN]\n"
-                f"{items_text}\n"
-                f"IMPORTANT: Every listed item must be clearly visible and correctly worn. "
-                f"Preserve the exact color, fabric texture, and design details from each item image.\n"
-                f"{skin_block}"
-                f"{lighting_block}"
-                f"{camera_block}"
-                f"[STYLE]\n"
-                f"High-end fashion magazine editorial (COS, SSENSE lookbook quality). "
-                f"Clean, minimal, professional. No text overlays or watermarks."
-            )
-        except Exception as exc:
-            logger.warning("model image fetch failed (%s), falling back to prompt-only", exc)
+        content_parts.append(types.Part.from_text(text="[REFERENCE MODEL PHOTO — use this person's face and body]"))
+        content_parts.append(
+            types.Part.from_bytes(data=model_bytes, mime_type="image/jpeg")
+        )
+        prompt_text = (
+            f"[TASK] Generate a photorealistic fashion editorial full-body photo "
+            f"using the reference model photo provided above.\n"
+            f"\n[SUBJECT]\n"
+            f"Use the exact face and body proportions from the reference model photo. "
+            f"Natural relaxed standing pose with slight weight shift. "
+            f"Full body from head to toe — shoes and feet MUST be fully visible.\n"
+            f"\n[WARDROBE — {len(item_infos)} ITEMS, ALL MUST BE WORN]\n"
+            f"Dress the model in ALL the items shown above. Each item image is labeled.\n"
+            f"{items_text}\n"
+            f"IMPORTANT: Every listed item must be clearly visible and correctly worn. "
+            f"Preserve the exact color, fabric texture, and design details from each item image.\n"
+            f"{skin_block}"
+            f"{lighting_block}"
+            f"{camera_block}"
+            f"[STYLE]\n"
+            f"High-end fashion magazine editorial (COS, SSENSE lookbook quality). "
+            f"Clean, minimal, professional. No text overlays or watermarks."
+        )
 
-    image_parts.append(types.Part.from_text(text=prompt_text))
+    content_parts.append(types.Part.from_text(text=prompt_text))
 
     client = genai.Client(api_key=settings.gemini_api_key)
 
     response = await client.aio.models.generate_content(
         model=TRYON_MODEL,
-        contents=image_parts,
+        contents=content_parts,
         config=types.GenerateContentConfig(
             response_modalities=["IMAGE"],
         ),
