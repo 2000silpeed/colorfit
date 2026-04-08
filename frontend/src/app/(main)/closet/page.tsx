@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { fetchCloset, type ClosetItemData, type ClosetStats } from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 type PageState = "loading" | "empty" | "success" | "error";
 
@@ -163,12 +165,12 @@ function ClosetItemCard({
             </div>
           )}
           {item.overall_score != null && (
-            <span
-              className="absolute top-[6px] right-[6px] text-[11px] font-body font-medium rounded-full px-[8px] py-[2px]"
+            <Badge
+              className="absolute top-[6px] right-[6px] text-[11px] font-body font-medium rounded-full px-[8px] py-[2px] border-none"
               style={{ backgroundColor: badge.bg, color: badge.text }}
             >
               {Math.round(item.overall_score)}
-            </span>
+            </Badge>
           )}
         </div>
         {item.category && (
@@ -177,14 +179,14 @@ function ClosetItemCard({
           </p>
         )}
       </button>
-      <button
-        type="button"
+      <Button
+        variant="outline"
         onClick={onOutfit}
         aria-label={`${CATEGORY_LABEL[item.category ?? ""] ?? "\uB0B4 \uC637"} 코디 완성하기`}
-        className="w-full mt-[8px] min-h-[44px] py-[8px] text-[12px] font-body font-medium text-accent border border-accent rounded-[var(--radius-full)] hover:bg-accent/5 transition-colors"
+        className="w-full mt-[8px] min-h-[44px] py-[8px] text-[12px] font-body font-medium text-accent border-accent rounded-full hover:bg-accent/5"
       >
         코디 완성하기
-      </button>
+      </Button>
     </motion.div>
   );
 }
@@ -293,13 +295,12 @@ export default function ClosetPage() {
         <p className="font-body text-[14px] text-text-secondary text-center mb-[24px]">
           {errorMessage}
         </p>
-        <button
-          type="button"
+        <Button
           onClick={handleRetry}
-          className="px-[24px] py-[12px] bg-accent text-white font-body text-[15px] font-medium rounded-[var(--radius-full)]"
+          className="px-[24px] py-[12px] h-auto bg-accent text-white font-body text-[15px] font-medium rounded-full hover:bg-accent/90"
         >
           다시 시도하기
-        </button>
+        </Button>
       </div>
     );
   }
@@ -322,13 +323,12 @@ export default function ClosetPage() {
         <p className="font-body text-[14px] text-text-secondary text-center mb-[24px]">
           옷 사진을 찍으면 퍼스널컬러에{"\n"}얼마나 어울리는지 알려드려요
         </p>
-        <button
-          type="button"
+        <Button
           onClick={handleAdd}
-          className="px-[24px] py-[14px] bg-accent text-white font-body text-[15px] font-medium rounded-[var(--radius-full)]"
+          className="px-[24px] py-[14px] h-auto bg-accent text-white font-body text-[15px] font-medium rounded-full hover:bg-accent/90"
         >
           첫 번째 옷 분석하기
-        </button>
+        </Button>
       </div>
     );
   }
@@ -372,12 +372,12 @@ export default function ClosetPage() {
         <span className="font-body text-[13px] text-text-secondary">
           무료 분석 {freeRemaining}회 남음
         </span>
-        <button
-          type="button"
-          className="font-body text-[13px] font-medium px-[12px] py-[6px] rounded-[var(--radius-full)] border border-accent text-accent"
+        <Button
+          variant="outline"
+          className="font-body text-[13px] font-medium px-[12px] py-[6px] h-auto rounded-full border-accent text-accent"
         >
           프리미엄
-        </button>
+        </Button>
       </div>
 
       {/* Grid */}
@@ -396,17 +396,17 @@ export default function ClosetPage() {
       </div>
 
       {/* FAB: Add button */}
-      <button
-        type="button"
+      <Button
+        size="icon"
         onClick={handleAdd}
-        className="fixed bottom-[80px] right-[20px] w-[56px] h-[56px] rounded-full bg-accent text-white flex items-center justify-center shadow-lg z-40"
-        aria-label="옷 추가"
+        className="fixed bottom-[80px] right-[20px] w-[56px] h-[56px] rounded-full bg-accent text-white flex items-center justify-center z-40 hover:bg-accent/90"
         style={{ boxShadow: "0 4px 12px rgba(150, 79, 76, 0.3)" }}
+        aria-label="옷 추가"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
           <path d="M12 5v14M5 12h14" />
         </svg>
-      </button>
+      </Button>
     </div>
   );
 }

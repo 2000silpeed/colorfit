@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { fetchSaved, postReaction, fetchTopPick, type SavedOutfit, type TopPickResponse } from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 type PageState = "loading" | "empty" | "success" | "error";
 type SortBy = "recent" | "score" | "price";
@@ -131,8 +133,8 @@ function SavedCard({ outfit, index, onTap, onLongPress, compareMode, compareSele
 
         {/* 점수 뱃지 */}
         {outfit.scores && (
-          <div
-            className="absolute top-[8px] right-[8px] px-[6px] py-[2px] rounded-full text-[11px] font-medium"
+          <Badge
+            className="absolute top-[8px] right-[8px] px-[6px] py-[2px] rounded-full text-[11px] font-medium border-none h-auto"
             style={{
               backgroundColor: outfit.scores.pcf >= 70
                 ? "var(--color-accent)"
@@ -141,20 +143,14 @@ function SavedCard({ outfit, index, onTap, onLongPress, compareMode, compareSele
             }}
           >
             {Math.round(outfit.scores.pcf)}
-          </div>
+          </Badge>
         )}
 
         {/* TPO 뱃지 */}
         {tpoLabel && (
-          <div
-            className="absolute bottom-[8px] left-[8px] px-[6px] py-[2px] rounded-full text-[10px]"
-            style={{
-              backgroundColor: "rgba(0,0,0,0.5)",
-              color: "#FFFFFF",
-            }}
-          >
+          <Badge className="absolute bottom-[8px] left-[8px] px-[6px] py-[2px] rounded-full text-[10px] bg-black/50 text-white border-none h-auto">
             {tpoLabel}
-          </div>
+          </Badge>
         )}
 
         {/* 비교 모드 선택 표시 */}
@@ -167,25 +163,19 @@ function SavedCard({ outfit, index, onTap, onLongPress, compareMode, compareSele
               border: compareSelected ? "none" : "2px solid var(--color-border)",
             }}
           >
-            {compareSelected ? "✓" : ""}
+            {compareSelected ? "\u2713" : ""}
           </div>
         )}
       </div>
 
       {/* 제목 (1줄 추천 이유) */}
-      <p
-        className="mt-[8px] text-[13px] leading-[1.4] line-clamp-1"
-        style={{ color: "var(--color-text-primary)", fontFamily: "var(--font-body)" }}
-      >
+      <p className="mt-[8px] font-body text-[13px] leading-[1.4] line-clamp-1 text-[var(--color-text-primary)]">
         {reason || "저장한 코디"}
       </p>
 
       {/* 가격 */}
       {outfit.total_price != null && (
-        <p
-          className="mt-[2px] text-[12px]"
-          style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-body)" }}
-        >
+        <p className="mt-[2px] font-body text-[12px] text-[var(--color-text-secondary)]">
           ₩{formatPrice(outfit.total_price)}
         </p>
       )}
@@ -218,7 +208,7 @@ function DeleteBottomSheet({ outfitId, onConfirm, onCancel }: DeleteSheetProps) 
 
       {/* 시트 */}
       <motion.div
-        className="relative w-full max-w-[430px] rounded-t-[var(--radius-xl)] px-[20px] pt-[24px] pb-[32px]"
+        className="relative w-full max-w-[430px] rounded-t-[var(--radius-xl)] px-[20px] pt-[24px]"
         style={{
           backgroundColor: "var(--color-bg-primary)",
           paddingBottom: "calc(32px + env(safe-area-inset-bottom, 0px))",
@@ -232,36 +222,24 @@ function DeleteBottomSheet({ outfitId, onConfirm, onCancel }: DeleteSheetProps) 
             : { type: "spring", stiffness: 300, damping: 30 }
         }
       >
-        <p
-          className="text-[16px] font-medium text-center mb-[20px]"
-          style={{ color: "var(--color-text-primary)", fontFamily: "var(--font-body)" }}
-        >
+        <p className="font-body text-[16px] font-medium text-center mb-[20px] text-[var(--color-text-primary)]">
           이 코디를 저장 목록에서 삭제할까요?
         </p>
 
         <div className="flex gap-[12px]">
-          <button
+          <Button
+            variant="secondary"
             onClick={onCancel}
-            className="flex-1 py-[14px] rounded-[var(--radius-md)] text-[15px] font-medium"
-            style={{
-              backgroundColor: "var(--color-bg-secondary)",
-              color: "var(--color-text-primary)",
-              fontFamily: "var(--font-body)",
-            }}
+            className="flex-1 py-[14px] h-auto rounded-[var(--radius-md)] text-[15px] font-medium font-body bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)]/80"
           >
             취소
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={onConfirm}
-            className="flex-1 py-[14px] rounded-[var(--radius-md)] text-[15px] font-medium"
-            style={{
-              backgroundColor: "var(--color-accent)",
-              color: "#FFFFFF",
-              fontFamily: "var(--font-body)",
-            }}
+            className="flex-1 py-[14px] h-auto rounded-[var(--radius-md)] text-[15px] font-medium font-body bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent)]/90"
           >
             삭제
-          </button>
+          </Button>
         </div>
       </motion.div>
     </motion.div>
@@ -314,32 +292,27 @@ function TopPickModal({ data, onClose, onViewOutfit }: TopPickModalProps) {
     >
       {/* 상단 바 */}
       <div className="flex items-center justify-between px-[20px] pt-[16px] pb-[8px]">
-        <span
-          className="text-[13px]"
-          style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-body)" }}
-        >
+        <span className="font-body text-[13px] text-[var(--color-text-secondary)]">
           Top Pick
         </span>
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={onClose}
-          className="w-[44px] h-[44px] flex items-center justify-center rounded-full"
-          style={{ backgroundColor: "var(--color-bg-secondary)" }}
+          className="w-[44px] h-[44px] rounded-full bg-[var(--color-bg-secondary)]"
           aria-label="닫기"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-primary)" strokeWidth="2" strokeLinecap="round">
             <line x1="18" y1="6" x2="6" y2="18" />
             <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
-        </button>
+        </Button>
       </div>
 
       {/* 스크롤 영역 */}
       <div className="flex-1 overflow-y-auto px-[20px] pb-[120px]">
         {/* 헤드라인 */}
-        <h2
-          className="text-[24px] leading-[1.25] mt-[16px] mb-[24px]"
-          style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--color-text-primary)" }}
-        >
+        <h2 className="font-display text-[24px] leading-[1.25] mt-[16px] mb-[24px] font-bold text-[var(--color-text-primary)]">
           이 코디가 가장<br />잘 어울려요
         </h2>
 
@@ -369,31 +342,22 @@ function TopPickModal({ data, onClose, onViewOutfit }: TopPickModalProps) {
 
           {/* TPO 뱃지 */}
           {data.designed_tpo && (
-            <div
-              className="absolute bottom-[12px] left-[12px] px-[10px] py-[4px] rounded-full text-[12px]"
-              style={{ backgroundColor: "rgba(0,0,0,0.5)", color: "#FFFFFF", fontFamily: "var(--font-body)" }}
-            >
+            <Badge className="absolute bottom-[12px] left-[12px] px-[10px] py-[4px] rounded-full text-[12px] bg-black/50 text-white font-body border-none h-auto">
               {data.designed_tpo}
-            </div>
+            </Badge>
           )}
 
           {/* 가격 */}
           {data.total_price != null && (
-            <div
-              className="absolute bottom-[12px] right-[12px] px-[10px] py-[4px] rounded-full text-[12px] font-medium"
-              style={{ backgroundColor: "rgba(0,0,0,0.5)", color: "#FFFFFF", fontFamily: "var(--font-body)" }}
-            >
+            <Badge className="absolute bottom-[12px] right-[12px] px-[10px] py-[4px] rounded-full text-[12px] font-medium bg-black/50 text-white font-body border-none h-auto">
               ₩{formatPrice(data.total_price)}
-            </div>
+            </Badge>
           )}
         </div>
 
         {/* 하이라이트 이유 */}
         {data.highlight_reason && (
-          <p
-            className="mt-[20px] text-[15px] leading-[1.6] font-medium"
-            style={{ color: "var(--color-accent)", fontFamily: "var(--font-body)" }}
-          >
+          <p className="mt-[20px] font-body text-[15px] leading-[1.6] font-medium text-[var(--color-accent)]">
             {data.highlight_reason}
           </p>
         )}
@@ -404,13 +368,9 @@ function TopPickModal({ data, onClose, onViewOutfit }: TopPickModalProps) {
             {reasons.map((reason, i) => (
               <div key={i} className="flex items-start gap-[8px]">
                 <span
-                  className="mt-[2px] w-[6px] h-[6px] rounded-full flex-shrink-0"
-                  style={{ backgroundColor: "var(--color-accent)" }}
+                  className="mt-[2px] w-[6px] h-[6px] rounded-full flex-shrink-0 bg-[var(--color-accent)]"
                 />
-                <p
-                  className="text-[14px] leading-[1.5]"
-                  style={{ color: "var(--color-text-primary)", fontFamily: "var(--font-body)" }}
-                >
+                <p className="font-body text-[14px] leading-[1.5] text-[var(--color-text-primary)]">
                   {reason}
                 </p>
               </div>
@@ -421,10 +381,7 @@ function TopPickModal({ data, onClose, onViewOutfit }: TopPickModalProps) {
         {/* 5축 바 차트 */}
         {data.scores && (
           <div className="mt-[28px]">
-            <h3
-              className="text-[14px] font-medium mb-[16px]"
-              style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-body)" }}
-            >
+            <h3 className="font-body text-[14px] font-medium mb-[16px] text-[var(--color-text-secondary)]">
               스타일 분석
             </h3>
             <div className="flex flex-col gap-[12px]">
@@ -434,16 +391,10 @@ function TopPickModal({ data, onClose, onViewOutfit }: TopPickModalProps) {
                 return (
                   <div key={key}>
                     <div className="flex items-center justify-between mb-[4px]">
-                      <span
-                        className="text-[13px]"
-                        style={{ color: "var(--color-text-primary)", fontFamily: "var(--font-body)" }}
-                      >
+                      <span className="font-body text-[13px] text-[var(--color-text-primary)]">
                         {label}
                       </span>
-                      <span
-                        className="text-[13px] font-medium"
-                        style={{ color, fontFamily: "var(--font-body)" }}
-                      >
+                      <span className="font-body text-[13px] font-medium" style={{ color }}>
                         {Math.round(value)}
                       </span>
                     </div>
@@ -480,28 +431,19 @@ function TopPickModal({ data, onClose, onViewOutfit }: TopPickModalProps) {
         }}
       >
         <div className="flex gap-[12px] max-w-[430px] mx-auto">
-          <button
+          <Button
+            variant="secondary"
             onClick={onClose}
-            className="flex-1 py-[14px] rounded-[var(--radius-md)] text-[15px] font-medium"
-            style={{
-              backgroundColor: "var(--color-bg-secondary)",
-              color: "var(--color-text-primary)",
-              fontFamily: "var(--font-body)",
-            }}
+            className="flex-1 py-[14px] h-auto rounded-[var(--radius-md)] text-[15px] font-medium font-body bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)]/80"
           >
             닫기
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => onViewOutfit(data.id)}
-            className="flex-1 py-[14px] rounded-[var(--radius-md)] text-[15px] font-medium"
-            style={{
-              backgroundColor: "var(--color-accent)",
-              color: "#FFFFFF",
-              fontFamily: "var(--font-body)",
-            }}
+            className="flex-1 py-[14px] h-auto rounded-[var(--radius-md)] text-[15px] font-medium font-body bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent)]/90"
           >
             코디 상세 보기
-          </button>
+          </Button>
         </div>
       </div>
     </motion.div>
@@ -653,34 +595,26 @@ export default function SavedPage() {
         className="sticky top-0 z-10 px-[20px] pt-[16px] pb-[12px]"
         style={{ backgroundColor: "var(--color-bg-primary)" }}
       >
-        <h1
-          className="text-[24px] leading-[1.3]"
-          style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--color-text-primary)" }}
-        >
+        <h1 className="font-display text-[24px] leading-[1.3] font-bold text-[var(--color-text-primary)]">
           저장한 코디
         </h1>
 
-        {/* 정렬 드롭다운 */}
+        {/* 정렬 칩 */}
         {pageState === "success" && (
           <div className="flex gap-[8px] mt-[12px]">
             {SORT_OPTIONS.map((opt) => (
-              <button
+              <Button
                 key={opt.value}
+                variant={sortBy === opt.value ? "default" : "secondary"}
                 onClick={() => handleSortChange(opt.value)}
-                className="px-[12px] py-[6px] rounded-full text-[13px] transition-colors"
-                style={{
-                  backgroundColor: sortBy === opt.value
-                    ? "var(--color-accent)"
-                    : "var(--color-bg-secondary)",
-                  color: sortBy === opt.value
-                    ? "#FFFFFF"
-                    : "var(--color-text-secondary)",
-                  fontFamily: "var(--font-body)",
-                  fontWeight: sortBy === opt.value ? 600 : 400,
-                }}
+                className={`px-[12px] py-[6px] h-auto rounded-full text-[13px] font-body ${
+                  sortBy === opt.value
+                    ? "bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent)]/90 font-semibold border-transparent"
+                    : "bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)]/80"
+                }`}
               >
                 {opt.label}
-              </button>
+              </Button>
             ))}
           </div>
         )}
@@ -689,37 +623,29 @@ export default function SavedPage() {
       {/* Top Pick + 비교 버튼 */}
       {pageState === "success" && (
         <div className="px-[20px] pt-[8px] pb-[4px] flex gap-[8px]">
-          <button
+          <Button
+            variant="outline"
             onClick={handleTopPick}
             disabled={topPickLoading}
-            className="flex-1 py-[12px] rounded-[var(--radius-md)] text-[14px] font-medium transition-opacity"
-            style={{
-              backgroundColor: "transparent",
-              color: "var(--color-accent)",
-              border: "1.5px solid var(--color-accent)",
-              fontFamily: "var(--font-body)",
-              opacity: topPickLoading ? 0.6 : 1,
-            }}
+            className="flex-1 py-[12px] h-auto rounded-[var(--radius-md)] text-[14px] font-medium font-body border-[var(--color-accent)] text-[var(--color-accent)] bg-transparent disabled:opacity-60"
+            style={{ borderWidth: "1.5px" }}
           >
             {topPickLoading ? "분석 중..." : "Top Pick"}
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="outline"
             onClick={handleToggleCompareMode}
-            className="flex-1 py-[12px] rounded-[var(--radius-md)] text-[14px] font-medium"
-            style={{
-              backgroundColor: compareMode ? "var(--color-accent)" : "transparent",
-              color: compareMode ? "#FFFFFF" : "var(--color-accent)",
-              border: "1.5px solid var(--color-accent)",
-              fontFamily: "var(--font-body)",
-            }}
+            className={`flex-1 py-[12px] h-auto rounded-[var(--radius-md)] text-[14px] font-medium font-body ${
+              compareMode
+                ? "bg-[var(--color-accent)] text-white border-[var(--color-accent)] hover:bg-[var(--color-accent)]/90"
+                : "bg-transparent text-[var(--color-accent)] border-[var(--color-accent)]"
+            }`}
+            style={{ borderWidth: "1.5px" }}
           >
             {compareMode ? "비교 취소" : "A vs B 비교"}
-          </button>
+          </Button>
           {topPickError && (
-            <p
-              className="mt-[8px] text-[13px] text-center col-span-2"
-              style={{ color: "var(--color-accent)", fontFamily: "var(--font-body)" }}
-            >
+            <p className="mt-[8px] font-body text-[13px] text-center col-span-2 text-[var(--color-accent)]">
               Top Pick을 불러오지 못했어요. 다시 시도해주세요.
             </p>
           )}
@@ -739,69 +665,46 @@ export default function SavedPage() {
       {pageState === "empty" && (
         <div className="flex flex-col items-center justify-center px-[20px] pt-[120px]">
           <div
-            className="w-[80px] h-[80px] rounded-full flex items-center justify-center mb-[16px]"
-            style={{ backgroundColor: "var(--color-bg-secondary)" }}
+            className="w-[80px] h-[80px] rounded-full flex items-center justify-center mb-[16px] bg-[var(--color-bg-secondary)]"
           >
             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-tertiary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
           </div>
-          <p
-            className="text-[18px] mb-[8px]"
-            style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--color-text-primary)" }}
-          >
+          <p className="font-display text-[18px] mb-[8px] font-bold text-[var(--color-text-primary)]">
             아직 저장한 코디가 없어요
           </p>
-          <p
-            className="text-[14px] text-center mb-[24px]"
-            style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-body)" }}
-          >
+          <p className="font-body text-[14px] text-center mb-[24px] text-[var(--color-text-secondary)]">
             피드에서 마음에 드는 코디를 저장해보세요
           </p>
-          <button
+          <Button
             onClick={() => router.push("/feed")}
-            className="px-[24px] py-[14px] rounded-[var(--radius-md)] text-[15px] font-medium"
-            style={{
-              backgroundColor: "var(--color-accent)",
-              color: "#FFFFFF",
-              fontFamily: "var(--font-body)",
-            }}
+            className="px-[24px] py-[14px] h-auto rounded-[var(--radius-md)] text-[15px] font-medium font-body bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent)]/90"
           >
             코디 피드 둘러보기
-          </button>
+          </Button>
         </div>
       )}
 
       {/* 에러 */}
       {pageState === "error" && (
         <div className="flex flex-col items-center justify-center px-[20px] pt-[120px]">
-          <p
-            className="text-[16px] mb-[12px]"
-            style={{ color: "var(--color-text-primary)", fontFamily: "var(--font-body)" }}
-          >
+          <p className="font-body text-[16px] mb-[12px] text-[var(--color-text-primary)]">
             저장 목록을 불러오지 못했어요
           </p>
-          <button
+          <Button
             onClick={() => loadSaved(sortBy)}
-            className="px-[24px] py-[10px] rounded-full text-[14px]"
-            style={{
-              backgroundColor: "var(--color-accent)",
-              color: "#FFFFFF",
-              fontFamily: "var(--font-body)",
-            }}
+            className="px-[24px] py-[10px] h-auto rounded-full text-[14px] font-body bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent)]/90"
           >
             다시 시도
-          </button>
+          </Button>
         </div>
       )}
 
       {/* 비교 모드 안내 */}
       {compareMode && (
         <div className="px-[20px] pt-[8px]">
-          <p
-            className="text-[13px] text-center"
-            style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-body)" }}
-          >
+          <p className="font-body text-[13px] text-center text-[var(--color-text-secondary)]">
             비교할 코디 2개를 선택하세요 ({compareSelected.length}/2)
           </p>
         </div>
@@ -836,17 +739,12 @@ export default function SavedPage() {
             exit={{ y: 20, opacity: 0 }}
             transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.2 }}
           >
-            <button
+            <Button
               onClick={handleCompareGo}
-              className="w-full max-w-[430px] mx-auto block py-[14px] rounded-[var(--radius-md)] text-[15px] font-medium"
-              style={{
-                backgroundColor: "var(--color-accent)",
-                color: "#FFFFFF",
-                fontFamily: "var(--font-body)",
-              }}
+              className="w-full max-w-[430px] mx-auto block py-[14px] h-auto rounded-[var(--radius-md)] text-[15px] font-medium font-body bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent)]/90"
             >
               비교하기
-            </button>
+            </Button>
           </motion.div>
         )}
       </AnimatePresence>

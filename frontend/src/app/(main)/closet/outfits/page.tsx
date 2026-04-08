@@ -11,6 +11,10 @@ import {
   type ClosetOutfitItem,
 } from "@/lib/api";
 import { isLoggedIn } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Card, CardContent } from "@/components/ui/card";
 
 /* ── TPO 탭 데이터 ── */
 const TPO_TABS = [
@@ -101,9 +105,9 @@ function ItemThumb({ item }: ItemThumbProps) {
         )}
       </div>
       {isMyItem && (
-        <span className="absolute -top-[6px] -right-[6px] bg-[var(--color-accent)] text-white text-[10px] font-body font-medium px-[6px] py-[2px] rounded-full z-10">
+        <Badge className="absolute -top-[6px] -right-[6px] bg-[var(--color-accent)] text-white text-[10px] font-body font-medium px-[6px] py-[2px] rounded-full z-10 border-none">
           내 옷
-        </span>
+        </Badge>
       )}
       {item.category && (
         <p className="text-[11px] text-[var(--color-text-tertiary)] font-body mt-[4px] text-center truncate w-[80px]">
@@ -173,23 +177,24 @@ function ClosetOutfitCard({ outfit, isSaved, index, onTap, onSaveToggle }: Outfi
               const val = outfit.scores[axis.key];
               if (val == null) return null;
               return (
-                <span
+                <Badge
                   key={axis.key}
-                  className="text-[11px] font-body px-[6px] py-[2px] rounded-full"
+                  className="text-[11px] font-body px-[6px] py-[2px] rounded-full border-none h-auto"
                   style={{ backgroundColor: `${axis.color}18`, color: axis.color }}
                 >
                   {axis.label} {Math.round(val)}
-                </span>
+                </Badge>
               );
             })}
           </div>
         </div>
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={handleSave}
-          className="w-[36px] h-[36px] flex items-center justify-center"
           aria-label={saved ? "저장 취소" : "저장"}
           aria-pressed={saved}
+          className="w-[36px] h-[36px]"
         >
           <motion.svg
             width="20"
@@ -205,7 +210,7 @@ function ClosetOutfitCard({ outfit, isSaved, index, onTap, onSaveToggle }: Outfi
           >
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
           </motion.svg>
-        </button>
+        </Button>
       </div>
 
       {/* 추천 이유 */}
@@ -216,7 +221,8 @@ function ClosetOutfitCard({ outfit, isSaved, index, onTap, onSaveToggle }: Outfi
       )}
 
       {/* 추가 구매 비용 */}
-      <div className="flex items-center justify-between mt-[10px] pt-[10px] border-t border-[var(--color-border)]">
+      <Separator className="mt-[10px] bg-[var(--color-border)]" />
+      <div className="flex items-center justify-between pt-[10px]">
         <div className="flex items-center gap-[8px] text-[13px] font-body">
           <span className="text-[var(--color-text-tertiary)]">
             내 옷 {ps.my_items_count}벌
@@ -344,16 +350,17 @@ export default function ClosetOutfitsPage() {
       {/* ── 헤더 ── */}
       <header className="sticky top-0 z-30 bg-[var(--color-bg)]/95 backdrop-blur-sm">
         <div className="flex items-center px-[20px] h-[52px] max-w-[768px] mx-auto gap-[12px]">
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => router.back()}
-            className="w-[44px] h-[44px] flex items-center justify-center -ml-[8px]"
+            className="-ml-[8px] w-[44px] h-[44px]"
             aria-label="뒤로 가기"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15 18 9 12 15 6" />
             </svg>
-          </button>
+          </Button>
           <span className="font-display text-[18px] text-[var(--color-text-primary)] font-bold">
             코디 완성
           </span>
@@ -365,18 +372,18 @@ export default function ClosetOutfitsPage() {
           style={{ scrollbarWidth: "none" }}
         >
           {TPO_TABS.map((tab) => (
-            <button
+            <Button
               key={tab.id}
-              type="button"
+              variant={activeTpo === tab.id ? "default" : "outline"}
               onClick={() => setActiveTpo(tab.id)}
-              className={`shrink-0 min-h-[44px] px-[16px] py-[12px] rounded-full text-[14px] font-body transition-colors whitespace-nowrap ${
+              className={`shrink-0 min-h-[44px] px-[16px] py-[12px] rounded-full text-[14px] font-body whitespace-nowrap ${
                 activeTpo === tab.id
-                  ? "bg-[var(--color-accent)] text-white"
-                  : "bg-[var(--color-surface)] text-[var(--color-text-secondary)] border border-[var(--color-border)]"
+                  ? "bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent)]/90 border-transparent"
+                  : "bg-[var(--color-surface)] text-[var(--color-text-secondary)] border-[var(--color-border)]"
               }`}
             >
               {tab.label}
-            </button>
+            </Button>
           ))}
         </div>
       </header>
@@ -398,13 +405,13 @@ export default function ClosetOutfitsPage() {
             <p className="font-body text-[16px] text-[var(--color-text-primary)] mb-[16px]">
               코디를 불러오지 못했어요
             </p>
-            <button
-              type="button"
+            <Button
+              variant="outline"
               onClick={loadOutfits}
-              className="px-[24px] py-[10px] rounded-full border border-[var(--color-accent)] text-[var(--color-accent)] text-[14px] font-body"
+              className="px-[24px] py-[10px] h-auto rounded-full border-[var(--color-accent)] text-[var(--color-accent)] text-[14px] font-body"
             >
               다시 시도
-            </button>
+            </Button>
           </div>
         )}
 
@@ -423,13 +430,12 @@ export default function ClosetOutfitsPage() {
               다른 TPO를 선택해보세요
             </p>
             {activeTpo !== "all" && (
-              <button
-                type="button"
+              <Button
                 onClick={() => setActiveTpo("all")}
-                className="px-[24px] py-[10px] rounded-full bg-[var(--color-accent)] text-white text-[14px] font-body"
+                className="px-[24px] py-[10px] h-auto rounded-full bg-[var(--color-accent)] text-white text-[14px] font-body hover:bg-[var(--color-accent)]/90"
               >
                 전체 보기
-              </button>
+              </Button>
             )}
           </div>
         )}

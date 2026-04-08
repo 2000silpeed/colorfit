@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
-import { Nanum_Myeongjo } from "next/font/google";
+import { Nanum_Myeongjo, Geist } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const nanumMyeongjo = Nanum_Myeongjo({
   weight: ["400", "700", "800"],
@@ -30,7 +33,7 @@ export default function RootLayout({
   return (
     <html
       lang="ko"
-      className={`${nanumMyeongjo.variable} ${pretendard.variable} h-full antialiased`}
+      className={cn("h-full", "antialiased", nanumMyeongjo.variable, pretendard.variable, "font-sans", geist.variable)}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col items-center bg-[#E8E4DF]">

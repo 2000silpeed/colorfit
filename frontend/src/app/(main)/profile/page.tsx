@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { deleteUser, fetchToneDetail, type ToneDetailResponse } from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 function clearColorfitStorage(): void {
   for (let i = localStorage.length - 1; i >= 0; i--) {
@@ -60,10 +62,7 @@ function ColorSwatch({ hex, name }: { hex: string; name: string }) {
         className="w-[40px] h-[40px] rounded-full border border-border"
         style={{ backgroundColor: hex }}
       />
-      <span
-        className="text-[11px] leading-[1.4] text-text-tertiary text-center"
-        style={{ fontFamily: "var(--font-body)", maxWidth: "48px" }}
-      >
+      <span className="font-body text-[11px] leading-[1.4] text-text-tertiary text-center max-w-[48px]">
         {name}
       </span>
     </div>
@@ -81,6 +80,15 @@ const TPO_LABELS: Record<string, string> = {
   event: "행사",
   workout: "운동",
 };
+
+/* ── 화살표 아이콘 ── */
+function ChevronRight() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M6 3l5 5-5 5" stroke="var(--color-text-tertiary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -150,20 +158,15 @@ export default function ProfilePage() {
   if (error || !tone) {
     return (
       <div className="min-h-screen bg-bg-primary flex flex-col items-center justify-center px-[20px] pb-[80px]">
-        <p className="text-text-secondary text-[15px] mb-[16px]" style={{ fontFamily: "var(--font-body)" }}>
+        <p className="font-body text-text-secondary text-[15px] mb-[16px]">
           {error ?? "톤 정보를 불러올 수 없습니다"}
         </p>
-        <button
+        <Button
           onClick={() => window.location.reload()}
-          className="px-[24px] py-[10px] rounded-full text-[14px] font-medium"
-          style={{
-            fontFamily: "var(--font-body)",
-            backgroundColor: "var(--color-accent)",
-            color: "#FFFFFF",
-          }}
+          className="rounded-full px-[24px] py-[10px] text-[14px] font-medium bg-accent text-white hover:bg-accent/90 font-body"
         >
           다시 시도
-        </button>
+        </Button>
       </div>
     );
   }
@@ -187,28 +190,16 @@ export default function ProfilePage() {
         transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.4 }}
       >
         <div
-          className="relative w-full flex flex-col items-center justify-center"
-          style={{
-            background: gradient,
-            height: "180px",
-          }}
+          className="relative w-full h-[180px] flex flex-col items-center justify-center"
+          style={{ background: gradient }}
         >
-          <h1
-            className="text-[28px] text-white leading-[1.25]"
-            style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
-          >
+          <h1 className="font-display text-[28px] text-white leading-[1.25] font-bold">
             {tone.tone_name_ko}
           </h1>
-          <p
-            className="text-[13px] text-white/80 mt-[8px]"
-            style={{ fontFamily: "var(--font-body)" }}
-          >
+          <p className="font-body text-[13px] text-white/80 mt-[8px]">
             {tone.description.slice(0, 30)}...
           </p>
-          <div
-            className="absolute bottom-[12px] right-[16px] text-[12px] text-white/60"
-            style={{ fontFamily: "var(--font-body)" }}
-          >
+          <div className="absolute bottom-[12px] right-[16px] font-body text-[12px] text-white/60">
             탭하여 상세 보기
           </div>
         </div>
@@ -221,10 +212,7 @@ export default function ProfilePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.3, delay: 0.1 }}
       >
-        <h2
-          className="text-[16px] font-semibold text-text-primary mb-[12px]"
-          style={{ fontFamily: "var(--font-body)" }}
-        >
+        <h2 className="font-body text-[16px] font-semibold text-text-primary mb-[12px]">
           잘 어울리는 색
         </h2>
         <div className="flex gap-[12px] overflow-x-auto pb-[4px]">
@@ -233,10 +221,7 @@ export default function ProfilePage() {
           ))}
         </div>
 
-        <h2
-          className="text-[16px] font-semibold text-text-primary mt-[24px] mb-[12px]"
-          style={{ fontFamily: "var(--font-body)" }}
-        >
+        <h2 className="font-body text-[16px] font-semibold text-text-primary mt-[24px] mb-[12px]">
           피해야 할 색
         </h2>
         <div className="flex gap-[12px] overflow-x-auto pb-[4px]">
@@ -254,10 +239,7 @@ export default function ProfilePage() {
                   </svg>
                 </div>
               </div>
-              <span
-                className="text-[11px] leading-[1.4] text-text-tertiary text-center"
-                style={{ fontFamily: "var(--font-body)", maxWidth: "48px" }}
-              >
+              <span className="font-body text-[11px] leading-[1.4] text-text-tertiary text-center max-w-[48px]">
                 {c.name_ko}
               </span>
             </div>
@@ -272,52 +254,37 @@ export default function ProfilePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.3, delay: 0.2 }}
       >
-        <h2
-          className="text-[18px] text-text-primary mb-[16px]"
-          style={{ fontFamily: "var(--font-display)", fontWeight: 700, lineHeight: 1.3 }}
-        >
+        <h2 className="font-display text-[18px] text-text-primary mb-[16px] font-bold leading-[1.3]">
           내 정보
         </h2>
 
         <div className="space-y-[2px]">
           {/* 성별 */}
-          <div
-            className="flex items-center justify-between py-[14px] border-b"
-            style={{ borderColor: "var(--color-border)" }}
-          >
-            <span className="text-[15px] text-text-primary" style={{ fontFamily: "var(--font-body)" }}>
-              성별
-            </span>
-            <span className="text-[14px] text-text-secondary" style={{ fontFamily: "var(--font-body)" }}>
+          <div className="flex items-center justify-between py-[14px]">
+            <span className="font-body text-[15px] text-text-primary">성별</span>
+            <span className="font-body text-[14px] text-text-secondary">
               {gender === "male" ? "남성" : "여성"}
             </span>
           </div>
+          <Separator className="bg-border" />
 
           {/* TPO */}
-          <div
-            className="flex items-center justify-between py-[14px] border-b"
-            style={{ borderColor: "var(--color-border)" }}
-          >
-            <span className="text-[15px] text-text-primary" style={{ fontFamily: "var(--font-body)" }}>
-              선택 TPO
-            </span>
-            <span className="text-[14px] text-text-secondary" style={{ fontFamily: "var(--font-body)" }}>
+          <div className="flex items-center justify-between py-[14px]">
+            <span className="font-body text-[15px] text-text-primary">선택 TPO</span>
+            <span className="font-body text-[14px] text-text-secondary">
               {tpoList.length > 0 ? tpoList.map((t) => TPO_LABELS[t] ?? t).join(", ") : "미설정"}
             </span>
           </div>
+          <Separator className="bg-border" />
 
           {/* 예산 */}
-          <div
-            className="flex items-center justify-between py-[14px] border-b"
-            style={{ borderColor: "var(--color-border)" }}
-          >
-            <span className="text-[15px] text-text-primary" style={{ fontFamily: "var(--font-body)" }}>
-              예산 범위
-            </span>
-            <span className="text-[14px] text-text-secondary" style={{ fontFamily: "var(--font-body)" }}>
+          <div className="flex items-center justify-between py-[14px]">
+            <span className="font-body text-[15px] text-text-primary">예산 범위</span>
+            <span className="font-body text-[14px] text-text-secondary">
               {formatBudget(budgetMin, budgetMax)}
             </span>
           </div>
+          <Separator className="bg-border" />
         </div>
       </motion.div>
 
@@ -328,42 +295,33 @@ export default function ProfilePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.3, delay: 0.3 }}
       >
-        <button
+        <Button
+          variant="ghost"
           onClick={() => router.push("/tryon-gallery")}
-          className="flex items-center justify-between w-full py-[14px] border-b"
-          style={{ borderColor: "var(--color-border)" }}
+          className="flex items-center justify-between w-full py-[14px] h-auto rounded-none px-0"
         >
-          <span className="text-[15px] text-text-primary" style={{ fontFamily: "var(--font-body)" }}>
-            AI 착장 갤러리
-          </span>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M6 3l5 5-5 5" stroke="var(--color-text-tertiary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
-        <button
+          <span className="font-body text-[15px] text-text-primary">AI 착장 갤러리</span>
+          <ChevronRight />
+        </Button>
+        <Separator className="bg-border" />
+        <Button
+          variant="ghost"
           onClick={() => router.push("/preference")}
-          className="flex items-center justify-between w-full py-[14px] border-b"
-          style={{ borderColor: "var(--color-border)" }}
+          className="flex items-center justify-between w-full py-[14px] h-auto rounded-none px-0"
         >
-          <span className="text-[15px] text-text-primary" style={{ fontFamily: "var(--font-body)" }}>
-            취향 관리
-          </span>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M6 3l5 5-5 5" stroke="var(--color-text-tertiary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
-        <button
+          <span className="font-body text-[15px] text-text-primary">취향 관리</span>
+          <ChevronRight />
+        </Button>
+        <Separator className="bg-border" />
+        <Button
+          variant="ghost"
           onClick={() => router.push("/brands")}
-          className="flex items-center justify-between w-full py-[14px] border-b"
-          style={{ borderColor: "var(--color-border)" }}
+          className="flex items-center justify-between w-full py-[14px] h-auto rounded-none px-0"
         >
-          <span className="text-[15px] text-text-primary" style={{ fontFamily: "var(--font-body)" }}>
-            선호 브랜드
-          </span>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M6 3l5 5-5 5" stroke="var(--color-text-tertiary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
+          <span className="font-body text-[15px] text-text-primary">선호 브랜드</span>
+          <ChevronRight />
+        </Button>
+        <Separator className="bg-border" />
       </motion.div>
 
       {/* 설정 */}
@@ -373,40 +331,29 @@ export default function ProfilePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.3, delay: 0.4 }}
       >
-        <h2
-          className="text-[18px] text-text-primary mb-[16px]"
-          style={{ fontFamily: "var(--font-display)", fontWeight: 700, lineHeight: 1.3 }}
-        >
+        <h2 className="font-display text-[18px] text-text-primary mb-[16px] font-bold leading-[1.3]">
           설정
         </h2>
 
         <div className="space-y-[2px]">
-          <button
-            type="button"
+          <Button
+            variant="ghost"
             onClick={handleLogout}
-            className="flex items-center justify-between w-full py-[14px] border-b"
-            style={{ borderColor: "var(--color-border)" }}
+            className="flex items-center justify-between w-full py-[14px] h-auto rounded-none px-0"
           >
-            <span className="text-[15px] text-text-primary" style={{ fontFamily: "var(--font-body)" }}>
-              로그아웃
-            </span>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M6 3l5 5-5 5" stroke="var(--color-text-tertiary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-          <button
-            type="button"
+            <span className="font-body text-[15px] text-text-primary">로그아웃</span>
+            <ChevronRight />
+          </Button>
+          <Separator className="bg-border" />
+          <Button
+            variant="ghost"
             onClick={() => setShowDeleteDialog(true)}
-            className="flex items-center justify-between w-full py-[14px] border-b"
-            style={{ borderColor: "var(--color-border)" }}
+            className="flex items-center justify-between w-full py-[14px] h-auto rounded-none px-0"
           >
-            <span className="text-[15px]" style={{ fontFamily: "var(--font-body)", color: "var(--color-accent)" }}>
-              계정 삭제
-            </span>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M6 3l5 5-5 5" stroke="var(--color-text-tertiary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
+            <span className="font-body text-[15px] text-accent">계정 삭제</span>
+            <ChevronRight />
+          </Button>
+          <Separator className="bg-border" />
         </div>
       </motion.div>
 
@@ -433,51 +380,34 @@ export default function ProfilePage() {
             >
               <h3
                 id="delete-dialog-title"
-                className="text-[17px] text-text-primary mb-[8px]"
-                style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
+                className="font-display text-[17px] text-text-primary mb-[8px] font-bold"
               >
                 계정을 삭제할까요?
               </h3>
-              <p
-                className="text-[13px] text-text-secondary leading-[1.5] mb-[20px]"
-                style={{ fontFamily: "var(--font-body)" }}
-              >
+              <p className="font-body text-[13px] text-text-secondary leading-[1.5] mb-[20px]">
                 저장한 옷장, 코디, 취향 데이터가 모두 삭제되며 복구할 수 없어요.
               </p>
               {deleteError && (
-                <p
-                  className="text-[13px] mb-[12px]"
-                  style={{ fontFamily: "var(--font-body)", color: "var(--color-accent)" }}
-                >
+                <p className="font-body text-[13px] text-accent mb-[12px]">
                   {deleteError}
                 </p>
               )}
               <div className="flex gap-[8px]">
-                <button
-                  type="button"
+                <Button
+                  variant="outline"
                   onClick={() => setShowDeleteDialog(false)}
                   disabled={deleting}
-                  className="flex-1 py-[12px] rounded-full text-[14px] font-medium border disabled:opacity-60"
-                  style={{
-                    fontFamily: "var(--font-body)",
-                    borderColor: "var(--color-border)",
-                    color: "var(--color-text-primary)",
-                  }}
+                  className="flex-1 py-[12px] h-auto rounded-full text-[14px] font-medium font-body border-border text-text-primary disabled:opacity-60"
                 >
                   취소
-                </button>
-                <button
-                  type="button"
+                </Button>
+                <Button
                   onClick={handleDeleteAccount}
                   disabled={deleting}
-                  className="flex-1 py-[12px] rounded-full text-[14px] font-medium text-white disabled:opacity-60"
-                  style={{
-                    fontFamily: "var(--font-body)",
-                    backgroundColor: "var(--color-accent)",
-                  }}
+                  className="flex-1 py-[12px] h-auto rounded-full text-[14px] font-medium font-body bg-accent text-white hover:bg-accent/90 disabled:opacity-60"
                 >
                   {deleting ? "삭제 중..." : "삭제"}
-                </button>
+                </Button>
               </div>
             </motion.div>
           </>

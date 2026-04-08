@@ -71,6 +71,7 @@ async def top_pick(
             brand=item.get("brand"),
             category=item.get("category"),
             color_hex=item.get("color_hex"),
+            color_name=item.get("color_name"),
             price=item.get("price"),
             image_url=item.get("image_url"),
             mall_url=item.get("mall_url"),

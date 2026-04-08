@@ -90,6 +90,7 @@ export interface ProductBrief {
   style_tag: string | null;
   is_verified_brand: boolean;
   color_hex: string | null;
+  color_name: string | null;
 }
 
 export interface OutfitDetailResponse {

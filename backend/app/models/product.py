@@ -12,6 +12,7 @@ class Product(Base):
     brand: Mapped[str | None] = mapped_column(String(100))
     category: Mapped[str | None] = mapped_column(String(20))
     color_hex: Mapped[str | None] = mapped_column(String(7))
+    color_name: Mapped[str | None] = mapped_column(String(20))
     tone_id: Mapped[str | None] = mapped_column(String(30), index=True)
     price: Mapped[int | None] = mapped_column(Integer)
     mall_name: Mapped[str | None] = mapped_column(String(50))

@@ -4,6 +4,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 interface RoundOption {
   id: string;
@@ -278,23 +279,23 @@ export default function Step5Page() {
 
         {/* 패스 + 건너뛰기 */}
         <div className="flex items-center gap-[var(--space-lg)]">
-          <button
-            type="button"
+          <Button
+            variant="ghost"
             onClick={handlePass}
             disabled={isTransitioning}
-            className="font-body text-[14px] text-text-secondary bg-transparent border-none cursor-pointer disabled:cursor-default"
+            className="font-body text-sm text-text-secondary"
             aria-label="이 라운드 패스"
           >
             패스 →
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="link"
             onClick={handleSkipAll}
-            className="font-body text-[14px] text-text-tertiary bg-transparent border-none cursor-pointer"
+            className="font-body text-sm text-text-tertiary"
             aria-label="취향 분석 건너뛰기"
           >
             건너뛰기
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -3,9 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { Card } from "@/components/ui/card";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type Gender = "female" | "male";
 type AgeGroup = "20s" | "30s" | "40plus";
+
+const MotionCard = motion.create(Card);
 
 const GENDER_CARDS: { value: Gender; label: string; initial: string }[] = [
   { value: "female", label: "여성", initial: "W" },
@@ -68,10 +73,17 @@ export default function Step1Page() {
 
             <div className="flex gap-[var(--space-md)] mt-[var(--space-2xl)] w-full max-w-[400px] justify-center">
               {GENDER_CARDS.map((card, i) => (
-                <motion.button
+                <MotionCard
                   key={card.value}
-                  type="button"
+                  role="button"
+                  tabIndex={0}
                   onClick={() => handleGenderSelect(card.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      handleGenderSelect(card.value);
+                    }
+                  }}
                   initial={prefersReducedMotion ? false : { y: 30, opacity: 0 }}
                   animate={{ y: 0, opacity: 1, scale: 1 }}
                   transition={
@@ -79,27 +91,16 @@ export default function Step1Page() {
                       ? { duration: 0 }
                       : { duration: 0.4, delay: i * 0.15, ease: "easeOut" }
                   }
-                  className="w-[45%] rounded-[var(--radius-xl)] flex flex-col items-center justify-center cursor-pointer border-2 border-transparent"
-                  style={{
-                    aspectRatio: "3 / 4",
-                    backgroundColor: "#FFFFFF",
-                  }}
+                  className="w-[45%] aspect-[3/4] rounded-[var(--radius-xl)] flex flex-col items-center justify-center cursor-pointer border-2 border-transparent bg-white ring-0 p-0"
                   aria-label={`${card.label} 선택`}
                 >
-                  <span
-                    className="text-text-primary leading-none"
-                    style={{
-                      fontFamily: "'Noto Serif', 'Nanum Myeongjo', serif",
-                      fontSize: "48px",
-                      fontWeight: 400,
-                    }}
-                  >
+                  <span className="font-display text-[48px] font-normal text-text-primary leading-none">
                     {card.initial}
                   </span>
                   <span className="mt-[var(--space-sm)] font-body text-[15px] text-text-secondary">
                     {card.label}
                   </span>
-                </motion.button>
+                </MotionCard>
               ))}
             </div>
           </motion.div>
@@ -120,10 +121,17 @@ export default function Step1Page() {
 
             <div className="flex flex-col gap-[var(--space-sm)] mt-[var(--space-2xl)] w-full max-w-[340px]">
               {AGE_CARDS.map((card, i) => (
-                <motion.button
+                <MotionCard
                   key={card.value}
-                  type="button"
+                  role="button"
+                  tabIndex={0}
                   onClick={() => handleAgeSelect(card.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      handleAgeSelect(card.value);
+                    }
+                  }}
                   initial={prefersReducedMotion ? false : { x: 30, opacity: 0 }}
                   animate={
                     selectedAge === card.value
@@ -135,15 +143,12 @@ export default function Step1Page() {
                       ? { duration: 0 }
                       : { duration: 0.3, delay: i * 0.1, ease: "easeOut" }
                   }
-                  className="w-full rounded-[var(--radius-lg)] flex items-center justify-between px-[24px] py-[20px] cursor-pointer border-2"
-                  style={{
-                    backgroundColor: "#FFFFFF",
-                    borderColor:
-                      selectedAge === card.value
-                        ? "var(--color-accent)"
-                        : "transparent",
-                    transition: "border-color 0.3s ease-out",
-                  }}
+                  className={cn(
+                    "w-full rounded-[var(--radius-lg)] flex flex-row items-center justify-between px-[24px] py-[20px] cursor-pointer border-2 bg-white ring-0 transition-[border-color] duration-300 ease-out",
+                    selectedAge === card.value
+                      ? "border-[var(--color-accent)]"
+                      : "border-transparent"
+                  )}
                   aria-pressed={selectedAge === card.value}
                   aria-label={`${card.label} 선택`}
                 >
@@ -153,7 +158,7 @@ export default function Step1Page() {
                   <span className="font-body text-[13px] text-text-secondary">
                     {card.sub}
                   </span>
-                </motion.button>
+                </MotionCard>
               ))}
             </div>
           </motion.div>
@@ -170,7 +175,10 @@ export default function Step1Page() {
             ? { duration: 0 }
             : { duration: 0.4, delay: 0.5 }
         }
-        className="mt-[var(--space-2xl)] font-body text-[14px] text-text-secondary underline cursor-pointer bg-transparent border-none"
+        className={cn(
+          buttonVariants({ variant: "link" }),
+          "mt-[var(--space-2xl)] font-body text-[14px] text-text-secondary"
+        )}
         aria-label="건너뛰기"
       >
         건너뛰기

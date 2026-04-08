@@ -3,6 +3,8 @@
 import { useState, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 type SeasonId = "spring_warm" | "summer_cool" | "autumn_warm" | "winter_cool";
 
@@ -266,26 +268,20 @@ export default function Step2Page() {
                             aria-label={`${season.label} ${tone.label} 톤 선택`}
                           >
                             <div
-                              className="rounded-full"
+                              className="size-8 rounded-full transition-shadow duration-200 ease-out"
                               style={{
-                                width: 32,
-                                height: 32,
                                 backgroundColor: tone.color,
                                 boxShadow: isToneSelected
                                   ? "0 0 0 3px var(--color-accent)"
                                   : "0 0 0 1px var(--color-border)",
-                                transition: "box-shadow 0.2s ease-out",
                               }}
                             />
                             <span
-                              className="font-body text-text-secondary"
-                              style={{
-                                fontSize: 11,
-                                fontWeight: isToneSelected ? 600 : 400,
-                                color: isToneSelected
-                                  ? "var(--color-accent)"
-                                  : undefined,
-                              }}
+                              className={`font-body text-[11px] ${
+                                isToneSelected
+                                  ? "font-semibold text-[var(--color-accent)]"
+                                  : "font-normal text-text-secondary"
+                              }`}
                             >
                               {tone.label}
                             </span>
@@ -302,35 +298,32 @@ export default function Step2Page() {
       </div>
 
       <div className="mt-auto pt-[var(--space-2xl)] flex flex-col items-center gap-[var(--space-md)]">
-        <button
-          type="button"
+        <Button
+          variant="link"
           onClick={() => {
             setShowBottomSheet(true);
             setDiagnosisStep(0);
             setDiagnosisAnswer(null);
           }}
-          className="font-body text-[14px] text-text-secondary underline cursor-pointer bg-transparent border-none"
+          className="font-body text-[14px] text-text-secondary"
         >
           잘 모르겠어요
-        </button>
+        </Button>
 
-        <motion.button
-          type="button"
+        <Button
           onClick={handleNext}
           disabled={!selectedTone}
-          className="w-full font-body text-[16px] font-semibold rounded-[var(--radius-xl)] border-none cursor-pointer disabled:cursor-not-allowed"
+          className="w-full h-14 font-body text-[16px] font-semibold rounded-[var(--radius-xl)] transition-[background-color,color] duration-300 ease-out"
           style={{
-            height: 56,
             backgroundColor: selectedTone
               ? "var(--color-accent)"
               : "#E0DCD7",
             color: selectedTone ? "#FFFFFF" : "var(--color-text-tertiary)",
-            transition: "background-color 0.3s ease-out, color 0.3s ease-out",
           }}
           aria-label={isChangeMode ? "톤 변경 저장" : "다음 단계로"}
         >
           {isChangeMode ? "변경하기" : "다음"}
-        </motion.button>
+        </Button>
       </div>
 
       {/* 바텀시트 — 간이 진단 */}
@@ -342,8 +335,7 @@ export default function Step2Page() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={motionProps ?? { duration: 0.2 }}
-              className="fixed inset-0 z-40"
-              style={{ backgroundColor: "rgba(0,0,0,0.4)" }}
+              className="fixed inset-0 z-40 bg-black/40"
               onClick={() => setShowBottomSheet(false)}
             />
             <motion.div
@@ -360,10 +352,9 @@ export default function Step2Page() {
               role="dialog"
               aria-modal="true"
               aria-label="퍼스널컬러 간이 진단"
-              className="fixed bottom-0 left-0 right-0 z-50 rounded-t-[var(--radius-lg)] px-[var(--space-lg)] pt-[var(--space-lg)] pb-[var(--space-2xl)]"
-              style={{ backgroundColor: "var(--color-bg-primary)" }}
+              className="fixed bottom-0 left-0 right-0 z-50 rounded-t-[var(--radius-lg)] bg-[var(--color-bg-primary)] px-[var(--space-lg)] pt-[var(--space-lg)] pb-[var(--space-2xl)]"
             >
-              <div className="w-10 h-1 rounded-full mx-auto mb-[var(--space-lg)]" style={{ backgroundColor: "var(--color-border)" }} />
+              <div className="w-10 h-1 rounded-full bg-[var(--color-border)] mx-auto mb-[var(--space-lg)]" />
 
               {diagnosisStep === 0 ? (
                 <div>
@@ -375,30 +366,23 @@ export default function Step2Page() {
                   </p>
                   <div className="grid grid-cols-2 gap-[var(--space-md)] mt-[var(--space-lg)]">
                     {Q1_OPTIONS.map((opt) => (
-                      <button
+                      <Card
                         key={opt.id}
-                        type="button"
+                        className="cursor-pointer border-2 border-transparent bg-[var(--color-surface)] ring-0 transition-[border-color] duration-200 ease-out hover:border-[var(--color-accent)] p-0"
                         onClick={() => handleDiagnosisQ1(opt.id)}
-                        className="flex flex-col items-center gap-[var(--space-sm)] p-[var(--space-md)] rounded-[var(--radius-xl)] cursor-pointer border-2 border-transparent"
-                        style={{
-                          backgroundColor: "var(--color-surface)",
-                          transition: "border-color 0.2s ease-out",
-                        }}
+                        role="button"
                         aria-label={`${opt.label} 선택`}
                       >
-                        <div
-                          className="rounded-full"
-                          style={{
-                            width: 48,
-                            height: 48,
-                            backgroundColor: opt.color,
-                            boxShadow: "0 0 0 1px var(--color-border)",
-                          }}
-                        />
-                        <span className="font-body text-[14px] font-medium text-text-primary">
-                          {opt.label}
-                        </span>
-                      </button>
+                        <CardContent className="flex flex-col items-center gap-[var(--space-sm)] p-[var(--space-md)]">
+                          <div
+                            className="size-12 rounded-full shadow-[0_0_0_1px_var(--color-border)]"
+                            style={{ backgroundColor: opt.color }}
+                          />
+                          <span className="font-body text-[14px] font-medium text-text-primary">
+                            {opt.label}
+                          </span>
+                        </CardContent>
+                      </Card>
                     ))}
                   </div>
                 </div>
@@ -417,35 +401,31 @@ export default function Step2Page() {
                       { label: "파스텔", choice: "pastel" as Q2Choice, colors: ["#FFB6C1", "#B0C4DE", "#98FB98"] },
                       { label: "비비드", choice: "vivid" as Q2Choice, colors: ["#FF0000", "#0000FF", "#FFD700"] },
                     ]).map((opt) => (
-                      <button
+                      <Card
                         key={opt.label}
-                        type="button"
+                        className="cursor-pointer border-2 border-transparent bg-[var(--color-surface)] ring-0 transition-[border-color] duration-200 ease-out hover:border-[var(--color-accent)] p-0"
                         onClick={() => handleDiagnosisQ2(opt.choice)}
-                        className="flex flex-col items-center gap-[var(--space-sm)] p-[var(--space-md)] rounded-[var(--radius-xl)] cursor-pointer border-2 border-transparent"
-                        style={{
-                          backgroundColor: "var(--color-surface)",
-                          transition: "border-color 0.2s ease-out",
-                        }}
+                        role="button"
                         aria-label={`${opt.label} 선택`}
                       >
-                        <div className="flex gap-[var(--space-xs)]">
-                          {opt.colors.map((c) => (
-                            <div
-                              key={c}
-                              className="rounded-full"
-                              style={{
-                                width: 24,
-                                height: 24,
-                                backgroundColor: c,
-                                boxShadow: needsLightText(c) ? "none" : "inset 0 0 0 1px var(--color-border)",
-                              }}
-                            />
-                          ))}
-                        </div>
-                        <span className="font-body text-[14px] font-medium text-text-primary">
-                          {opt.label}
-                        </span>
-                      </button>
+                        <CardContent className="flex flex-col items-center gap-[var(--space-sm)] p-[var(--space-md)]">
+                          <div className="flex gap-[var(--space-xs)]">
+                            {opt.colors.map((c) => (
+                              <div
+                                key={c}
+                                className="size-6 rounded-full"
+                                style={{
+                                  backgroundColor: c,
+                                  boxShadow: needsLightText(c) ? "none" : "inset 0 0 0 1px var(--color-border)",
+                                }}
+                              />
+                            ))}
+                          </div>
+                          <span className="font-body text-[14px] font-medium text-text-primary">
+                            {opt.label}
+                          </span>
+                        </CardContent>
+                      </Card>
                     ))}
                   </div>
                 </div>

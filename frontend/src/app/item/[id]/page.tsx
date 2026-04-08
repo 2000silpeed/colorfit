@@ -230,18 +230,6 @@ export default function ItemDetailPage() {
           </div>
         )}
 
-        {/* 컬러 스와치 */}
-        {item.color_hex && (
-          <div className="absolute bottom-[12px] left-[12px] flex items-center gap-[6px] bg-black/40 backdrop-blur-sm rounded-full px-[10px] py-[6px]">
-            <div
-              className="w-[16px] h-[16px] rounded-full border border-white/30"
-              style={{ backgroundColor: item.color_hex }}
-            />
-            <span className="text-white text-[11px] font-body font-medium">
-              {item.color_hex}
-            </span>
-          </div>
-        )}
       </div>
 
       {/* ── 메인 콘텐츠 ── */}

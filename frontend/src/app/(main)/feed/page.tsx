@@ -7,6 +7,8 @@ import OutfitCard from "@/components/OutfitCard";
 import { fetchFeed, postReaction, type OutfitFeedItem } from "@/lib/api";
 import { isLoggedIn } from "@/lib/auth";
 import { migrateLegacyTones } from "@/lib/toneMigration";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 /* ── TPO 탭 데이터 ── */
 const TPO_TABS = [
@@ -282,16 +284,17 @@ export default function FeedPage() {
           <span className="font-display text-[20px] text-text-primary font-bold">
             ColorFit
           </span>
-          <button
-            type="button"
-            className="w-[44px] h-[44px] rounded-full bg-bg-secondary flex items-center justify-center"
+          <Button
+            variant="ghost"
+            size="icon"
+            className="w-[44px] h-[44px] rounded-full bg-bg-secondary"
             aria-label="프로필"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
               <circle cx="12" cy="7" r="4" />
             </svg>
-          </button>
+          </Button>
         </div>
 
         {/* ── TPO 탭 필터 ── */}
@@ -301,18 +304,17 @@ export default function FeedPage() {
           style={{ scrollbarWidth: "none" }}
         >
           {TPO_TABS.map((tab) => (
-            <button
+            <Badge
               key={tab.id}
-              type="button"
               onClick={() => setActiveTpo(tab.id)}
-              className={`shrink-0 min-h-[44px] px-[16px] py-[12px] rounded-full text-[14px] font-body transition-colors whitespace-nowrap ${
+              className={`shrink-0 min-h-[36px] px-[16px] py-[8px] rounded-full text-[14px] font-body cursor-pointer transition-colors whitespace-nowrap ${
                 activeTpo === tab.id
-                  ? "bg-accent text-white"
-                  : "bg-bg-secondary text-text-secondary border border-border"
+                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                  : "bg-secondary text-secondary-foreground border border-border hover:bg-muted"
               }`}
             >
               {tab.label}
-            </button>
+            </Badge>
           ))}
         </div>
 
@@ -345,20 +347,19 @@ export default function FeedPage() {
           </button>
 
           {/* 추천 브랜드만 토글 */}
-          <button
-            type="button"
+          <Badge
             onClick={() => setVerifiedOnly((prev) => !prev)}
-            className={`shrink-0 inline-flex items-center gap-[4px] min-h-[44px] px-[12px] py-[10px] rounded-full text-[13px] font-body transition-colors ${
+            className={`shrink-0 inline-flex items-center gap-[4px] min-h-[36px] px-[12px] py-[8px] rounded-full text-[13px] font-body cursor-pointer transition-colors ${
               verifiedOnly
-                ? "bg-accent text-white"
-                : "bg-bg-secondary text-text-secondary border border-border"
+                ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                : "bg-secondary text-secondary-foreground border border-border hover:bg-muted"
             }`}
           >
             <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
               <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zm3.41 5.09L7.2 9.3 5.3 7.4a.75.75 0 0 0-1.1 1.02l.08.08 2.5 2.5a.75.75 0 0 0 1.02.08l.08-.08 4.8-4.8a.75.75 0 0 0-1.1-1.02l-.07.01z" />
             </svg>
             추천 브랜드
-          </button>
+          </Badge>
         </div>
 
         {/* ── 예산 슬라이더 (확장) ── */}
@@ -425,13 +426,13 @@ export default function FeedPage() {
             <p className="font-body text-[16px] text-text-primary mb-[16px]">
               불러오지 못했어요
             </p>
-            <button
-              type="button"
+            <Button
+              variant="outline"
               onClick={() => loadFeed(1, false)}
-              className="px-[24px] py-[10px] rounded-full border border-accent text-accent text-[14px] font-body"
+              className="rounded-full border-accent text-accent font-body hover:bg-accent/10"
             >
               다시 시도
-            </button>
+            </Button>
           </div>
         )}
 
@@ -446,8 +447,7 @@ export default function FeedPage() {
             <p className="font-body text-[16px] text-text-primary mb-[4px]">
               조건에 맞는 코디가 없어요
             </p>
-            <button
-              type="button"
+            <Button
               onClick={() => {
                 setActiveTpo("all");
                 setBudgetMin(BUDGET_MIN_DEFAULT);
@@ -455,10 +455,10 @@ export default function FeedPage() {
                 setVerifiedOnly(false);
                 setPreferredBrands([]);
               }}
-              className="mt-[12px] px-[24px] py-[10px] rounded-full bg-accent text-white text-[14px] font-body"
+              className="mt-[12px] rounded-full font-body"
             >
               필터를 변경해보세요
-            </button>
+            </Button>
           </div>
         )}
 

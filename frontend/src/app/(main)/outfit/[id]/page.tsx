@@ -19,6 +19,9 @@ import {
 } from "@/lib/api";
 import PurchaseFeedbackSheet from "@/components/PurchaseFeedbackSheet";
 import { isLoggedIn } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 /* ── 스코어 축 설정 ── */
 const SCORE_AXES: {
@@ -27,11 +30,11 @@ const SCORE_AXES: {
   fullLabel: string;
   color: string;
 }[] = [
-  { key: "pcf", label: "PCF", fullLabel: "퍼스널컬러", color: "#964F4C" },
-  { key: "of", label: "OF", fullLabel: "TPO 적합", color: "#4F97A3" },
-  { key: "ch", label: "CH", fullLabel: "색상 조화", color: "#DDB67D" },
-  { key: "pe", label: "PE", fullLabel: "가격 효율", color: "#D1933F" },
-  { key: "sf", label: "SF", fullLabel: "스타일 핏", color: "#6B5876" },
+  { key: "pcf", label: "퍼스널컬러", fullLabel: "퍼스널컬러", color: "#964F4C" },
+  { key: "of", label: "TPO 적합", fullLabel: "TPO 적합", color: "#4F97A3" },
+  { key: "ch", label: "색상 조화", fullLabel: "색상 조화", color: "#DDB67D" },
+  { key: "pe", label: "가격 효율", fullLabel: "가격 효율", color: "#D1933F" },
+  { key: "sf", label: "스타일 핏", fullLabel: "스타일 핏", color: "#6B5876" },
 ];
 
 /* ── 가격 포맷 ── */
@@ -66,9 +69,6 @@ function ScoreBar({
     <div className="flex items-center gap-[12px]">
       <div className="w-[72px] shrink-0">
         <span className="font-body text-[13px] text-text-secondary">{fullLabel}</span>
-        <span className="font-body text-[10px] text-text-tertiary ml-[4px] hidden sm:inline" title={fullLabel}>
-          {label}
-        </span>
       </div>
       <div className="flex-1 h-[8px] bg-border rounded-full overflow-hidden">
         <motion.div
@@ -94,7 +94,7 @@ function ScoreBar({
 function DetailSkeleton() {
   return (
     <div className="min-h-screen bg-bg-primary">
-      <div className="w-full bg-[#E0DCD7] animate-pulse" style={{ aspectRatio: "3/4" }} />
+      <div className="w-full aspect-[3/4] bg-[#E0DCD7] animate-pulse" />
       <div className="px-[20px] pt-[24px]">
         <div className="h-[24px] w-3/4 rounded bg-[#E0DCD7] animate-pulse" />
         <div className="mt-[12px] h-[16px] w-1/2 rounded bg-[#E0DCD7] animate-pulse" />
@@ -166,23 +166,21 @@ function ComparePickerSheet({ currentOutfitId, onSelect, onClose }: ComparePicke
         }
       >
         <div className="flex items-center justify-between mb-[16px]">
-          <h3
-            className="text-[16px] font-medium"
-            style={{ fontFamily: "var(--font-display)", color: "var(--color-text-primary)" }}
-          >
+          <h3 className="text-[16px] font-medium font-display text-text-primary">
             비교할 코디 선택
           </h3>
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onClose}
-            className="w-[44px] h-[44px] flex items-center justify-center rounded-full"
-            style={{ backgroundColor: "var(--color-bg-secondary)" }}
+            className="w-[44px] h-[44px] rounded-full bg-bg-secondary"
             aria-label="닫기"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-primary)" strokeWidth="2" strokeLinecap="round">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
-          </button>
+          </Button>
         </div>
 
         <div className="overflow-y-auto" style={{ maxHeight: "calc(70vh - 80px)" }}>
@@ -197,10 +195,7 @@ function ComparePickerSheet({ currentOutfitId, onSelect, onClose }: ComparePicke
           )}
 
           {!loading && savedOutfits.length === 0 && (
-            <p
-              className="text-[14px] text-center py-[32px]"
-              style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-body)" }}
-            >
+            <p className="text-[14px] text-center py-[32px] text-text-secondary font-body">
               저장한 코디가 없어요.{"\n"}피드에서 코디를 저장해보세요.
             </p>
           )}
@@ -215,8 +210,7 @@ function ComparePickerSheet({ currentOutfitId, onSelect, onClose }: ComparePicke
                   className="text-left"
                 >
                   <div
-                    className="relative w-full overflow-hidden rounded-[var(--radius-md)]"
-                    style={{ aspectRatio: "1/1", backgroundColor: "var(--color-bg-secondary)" }}
+                    className="relative w-full aspect-square overflow-hidden rounded-[var(--radius-md)] bg-bg-secondary"
                   >
                     {outfit.image_url ? (
                       <Image
@@ -235,10 +229,7 @@ function ComparePickerSheet({ currentOutfitId, onSelect, onClose }: ComparePicke
                       </div>
                     )}
                   </div>
-                  <p
-                    className="mt-[4px] text-[11px] line-clamp-1"
-                    style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-body)" }}
-                  >
+                  <p className="mt-[4px] text-[11px] line-clamp-1 text-text-secondary font-body">
                     {outfit.reasons?.[0] ?? outfit.designed_tpo ?? "코디"}
                   </p>
                 </button>
@@ -472,13 +463,13 @@ export default function OutfitDetailPage() {
         <p className="font-body text-[16px] text-text-primary mb-[16px]">
           코디를 불러오지 못했어요
         </p>
-        <button
-          type="button"
+        <Button
+          variant="outline"
           onClick={handleBack}
-          className="px-[24px] py-[10px] rounded-full border border-accent text-accent text-[14px] font-body"
+          className="px-[24px] py-[10px] rounded-full border-accent text-accent text-[14px] font-body"
         >
           돌아가기
-        </button>
+        </Button>
       </div>
     );
   }
@@ -520,24 +511,24 @@ export default function OutfitDetailPage() {
         }}
       >
         <div className="flex items-center justify-between px-[20px] h-[52px] max-w-[768px] mx-auto">
-          <button type="button" onClick={handleBack} aria-label="뒤로가기">
+          <Button variant="ghost" size="icon" onClick={handleBack} aria-label="뒤로가기">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15 18 9 12 15 6" />
             </svg>
-          </button>
+          </Button>
           <span className="font-display text-[16px] text-text-primary line-clamp-1 max-w-[200px]">
             {outfit.reasons?.[0] ?? "코디 상세"}
           </span>
-          <button type="button" onClick={handleSave} aria-label={saved ? "저장 취소" : "저장"}>
+          <Button variant="ghost" size="icon" onClick={handleSave} aria-label={saved ? "저장 취소" : "저장"}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill={saved ? "var(--color-accent)" : "none"} stroke={saved ? "var(--color-accent)" : "var(--color-text-primary)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
-          </button>
+          </Button>
         </div>
       </motion.header>
 
       {/* ── 히어로 이미지 (풀블리드 + Parallax) ── */}
-      <div ref={heroRef} className="relative w-full overflow-hidden bg-[#F0EDE8]" style={{ aspectRatio: "1/1" }}>
+      <div ref={heroRef} className="relative w-full aspect-square overflow-hidden bg-[#F0EDE8]">
         {/* 뒤로가기 버튼 (히어로 위) */}
         <button
           type="button"
@@ -601,12 +592,13 @@ export default function OutfitDetailPage() {
         {outfit.tags && outfit.tags.length > 0 && (
           <div className="flex flex-wrap gap-[6px] mb-[12px]">
             {outfit.tags.map((tag) => (
-              <span
+              <Badge
                 key={tag}
-                className="bg-bg-secondary text-text-secondary text-[11px] font-body rounded-full px-[10px] py-[4px] border border-border"
+                variant="outline"
+                className="bg-bg-secondary text-text-secondary text-[11px] font-body rounded-full px-[10px] py-[4px]"
               >
                 {tag}
-              </span>
+              </Badge>
             ))}
           </div>
         )}
@@ -653,6 +645,9 @@ export default function OutfitDetailPage() {
           </div>
         </section>
 
+        {/* ── 구분선 ── */}
+        <Separator className="mt-[28px]" />
+
         {/* ── 추천 이유 카드 ── */}
         {outfit.reasons && outfit.reasons.length > 1 && (
           <section className="mt-[28px]">
@@ -674,6 +669,9 @@ export default function OutfitDetailPage() {
           </section>
         )}
 
+        {/* ── 구분선 ── */}
+        <Separator className="mt-[28px]" />
+
         {/* ── 아이템 캐러셀 ── */}
         {outfit.items.length > 0 && (
           <section className="mt-[28px]">
@@ -681,8 +679,7 @@ export default function OutfitDetailPage() {
               아이템 구성
             </h2>
             <div
-              className="flex gap-[12px] overflow-x-auto pb-[8px]"
-              style={{ scrollbarWidth: "none" }}
+              className="flex gap-[12px] overflow-x-auto pb-[8px] scrollbar-none"
             >
               {sortedItems.map((item) => {
                 const isOwned = isClosetMode && catalogItemIds != null && !catalogItemIds.has(item.id);
@@ -723,20 +720,14 @@ export default function OutfitDetailPage() {
                         )}
                       </div>
                       {isOwned && (
-                        <span className="absolute top-[4px] left-[4px] bg-[#6B5876]/90 text-white text-[9px] font-body font-medium px-[6px] py-[2px] rounded-full">
+                        <Badge className="absolute top-[4px] left-[4px] bg-[#6B5876]/90 text-white text-[9px] font-body font-medium px-[6px] py-[2px] rounded-full h-auto">
                           보유 중
-                        </span>
+                        </Badge>
                       )}
-                      {item.color_hex && (
-                        <div className="absolute bottom-[4px] left-[4px] flex items-center gap-[4px] bg-black/40 backdrop-blur-sm rounded-full px-[8px] py-[4px]">
-                          <div
-                            className="w-[12px] h-[12px] rounded-full border border-white/30"
-                            style={{ backgroundColor: item.color_hex }}
-                          />
-                          <span className="text-white text-[10px] font-body font-medium">
-                            {item.color_hex}
-                          </span>
-                        </div>
+                      {item.color_name && (
+                        <Badge className="absolute bottom-[4px] left-[4px] bg-black/40 backdrop-blur-sm text-white text-[10px] font-body font-medium rounded-full px-[8px] py-[3px] h-auto">
+                          {item.color_name}
+                        </Badge>
                       )}
                     </div>
                     <p className={`font-body text-[11px] mt-[6px] line-clamp-2 ${
@@ -799,11 +790,11 @@ export default function OutfitDetailPage() {
         style={{ bottom: "calc(60px + env(safe-area-inset-bottom, 0px))" }}
       >
         <div className="flex flex-col gap-[8px] px-[20px] py-[12px] max-w-[768px] mx-auto">
-          <button
-            type="button"
+          <Button
+            variant="outline"
             onClick={handleTryOn}
             disabled={tryonState === "loading"}
-            className="w-full py-[12px] rounded-full border border-accent text-accent text-[14px] font-body font-medium flex items-center justify-center gap-[6px] disabled:opacity-60"
+            className="w-full h-auto py-[12px] rounded-full border-accent text-accent text-[14px] font-body font-medium gap-[6px]"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" />
@@ -814,26 +805,26 @@ export default function OutfitDetailPage() {
                 (무료 {tryonRemaining}회 남음)
               </span>
             )}
-          </button>
+          </Button>
           <div className="flex gap-[12px]">
-            <button
-              type="button"
+            <Button
+              variant={saved ? "default" : "outline"}
               onClick={handleSave}
-              className={`flex-1 py-[14px] rounded-full text-[15px] font-body font-medium transition-colors ${
+              className={`flex-1 h-auto py-[14px] rounded-full text-[15px] font-body font-medium ${
                 saved
                   ? "bg-accent text-white"
-                  : "bg-bg-secondary text-text-primary border border-border"
+                  : "bg-bg-secondary text-text-primary border-border"
               }`}
             >
               {saved ? "저장됨" : "저장"}
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant="default"
               onClick={() => setShowComparePicker(true)}
-              className="flex-1 py-[14px] rounded-full bg-accent text-white text-[15px] font-body font-medium"
+              className="flex-1 h-auto py-[14px] rounded-full bg-accent text-white text-[15px] font-body font-medium"
             >
               A vs B 비교
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -886,10 +877,7 @@ export default function OutfitDetailPage() {
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
                 >
-                  <div
-                    className="w-full max-w-[320px] rounded-[var(--radius-lg)] overflow-hidden"
-                    style={{ aspectRatio: "3/4" }}
-                  >
+                  <div className="w-full max-w-[320px] aspect-[3/4] rounded-[var(--radius-lg)] overflow-hidden">
                     <Image
                       src={tryonImageUrl}
                       alt="AI 착장 이미지"
@@ -905,8 +893,8 @@ export default function OutfitDetailPage() {
                     </p>
                   )}
                   <div className="flex gap-[12px] mt-[16px] w-full max-w-[320px]">
-                    <button
-                      type="button"
+                    <Button
+                      variant="default"
                       onClick={() => {
                         const saved: { outfitId: string; imageUrl: string; createdAt: string }[] =
                           JSON.parse(localStorage.getItem("colorfit_tryon_images") ?? "[]");
@@ -916,17 +904,17 @@ export default function OutfitDetailPage() {
                         }
                         handleTryOnClose();
                       }}
-                      className="flex-1 py-[14px] bg-accent text-white font-body text-[15px] font-medium rounded-[var(--radius-full)]"
+                      className="flex-1 h-auto py-[14px] bg-accent text-white font-body text-[15px] font-medium rounded-full"
                     >
                       이미지 저장
-                    </button>
-                    <button
-                      type="button"
+                    </Button>
+                    <Button
+                      variant="outline"
                       onClick={handleTryOnClose}
-                      className="flex-1 py-[14px] border border-border text-text-primary font-body text-[15px] font-medium rounded-[var(--radius-full)]"
+                      className="flex-1 h-auto py-[14px] text-text-primary font-body text-[15px] font-medium rounded-full"
                     >
                       닫기
-                    </button>
+                    </Button>
                   </div>
                 </motion.div>
               )}
@@ -939,13 +927,13 @@ export default function OutfitDetailPage() {
                   <p className="font-body text-[13px] text-text-secondary mb-[20px]">
                     네트워크를 확인하고 다시 시도해주세요
                   </p>
-                  <button
-                    type="button"
+                  <Button
+                    variant="default"
                     onClick={handleTryOn}
-                    className="px-[24px] py-[12px] bg-accent text-white font-body text-[15px] font-medium rounded-[var(--radius-full)]"
+                    className="h-auto px-[24px] py-[12px] bg-accent text-white font-body text-[15px] font-medium rounded-full"
                   >
                     다시 시도
-                  </button>
+                  </Button>
                 </div>
               )}
 
@@ -959,20 +947,20 @@ export default function OutfitDetailPage() {
                     <br />
                     프리미엄으로 업그레이드하면 무제한 이용 가능해요.
                   </p>
-                  <button
-                    type="button"
+                  <Button
+                    variant="default"
                     onClick={handleTryOnUpgrade}
-                    className="w-full max-w-[280px] py-[14px] bg-accent text-white font-body text-[15px] font-medium rounded-[var(--radius-full)]"
+                    className="w-full max-w-[280px] h-auto py-[14px] bg-accent text-white font-body text-[15px] font-medium rounded-full"
                   >
                     프리미엄으로 업그레이드
-                  </button>
-                  <button
-                    type="button"
+                  </Button>
+                  <Button
+                    variant="link"
                     onClick={handleTryOnClose}
-                    className="mt-[12px] font-body text-[14px] text-text-tertiary"
+                    className="mt-[12px] font-body text-[14px] text-text-tertiary no-underline"
                   >
                     나중에 할게요
-                  </button>
+                  </Button>
                 </div>
               )}
             </motion.div>

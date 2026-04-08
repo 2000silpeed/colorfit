@@ -49,6 +49,7 @@ async def get_outfit(
                 brand=p.brand,
                 category=p.category,
                 color_hex=p.color_hex,
+                color_name=p.color_name,
                 price=p.price,
                 image_url=p.image_url,
                 mall_url=p.mall_url,

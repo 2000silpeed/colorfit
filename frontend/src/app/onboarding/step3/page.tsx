@@ -3,6 +3,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 interface TpoOption {
   id: string;
@@ -279,13 +280,12 @@ export default function Step3Page() {
 
       {/* CTA */}
       <div className="mt-auto pt-[var(--space-2xl)]">
-        <motion.button
-          type="button"
+        <Button
+          variant="default"
           onClick={handleNext}
           disabled={!canProceed}
-          className="w-full font-body text-[16px] font-semibold rounded-[var(--radius-xl)] border-none cursor-pointer disabled:cursor-not-allowed"
+          className="w-full h-14 font-body text-base font-semibold rounded-[var(--radius-xl)]"
           style={{
-            height: 56,
             backgroundColor: canProceed
               ? "var(--color-accent)"
               : "#E0DCD7",
@@ -295,7 +295,7 @@ export default function Step3Page() {
           aria-label="다음 단계로"
         >
           다음
-        </motion.button>
+        </Button>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 const BUDGET_MIN = 0;
 const BUDGET_MAX = 500000;
@@ -313,9 +314,7 @@ export default function Step4Page() {
 
       {/* CTA */}
       <div className="mt-auto pt-[var(--space-2xl)]">
-        <motion.button
-          type="button"
-          onClick={handleNext}
+        <motion.div
           animate={
             hasBudgetSet && !prefersReducedMotion
               ? {
@@ -324,16 +323,20 @@ export default function Step4Page() {
                 }
               : {}
           }
-          className="w-full font-body text-[16px] font-bold rounded-[var(--radius-xl)] border-none cursor-pointer"
-          style={{
-            height: 56,
-            backgroundColor: "var(--color-accent)",
-            color: "#FFFFFF",
-          }}
-          aria-label="추천 코디 보러가기"
         >
-          추천 코디 보러가기
-        </motion.button>
+          <Button
+            variant="default"
+            onClick={handleNext}
+            className="w-full h-14 font-body text-base font-bold rounded-[var(--radius-xl)]"
+            style={{
+              backgroundColor: "var(--color-accent)",
+              color: "#FFFFFF",
+            }}
+            aria-label="추천 코디 보러가기"
+          >
+            추천 코디 보러가기
+          </Button>
+        </motion.div>
       </div>
     </div>
   );

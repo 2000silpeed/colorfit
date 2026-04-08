@@ -106,10 +106,31 @@ TRYON_STORAGE = Path(__file__).resolve().parents[2] / "storage" / "tryon"
 TRYON_STORAGE.mkdir(parents=True, exist_ok=True)
 
 
-DEFAULT_MODEL_IMAGES: dict[str, str] = {
-    "male": "https://storage.googleapis.com/colorfit-assets/models/male_default.jpg",
-    "female": "https://storage.googleapis.com/colorfit-assets/models/female_default.jpg",
+# 성별 × 연령별 기본 모델 이미지 (전신, 신발 포함, 흰 배경)
+# 로컬: /static/models/ 경로로 서빙됨 (storage/models/)
+# _get_default_model_url()에서 settings.api_url을 붙여 절대 URL로 변환
+_MODEL_IMAGE_KEYS: dict[str, str] = {
+    "female_20s": "models/female_20s.png",
+    "female_30s": "models/female_30s.png",
+    "female_40plus": "models/female_40plus.png",
+    "male_20s": "models/male_20s.png",
+    "male_30s": "models/male_30s.png",
+    "male_40plus": "models/male_40plus.png",
+    "female": "models/female_30s.png",
+    "male": "models/male_30s.png",
 }
+
+
+def _get_default_model_bytes(gender: str | None, age_group: str | None) -> bytes | None:
+    """로컬 저장된 기본 모델 이미지를 직접 읽는다."""
+    key = f"{gender}_{age_group}" if gender and age_group else (gender or "")
+    path = _MODEL_IMAGE_KEYS.get(key) or _MODEL_IMAGE_KEYS.get(gender or "")
+    if not path:
+        return None
+    filepath = Path(__file__).resolve().parents[2] / "storage" / path
+    if filepath.exists():
+        return filepath.read_bytes()
+    return None
 
 ALLOWED_IMAGE_HOSTS: set[str] = {
     "storage.googleapis.com",
@@ -312,8 +333,10 @@ async def generate_tryon_image(
 
     camera_block = (
         "\n[CAMERA & COMPOSITION]\n"
-        "Eye-level full-body shot at 1.6m height, 85mm equivalent focal length. "
+        "Full-body shot from head to toe — SHOES AND FEET MUST BE FULLY VISIBLE. "
+        "Eye-level at 1.6m height, 85mm equivalent focal length. "
         "Subject centered, 3:4 portrait aspect ratio. "
+        "Leave 10% margin below the shoes so nothing is cropped. "
         "Shallow depth of field (f/2.8) with garments in sharp focus. "
         "Simple seamless light gray (#E8E8E8) studio backdrop.\n"
     )
@@ -336,9 +359,19 @@ async def generate_tryon_image(
         f"Clean, minimal, professional. No text overlays or watermarks."
     )
 
+    # 모델 이미지: 사용자 제공 URL → 기본 모델(로컬 파일) 순서
+    model_bytes: bytes | None = None
     if model_image_url:
         try:
             model_bytes = await _fetch_image_bytes(model_image_url)
+        except Exception as exc:
+            logger.warning("user model image fetch failed (%s)", exc)
+
+    if not model_bytes:
+        model_bytes = _get_default_model_bytes(user_gender, user_age_group)
+
+    if model_bytes:
+        try:
             image_parts.append(
                 types.Part.from_bytes(data=model_bytes, mime_type="image/jpeg")
             )
@@ -347,7 +380,8 @@ async def generate_tryon_image(
                 f"using the reference model photo provided.\n"
                 f"\n[SUBJECT]\n"
                 f"Use the exact face and body proportions from the reference photo. "
-                f"Natural relaxed standing pose with slight weight shift.\n"
+                f"Natural relaxed standing pose with slight weight shift. "
+                f"Full body from head to toe — shoes and feet MUST be fully visible.\n"
                 f"\n[WARDROBE — {len(item_infos)} ITEMS, ALL MUST BE WORN]\n"
                 f"{items_text}\n"
                 f"IMPORTANT: Every listed item must be clearly visible and correctly worn. "
