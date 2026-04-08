@@ -273,6 +273,7 @@ export default function OutfitCard({
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            style={{ filter: saved ? "none" : "drop-shadow(0 1px 3px rgba(0,0,0,0.4))" }}
             animate={
               saved
                 ? { scale: [0.8, 1.2, 1.0] }
