@@ -317,9 +317,10 @@ export default function FeedPage() {
         </div>
 
         {/* TPO Filter Chips */}
+        <div className="relative">
         <div
           ref={tpoScrollRef}
-          className="flex gap-[6px] pl-[20px] pb-[10px] overflow-x-auto max-w-[430px] mx-auto"
+          className="flex gap-[6px] pl-[20px] pb-[10px] overflow-x-auto"
           style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
         >
           {TPO_TABS.map((tab) => {
@@ -345,6 +346,12 @@ export default function FeedPage() {
             );
           })}
           <div className="shrink-0 w-[20px]" aria-hidden="true" />
+        </div>
+        <div
+          className="absolute top-0 right-0 bottom-[10px] w-[32px] pointer-events-none"
+          style={{ background: "linear-gradient(to right, transparent, var(--color-bg-primary))" }}
+          aria-hidden="true"
+        />
         </div>
 
         {/* Filter bar */}
