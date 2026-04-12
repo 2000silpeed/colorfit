@@ -140,6 +140,7 @@ export default function FeedPage() {
 
   const sentinelRef = useRef<HTMLDivElement>(null);
   const tpoScrollRef = useRef<HTMLDivElement>(null);
+  const tpoDragState = useRef({ isDown: false, startX: 0, scrollLeft: 0 });
 
   /* 스크롤 감지 */
   useEffect(() => {
@@ -320,8 +321,24 @@ export default function FeedPage() {
         <div className="relative">
         <div
           ref={tpoScrollRef}
-          className="flex gap-[6px] pl-[20px] pb-[10px] overflow-x-auto"
+          className="flex gap-[6px] pl-[20px] pb-[10px] overflow-x-auto cursor-grab active:cursor-grabbing"
           style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
+          onMouseDown={(e) => {
+            const el = tpoScrollRef.current;
+            if (!el) return;
+            tpoDragState.current = { isDown: true, startX: e.pageX - el.offsetLeft, scrollLeft: el.scrollLeft };
+          }}
+          onMouseLeave={() => { tpoDragState.current.isDown = false; }}
+          onMouseUp={() => { tpoDragState.current.isDown = false; }}
+          onMouseMove={(e) => {
+            const d = tpoDragState.current;
+            if (!d.isDown) return;
+            e.preventDefault();
+            const el = tpoScrollRef.current;
+            if (!el) return;
+            const x = e.pageX - el.offsetLeft;
+            el.scrollLeft = d.scrollLeft - (x - d.startX);
+          }}
         >
           {TPO_TABS.map((tab) => {
             const isActive = activeTpo === tab.id;
