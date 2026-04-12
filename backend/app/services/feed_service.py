@@ -85,6 +85,7 @@ def _build_item_dict(p: Product) -> dict:
         "price": p.price,
         "image_url": p.image_url,
         "style_tag": p.style_tag,
+        "is_active": p.is_active,
     }
 
 
@@ -343,6 +344,9 @@ def _score_outfit(
     verified_only: bool,
 ) -> dict | None:
     """단일 outfit에 Hard Filter + Soft Score 적용. 탈락 시 None."""
+    if any(not it.get("is_active", True) for it in items):
+        return None
+
     outfit_dict = {
         "gender": o.gender,
         "total_price": o.total_price,

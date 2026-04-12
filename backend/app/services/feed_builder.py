@@ -288,10 +288,18 @@ def rerank(
     result: list[dict[str, Any]] = []
     tone_count: dict[str, int] = {}
     main_item_seen: set[str] = set()
+    item_set_seen: set[frozenset[str]] = set()
 
     for o in candidates:
         tone = o.get("dominant_tone")
         main_item = o.get("main_item_id")
+
+        outfit_obj = o.get("outfit")
+        item_ids = frozenset(getattr(outfit_obj, "item_ids", []) or [])
+        if item_ids and item_ids in item_set_seen:
+            continue
+        if item_ids:
+            item_set_seen.add(item_ids)
 
         if main_item and main_item in main_item_seen:
             continue

@@ -20,6 +20,7 @@ class ProductBrief(BaseModel):
     category: str | None = None
     color_hex: str | None = None
     color_name: str | None = None
+    color_options: list[dict] | None = None
     price: int | None = None
     image_url: str | None = None
     mall_url: str | None = None

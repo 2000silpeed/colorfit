@@ -1,4 +1,5 @@
-from sqlalchemy import String, Integer, SmallInteger, Text, ARRAY, TIMESTAMP, text
+from sqlalchemy import Boolean, String, Integer, SmallInteger, Text, ARRAY, TIMESTAMP, text
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -24,4 +25,6 @@ class Product(Base):
     formality: Mapped[int | None] = mapped_column(SmallInteger)
     age_group: Mapped[str | None] = mapped_column(String(10), index=True)
     style_tag: Mapped[str | None] = mapped_column(String(20), index=True)
+    color_options: Mapped[list | None] = mapped_column(JSONB, default=None)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, server_default=text("true"), index=True)
     last_observed_at: Mapped[str | None] = mapped_column(TIMESTAMP(timezone=True))

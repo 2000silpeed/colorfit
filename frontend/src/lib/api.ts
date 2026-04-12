@@ -91,6 +91,7 @@ export interface ProductBrief {
   is_verified_brand: boolean;
   color_hex: string | null;
   color_name: string | null;
+  color_options: ColorOption[] | null;
 }
 
 export interface OutfitDetailResponse {
@@ -165,6 +166,41 @@ export async function fetchItemDetail(itemId: string): Promise<ItemDetail> {
   if (!res.ok) {
     throw new Error(`Item API error: ${res.status}`);
   }
+  return res.json();
+}
+
+export interface ColorOption {
+  name: string;
+  hex: string;
+}
+
+export interface ExtractColorsResponse {
+  product_id: string;
+  colors: ColorOption[];
+}
+
+export async function extractProductColors(
+  productId: string,
+  imageUrl: string,
+): Promise<ExtractColorsResponse> {
+  const res = await fetch(`${API_BASE}/api/tryon/extract-colors`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ product_id: productId, image_url: imageUrl }),
+  });
+  if (!res.ok) throw new Error(`Extract colors error: ${res.status}`);
+  return res.json();
+}
+
+export interface AvailabilityCheck {
+  available: boolean;
+  mall_url: string | null;
+  reason: string | null;
+}
+
+export async function checkItemAvailability(itemId: string): Promise<AvailabilityCheck> {
+  const res = await fetch(`${API_BASE}/api/item/${itemId}/check-availability`);
+  if (!res.ok) throw new Error(`Availability check error: ${res.status}`);
   return res.json();
 }
 
@@ -497,13 +533,17 @@ export async function generateTryon(
   userId: string,
   closetItemId?: string,
   modelImageUrl?: string,
+  colorOverrides?: Record<string, string>,
 ): Promise<TryonGenerateResponse> {
-  const body: Record<string, string> = {
+  const body: Record<string, unknown> = {
     outfit_id: outfitId,
     user_id: userId,
   };
   if (closetItemId) body.closet_item_id = closetItemId;
   if (modelImageUrl) body.model_image_url = modelImageUrl;
+  if (colorOverrides && Object.keys(colorOverrides).length > 0) {
+    body.color_overrides = colorOverrides;
+  }
 
   const res = await fetch(`${API_BASE}/api/tryon/generate`, {
     method: "POST",

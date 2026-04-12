@@ -7,6 +7,7 @@ GET /api/item/{id}/similar — 유사 상품 리스트
 
 from __future__ import annotations
 
+import httpx
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -101,6 +102,41 @@ async def get_item_detail(
         formality=product.formality,
         price_entries=price_entries,
     )
+
+
+@router.get("/item/{item_id}/check-availability")
+async def check_availability(
+    item_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    """상품 판매 링크 유효성을 실시간 체크한다."""
+    product = await db.get(Product, item_id)
+    if product is None:
+        raise HTTPException(status_code=404, detail="아이템을 찾을 수 없습니다")
+
+    if not product.mall_url:
+        return {"available": False, "reason": "판매 링크 없음"}
+
+    try:
+        async with httpx.AsyncClient(
+            timeout=5.0,
+            follow_redirects=True,
+            headers={"User-Agent": "Mozilla/5.0"},
+        ) as client:
+            resp = await client.head(product.mall_url)
+            available = resp.status_code < 400
+    except httpx.HTTPError:
+        available = True
+
+    if not available and product.is_active:
+        product.is_active = False
+        await db.commit()
+
+    return {
+        "available": available,
+        "mall_url": product.mall_url,
+        "reason": None if available else "판매 종료된 상품이에요",
+    }
 
 
 @router.get("/item/{item_id}/similar", response_model=SimilarListResponse)

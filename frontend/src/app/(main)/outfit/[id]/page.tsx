@@ -11,11 +11,14 @@ import {
   postReaction,
   generateTryon,
   fetchTryonUsage,
+  extractProductColors,
+  checkItemAvailability,
   TryonLimitError,
   type OutfitDetailResponse,
   type ScoresResponse,
   type SavedOutfit,
   type ClosetOutfit,
+  type ColorOption,
 } from "@/lib/api";
 import PurchaseFeedbackSheet from "@/components/PurchaseFeedbackSheet";
 import { isLoggedIn } from "@/lib/auth";
@@ -360,8 +363,12 @@ export default function OutfitDetailPage() {
   const [showPurchaseFeedback, setShowPurchaseFeedback] = useState(false);
   const mallClickedRef = useRef(false);
 
-  const handleMallClick = useCallback(() => {
+  const [unavailableToast, setUnavailableToast] = useState<string | null>(null);
+  const lastClickedItemRef = useRef<string | null>(null);
+
+  const handleMallClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, itemId: string) => {
     mallClickedRef.current = true;
+    lastClickedItemRef.current = itemId;
   }, []);
 
   useEffect(() => {
@@ -371,6 +378,16 @@ export default function OutfitDetailPage() {
         const dismissed = sessionStorage.getItem(`colorfit_fb_dismissed_${outfitId}`);
         if (!dismissed) {
           setShowPurchaseFeedback(true);
+        }
+        const clickedId = lastClickedItemRef.current;
+        if (clickedId) {
+          lastClickedItemRef.current = null;
+          checkItemAvailability(clickedId).then((result) => {
+            if (!result.available) {
+              setUnavailableToast(result.reason ?? "판매 종료된 상품이에요");
+              setTimeout(() => setUnavailableToast(null), 3000);
+            }
+          }).catch(() => {});
         }
       }
     }
@@ -386,12 +403,18 @@ export default function OutfitDetailPage() {
   const [showComparePicker, setShowComparePicker] = useState(false);
 
   /* Try-On 상태 */
-  type TryOnState = "idle" | "loading" | "success" | "error" | "limit";
+  type TryOnState = "idle" | "color-select" | "loading" | "success" | "error" | "limit";
   const [tryonOpen, setTryonOpen] = useState(false);
   const [tryonState, setTryonState] = useState<TryOnState>("idle");
   const [tryonImageUrl, setTryonImageUrl] = useState("");
   const [tryonRemaining, setTryonRemaining] = useState<number | null>(null);
   const tryonCancelRef = useRef(false);
+
+  /* 멀티컬러 선택 */
+  const [multiColorItems, setMultiColorItems] = useState<
+    { productId: string; name: string; colors: ColorOption[] }[]
+  >([]);
+  const [selectedColors, setSelectedColors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!userId) return;
@@ -400,23 +423,12 @@ export default function OutfitDetailPage() {
       .catch(() => {});
   }, [userId]);
 
-  const handleTryOn = useCallback(async () => {
-    if (tryonState === "loading") return;
-    if (!isLoggedIn()) {
-      setLoginToast(true);
-      setTimeout(() => {
-        sessionStorage.setItem("colorfit_return_url", `/outfit/${outfitId}`);
-        router.push(`/login?returnUrl=${encodeURIComponent(`/outfit/${outfitId}`)}`);
-      }, 1200);
-      return;
-    }
+  const startTryonGeneration = useCallback(async (colorOverrides?: Record<string, string>) => {
     if (!userId) return;
-    tryonCancelRef.current = false;
-    setTryonOpen(true);
     setTryonState("loading");
     setTryonImageUrl("");
     try {
-      const result = await generateTryon(outfitId, userId);
+      const result = await generateTryon(outfitId, userId, undefined, undefined, colorOverrides);
       if (tryonCancelRef.current) return;
       setTryonImageUrl(result.image_url);
       setTryonState("success");
@@ -429,7 +441,76 @@ export default function OutfitDetailPage() {
         setTryonState("error");
       }
     }
-  }, [outfitId, userId, router, tryonState]);
+  }, [outfitId, userId]);
+
+  const handleTryOn = useCallback(async () => {
+    if (tryonState === "loading" || tryonState === "color-select") return;
+    if (!isLoggedIn()) {
+      setLoginToast(true);
+      setTimeout(() => {
+        sessionStorage.setItem("colorfit_return_url", `/outfit/${outfitId}`);
+        router.push(`/login?returnUrl=${encodeURIComponent(`/outfit/${outfitId}`)}`);
+      }, 1200);
+      return;
+    }
+    if (!userId || !outfit) return;
+    tryonCancelRef.current = false;
+    setTryonOpen(true);
+
+    const multiItems = outfit.items.filter(
+      (it) => it.color_name === "멀티컬러" && it.image_url
+    );
+
+    if (multiItems.length === 0) {
+      startTryonGeneration();
+      return;
+    }
+
+    const preloaded = multiItems.filter((it) => it.color_options && it.color_options.length > 0);
+    const needExtract = multiItems.filter((it) => !it.color_options || it.color_options.length === 0);
+
+    const colorItems: typeof multiColorItems = preloaded.map((it) => ({
+      productId: it.id,
+      name: it.name ?? it.category ?? "아이템",
+      colors: it.color_options!,
+    }));
+
+    if (needExtract.length === 0) {
+      setTryonState("color-select");
+      setSelectedColors({});
+      setMultiColorItems(colorItems);
+      return;
+    }
+
+    setTryonState("color-select");
+    setSelectedColors({});
+    try {
+      const extracted = await Promise.all(
+        needExtract.map(async (it) => {
+          const res = await extractProductColors(it.id, it.image_url!);
+          return { productId: it.id, name: it.name ?? it.category ?? "아이템", colors: res.colors };
+        })
+      );
+      if (tryonCancelRef.current) return;
+      setMultiColorItems([...colorItems, ...extracted]);
+    } catch {
+      if (tryonCancelRef.current) return;
+      if (colorItems.length > 0) {
+        setMultiColorItems(colorItems);
+      } else {
+        startTryonGeneration();
+      }
+    }
+  }, [outfitId, userId, router, tryonState, outfit, startTryonGeneration]);
+
+  const handleColorConfirm = useCallback(() => {
+    const overrides: Record<string, string> = {};
+    for (const item of multiColorItems) {
+      const sel = selectedColors[item.productId];
+      if (sel) overrides[item.productId] = sel;
+    }
+    startTryonGeneration(Object.keys(overrides).length > 0 ? overrides : undefined);
+  }, [multiColorItems, selectedColors, startTryonGeneration]);
 
   const handleTryOnClose = useCallback(() => {
     tryonCancelRef.current = true;
@@ -690,8 +771,8 @@ export default function OutfitDetailPage() {
                     key={item.id}
                     href={linkEnabled ? item.mall_url! : undefined}
                     target={linkEnabled ? "_blank" : undefined}
-                    rel={linkEnabled ? "noopener noreferrer" : undefined}
-                    onClick={linkEnabled ? handleMallClick : (e) => e.preventDefault()}
+                    rel={linkEnabled ? "noopener" : undefined}
+                    onClick={linkEnabled ? (e) => handleMallClick(e, item.id) : (e) => e.preventDefault()}
                     className={`shrink-0 w-[80px] group ${isOwned ? "cursor-default" : ""}`}
                   >
                     <div className="relative">
@@ -858,6 +939,71 @@ export default function OutfitDetailPage() {
                 <div className="w-[36px] h-[4px] rounded-full bg-border" />
               </div>
 
+              {tryonState === "color-select" && multiColorItems.length > 0 && (
+                <div className="flex flex-col py-[16px]">
+                  <p className="font-display text-[18px] text-text-primary text-center mb-[4px]">
+                    색상 선택
+                  </p>
+                  <p className="font-body text-[13px] text-text-secondary text-center mb-[20px]">
+                    멀티컬러 아이템의 원하는 색상을 선택해주세요
+                  </p>
+                  {multiColorItems.map((item) => (
+                    <div key={item.productId} className="mb-[20px]">
+                      <p className="font-body text-[14px] text-text-primary mb-[10px]">
+                        {item.name}
+                      </p>
+                      <div className="flex flex-wrap gap-[8px]">
+                        {item.colors.map((color) => {
+                          const isSelected = selectedColors[item.productId] === `${color.name} (${color.hex})`;
+                          return (
+                            <button
+                              key={color.hex}
+                              onClick={() =>
+                                setSelectedColors((prev) => ({
+                                  ...prev,
+                                  [item.productId]: `${color.name} (${color.hex})`,
+                                }))
+                              }
+                              className={`flex items-center gap-[6px] px-[12px] py-[8px] rounded-full border transition-colors ${
+                                isSelected
+                                  ? "border-accent bg-accent/10"
+                                  : "border-border bg-bg-secondary"
+                              }`}
+                            >
+                              <span
+                                className="w-[16px] h-[16px] rounded-full border border-black/10"
+                                style={{ backgroundColor: color.hex }}
+                              />
+                              <span className={`font-body text-[13px] ${
+                                isSelected ? "text-accent font-medium" : "text-text-primary"
+                              }`}>
+                                {color.name}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                  <div className="flex gap-[12px] mt-[8px]">
+                    <Button
+                      variant="default"
+                      onClick={handleColorConfirm}
+                      className="flex-1 h-auto py-[14px] bg-accent text-white font-body text-[15px] font-medium rounded-full"
+                    >
+                      이 색상으로 생성
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => startTryonGeneration()}
+                      className="flex-1 h-auto py-[14px] text-text-primary font-body text-[15px] font-medium rounded-full"
+                    >
+                      기본 색상으로
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               {tryonState === "loading" && (
                 <div className="flex flex-col items-center py-[32px]">
                   <div className="w-[48px] h-[48px] rounded-full border-2 border-accent border-t-transparent animate-spin mb-[16px]" />
@@ -1001,6 +1147,17 @@ export default function OutfitDetailPage() {
             exit={{ opacity: 0, y: 20 }}
           >
             로그인이 필요해요
+          </motion.div>
+        )}
+        {unavailableToast && (
+          <motion.div
+            className="fixed bottom-[100px] left-1/2 -translate-x-1/2 z-50 px-[20px] py-[12px] rounded-full text-[14px] font-body"
+            style={{ backgroundColor: "rgba(150,79,76,0.9)", color: "#FFFFFF" }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+          >
+            {unavailableToast}
           </motion.div>
         )}
       </AnimatePresence>

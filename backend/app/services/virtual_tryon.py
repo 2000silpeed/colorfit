@@ -165,11 +165,12 @@ async def _fetch_image_bytes(url: str) -> bytes:
 
 
 class _ItemInfo:
-    def __init__(self, image_url: str, name: str, category: str, color: str):
+    def __init__(self, image_url: str, name: str, category: str, color: str, product_id: str = ""):
         self.image_url = image_url
         self.name = name
         self.category = category
         self.color = color
+        self.product_id = product_id
 
 
 async def _get_item_infos(
@@ -193,6 +194,7 @@ async def _get_item_infos(
             name=p.name or "",
             category=p.category or "",
             color=p.color_hex or "",
+            product_id=p.id,
         )
         for p in products
         if p.image_url
@@ -247,12 +249,37 @@ async def _save_cache(
     await db.commit()
 
 
+def _build_color_override_block(
+    item_infos: list[_ItemInfo],
+    color_overrides: dict[str, str] | None,
+) -> str:
+    if not color_overrides:
+        return ""
+    lines: list[str] = []
+    for info in item_infos:
+        if info.product_id in color_overrides:
+            selected = color_overrides[info.product_id]
+            lines.append(
+                f"- \"{info.name}\" (item image above): render this item in {selected} color, "
+                f"NOT in the color shown in the product image."
+            )
+    if not lines:
+        return ""
+    return (
+        "\n[COLOR OVERRIDE — CRITICAL]\n"
+        "The user selected specific colors for some items. "
+        "You MUST render these items in the selected color:\n"
+        + "\n".join(lines) + "\n"
+    )
+
+
 async def generate_tryon_image(
     db: AsyncSession,
     outfit_id: str,
     user_id: uuid.UUID,
     closet_item_id: uuid.UUID | None = None,
     model_image_url: str | None = None,
+    color_overrides: dict[str, str] | None = None,
 ) -> dict:
     """착장 이미지를 생성한다.
 
@@ -269,7 +296,12 @@ async def generate_tryon_image(
     user_gender = user_row.gender if user_row else None
     user_age_group = user_row.age_group if user_row else None
 
+    color_suffix = ""
+    if color_overrides:
+        color_suffix = ":" + json.dumps(color_overrides, sort_keys=True, ensure_ascii=False)
     profile_hash = _make_profile_hash(user_tone_id, user_gender, user_age_group)
+    if color_suffix:
+        profile_hash = hashlib.md5((profile_hash + color_suffix).encode()).hexdigest()
 
     cached_url = await _check_cache(db, outfit_id, closet_item_id, user_id, profile_hash)
     if cached_url:
@@ -356,6 +388,7 @@ async def generate_tryon_image(
         f"{items_text}\n"
         f"IMPORTANT: Every listed item must be clearly visible and correctly worn. "
         f"Preserve the exact color, fabric texture, and design details from each item image.\n"
+        f"{_build_color_override_block(item_infos, color_overrides)}"
         f"{skin_block}"
         f"{lighting_block}"
         f"{camera_block}"
@@ -392,6 +425,7 @@ async def generate_tryon_image(
             f"{items_text}\n"
             f"IMPORTANT: Every listed item must be clearly visible and correctly worn. "
             f"Preserve the exact color, fabric texture, and design details from each item image.\n"
+            f"{_build_color_override_block(item_infos, color_overrides)}"
             f"{skin_block}"
             f"{lighting_block}"
             f"{camera_block}"
@@ -440,3 +474,44 @@ def _extract_image_from_response(response) -> bytes | None:
 def _image_to_data_url(image_data: bytes) -> str:
     b64 = base64.b64encode(image_data).decode("utf-8")
     return f"data:image/png;base64,{b64}"
+
+
+COLOR_EXTRACT_MODEL = "gemini-2.5-flash"
+
+COLOR_EXTRACT_PROMPT = (
+    "이 패션 상품 이미지를 보고, 이 상품에서 선택 가능한 색상 옵션을 분석해줘.\n\n"
+    "규칙:\n"
+    "1. 이미지에 여러 색상의 동일 상품이 보이면, 각 색상을 리스트로 나열\n"
+    "2. 단일 상품이지만 여러 색이 섞인 패턴이면, 주요 색상 2~3개를 나열\n"
+    "3. 각 색상에 대해 한글 이름과 HEX 코드를 제공\n"
+    "4. 최대 5개까지만\n\n"
+    "JSON 배열로만 답해. 설명 없이.\n"
+    '예: [{"name": "블랙", "hex": "#000000"}, {"name": "화이트", "hex": "#FFFFFF"}]'
+)
+
+
+async def extract_colors_from_product(image_url: str) -> list[dict[str, str]]:
+    """상품 이미지에서 선택 가능한 색상 옵션을 Gemini로 추출한다."""
+    img_bytes = await _fetch_image_bytes(image_url)
+    client = genai.Client(api_key=settings.gemini_api_key)
+
+    response = await client.aio.models.generate_content(
+        model=COLOR_EXTRACT_MODEL,
+        contents=[
+            types.Part.from_bytes(data=img_bytes, mime_type="image/jpeg"),
+            COLOR_EXTRACT_PROMPT,
+        ],
+    )
+
+    text = (response.text or "").strip()
+    if text.startswith("```"):
+        text = text.split("\n", 1)[1] if "\n" in text else text[3:]
+        text = text.rsplit("```", 1)[0]
+
+    try:
+        colors = json.loads(text)
+    except json.JSONDecodeError:
+        logger.warning("색상 추출 JSON 파싱 실패: %s", text[:200])
+        return []
+
+    return [{"name": c["name"], "hex": c["hex"]} for c in colors[:5]]

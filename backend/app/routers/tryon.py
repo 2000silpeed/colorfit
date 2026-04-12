@@ -15,9 +15,15 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
-from app.schemas.tryon import TryonGenerateRequest, TryonGenerateResponse, TryonUsageResponse
+from app.schemas.tryon import (
+    TryonExtractColorsRequest,
+    TryonExtractColorsResponse,
+    TryonGenerateRequest,
+    TryonGenerateResponse,
+    TryonUsageResponse,
+)
 from app.services.usage_tracker import check_and_increment, check_tryon_limit
-from app.services.virtual_tryon import generate_tryon_image
+from app.services.virtual_tryon import extract_colors_from_product, generate_tryon_image
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +50,7 @@ async def generate(
             user_id=req.user_id,
             closet_item_id=req.closet_item_id,
             model_image_url=req.model_image_url,
+            color_overrides=req.color_overrides,
         )
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
@@ -61,6 +68,23 @@ async def generate(
         outfit_id=result["outfit_id"],
         cached=result["cached"],
         remaining=limit_result["remaining"],
+    )
+
+
+@router.post("/extract-colors", response_model=TryonExtractColorsResponse)
+async def extract_colors(req: TryonExtractColorsRequest) -> TryonExtractColorsResponse:
+    """멀티컬러 상품 이미지에서 선택 가능한 색상 옵션을 추출한다."""
+    try:
+        colors = await extract_colors_from_product(req.image_url)
+    except Exception:
+        logger.exception("색상 추출 실패")
+        raise HTTPException(
+            status_code=500,
+            detail="색상 옵션을 추출하지 못했어요.",
+        )
+    return TryonExtractColorsResponse(
+        product_id=req.product_id,
+        colors=[{"name": c["name"], "hex": c["hex"]} for c in colors],
     )
 
 
