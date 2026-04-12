@@ -111,6 +111,16 @@ class CompareResponse(BaseModel):
     decisive_factor: DecisiveFactor
 
 
+class ScoreExplanations(BaseModel):
+    pcf: str = ""
+    of_: str = Field("", alias="of")
+    ch: str = ""
+    pe: str = ""
+    sf: str = ""
+
+    model_config = {"populate_by_name": True}
+
+
 class OutfitDetailResponse(BaseModel):
     id: str
     gender: str | None = None
@@ -123,4 +133,5 @@ class OutfitDetailResponse(BaseModel):
     tags: list[str] | None = None
     scores: ScoresResponse | None = None
     reasons: list[str] | None = None
+    score_explanations: ScoreExplanations | None = None
     items: list[ProductBrief] = []

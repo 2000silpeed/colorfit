@@ -2,6 +2,7 @@
 
 import { Suspense } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 
 const STEPS = [
@@ -50,8 +51,20 @@ function OnboardingLayoutContent({ children }: OnboardingLayoutProps) {
   };
 
   return (
-    <div className="min-h-dvh flex flex-col bg-bg-primary max-w-[430px] mx-auto">
-      <header className="sticky top-0 z-10 bg-bg-primary px-[20px] pt-[16px] pb-[8px]">
+    <div className="relative min-h-dvh flex flex-col max-w-[430px] mx-auto overflow-hidden bg-bg-primary">
+      {/* 온보딩 전용 화보 배경 이미지 */}
+      <Image
+        src="/onboarding-photo-bg.png"
+        alt="Onboarding Background"
+        fill
+        className="object-cover opacity-80 z-0 pointer-events-none object-top"
+        priority
+      />
+      {/* 바닥으로 갈수록 희미해지는 그라데이션 오버레이 */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#F8F6F3]/60 to-[#F8F6F3] z-0 pointer-events-none" />
+
+      {/* 헤더 */}
+      <header className="relative z-10 sticky top-0 px-[20px] pt-[16px] pb-[8px] border-b border-white/20 bg-white/30 backdrop-blur-md">
         <div className="h-[44px] flex items-center">
           <button
             onClick={handleBack}
@@ -113,7 +126,7 @@ function OnboardingLayoutContent({ children }: OnboardingLayoutProps) {
         </p>}
       </header>
 
-      <main className="flex-1 flex flex-col px-[20px]">
+      <main className="relative z-10 flex-1 flex flex-col px-[20px]">
         {children}
       </main>
     </div>

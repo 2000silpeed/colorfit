@@ -12,8 +12,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.models.outfit import Outfit
 from app.models.product import Product
-from app.schemas.outfit import OutfitDetailResponse, ProductBrief, ScoresResponse
+from app.schemas.outfit import OutfitDetailResponse, ProductBrief, ScoresResponse, ScoreExplanations
 from app.services.feed_builder import _load_brand_whitelist
+from app.services.reason_generator import generate_reasons, generate_score_explanations
 from app.utils import ensure_list, ensure_dict
 
 router = APIRouter(prefix="/api", tags=["outfit"])
@@ -22,6 +23,7 @@ router = APIRouter(prefix="/api", tags=["outfit"])
 @router.get("/outfit/{outfit_id}", response_model=OutfitDetailResponse)
 async def get_outfit(
     outfit_id: str,
+    tone_id: str | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> OutfitDetailResponse:
     result = await db.execute(select(Outfit).where(Outfit.id == outfit_id))
@@ -69,6 +71,37 @@ async def get_outfit(
         sf=scores.get("sf", 0) or scores.get("style_fit", 0),
     ) if scores else None
 
+    precomputed_reasons = ensure_list(outfit.reasons)
+    reasons = precomputed_reasons if precomputed_reasons else generate_reasons(
+        scores,
+        user_tone_id=tone_id,
+        outfit_tpo=outfit.designed_tpo,
+        outfit_id=outfit.id,
+        n=5,
+    )
+    if len(reasons) < 5 and scores:
+        reasons = generate_reasons(
+            scores,
+            user_tone_id=tone_id,
+            outfit_tpo=outfit.designed_tpo,
+            outfit_id=outfit.id,
+            n=5,
+        )
+
+    explanations_dict = generate_score_explanations(
+        scores,
+        user_tone_id=tone_id,
+        outfit_tpo=outfit.designed_tpo,
+        outfit_id=outfit.id,
+    )
+    score_explanations = ScoreExplanations(
+        pcf=explanations_dict.get("pcf", ""),
+        of_=explanations_dict.get("of", ""),
+        ch=explanations_dict.get("ch", ""),
+        pe=explanations_dict.get("pe", ""),
+        sf=explanations_dict.get("sf", ""),
+    ) if explanations_dict else None
+
     return OutfitDetailResponse(
         id=outfit.id,
         gender=outfit.gender,
@@ -80,6 +113,7 @@ async def get_outfit(
         is_complete_outfit=outfit.is_complete_outfit,
         tags=ensure_list(outfit.tags),
         scores=scores_resp,
-        reasons=ensure_list(outfit.reasons),
+        reasons=reasons,
+        score_explanations=score_explanations,
         items=items,
     )

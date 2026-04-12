@@ -16,6 +16,7 @@ import {
   TryonLimitError,
   type OutfitDetailResponse,
   type ScoresResponse,
+  type ScoreExplanations,
   type SavedOutfit,
   type ClosetOutfit,
   type ColorOption,
@@ -57,37 +58,46 @@ function ScoreBar({
   value,
   color,
   delay,
+  explanation,
 }: {
   label: string;
   fullLabel: string;
   value: number;
   color: string;
   delay: number;
+  explanation?: string;
 }) {
   const prefersReducedMotion = useReducedMotion();
   const percentage = Math.min(Math.max(value, 0), 100);
 
   return (
-    <div className="flex items-center gap-[12px]">
-      <div className="w-[72px] shrink-0">
-        <span className="font-body text-[13px] text-text-secondary">{fullLabel}</span>
+    <div>
+      <div className="flex items-center gap-[12px]">
+        <div className="w-[72px] shrink-0">
+          <span className="font-body text-[13px] text-text-secondary">{fullLabel}</span>
+        </div>
+        <div className="flex-1 h-[8px] bg-border rounded-full overflow-hidden">
+          <motion.div
+            className="h-full rounded-full"
+            style={{ backgroundColor: color }}
+            initial={prefersReducedMotion ? { width: `${percentage}%` } : { width: "0%" }}
+            animate={{ width: `${percentage}%` }}
+            transition={
+              prefersReducedMotion
+                ? { duration: 0 }
+                : { duration: 0.8, delay, ease: "easeOut" }
+            }
+          />
+        </div>
+        <span className="w-[32px] text-right font-body text-[13px] text-text-primary font-medium">
+          {Math.round(value)}
+        </span>
       </div>
-      <div className="flex-1 h-[8px] bg-border rounded-full overflow-hidden">
-        <motion.div
-          className="h-full rounded-full"
-          style={{ backgroundColor: color }}
-          initial={prefersReducedMotion ? { width: `${percentage}%` } : { width: "0%" }}
-          animate={{ width: `${percentage}%` }}
-          transition={
-            prefersReducedMotion
-              ? { duration: 0 }
-              : { duration: 0.8, delay, ease: "easeOut" }
-          }
-        />
-      </div>
-      <span className="w-[32px] text-right font-body text-[13px] text-text-primary font-medium">
-        {Math.round(value)}
-      </span>
+      {explanation && (
+        <p className="mt-[4px] ml-[84px] font-body text-[12px] text-text-tertiary leading-[1.5]">
+          {explanation}
+        </p>
+      )}
     </div>
   );
 }
@@ -278,7 +288,8 @@ export default function OutfitDetailPage() {
     let cancelled = false;
     async function load() {
       try {
-        const data = await fetchOutfitDetail(outfitId);
+        const storedTone = localStorage.getItem("colorfit_tone") ?? undefined;
+        const data = await fetchOutfitDetail(outfitId, storedTone);
         if (!cancelled) {
           setOutfit(data);
           setStatus("success");
@@ -710,7 +721,7 @@ export default function OutfitDetailPage() {
           <h2 className="font-display text-[18px] text-text-primary mb-[16px]">
             스코어
           </h2>
-          <div className="space-y-[12px]">
+          <div className="space-y-[16px]">
             {SCORE_AXES.map((axis, i) => (
               <ScoreBar
                 key={axis.key}
@@ -719,6 +730,7 @@ export default function OutfitDetailPage() {
                 value={outfit.scores?.[axis.key] ?? 0}
                 color={axis.color}
                 delay={i * 0.15}
+                explanation={outfit.score_explanations?.[axis.key as keyof ScoreExplanations]}
               />
             ))}
           </div>
@@ -728,20 +740,36 @@ export default function OutfitDetailPage() {
         <Separator className="mt-[28px]" />
 
         {/* ── 추천 이유 카드 ── */}
-        {outfit.reasons && outfit.reasons.length > 1 && (
+        {outfit.reasons && outfit.reasons.length > 0 && (
           <section className="mt-[28px]">
             <h2 className="font-display text-[18px] text-text-primary mb-[12px]">
-              추천 이유
+              이 코디가 어울리는 이유
             </h2>
-            <div className="bg-bg-secondary rounded-[var(--radius-lg)] p-[20px] space-y-[12px]">
-              {outfit.reasons.slice(1).map((reason, i) => (
+            <div className="bg-bg-secondary rounded-[var(--radius-lg)] p-[20px] space-y-[16px]">
+              {outfit.reasons.map((reason, i) => (
                 <div key={i} className="flex gap-[10px]">
-                  <span className="shrink-0 w-[20px] h-[20px] rounded-full bg-accent/10 text-accent text-[11px] font-body flex items-center justify-center font-medium">
+                  <span
+                    className="shrink-0 w-[20px] h-[20px] rounded-full text-[11px] font-body flex items-center justify-center font-medium"
+                    style={{
+                      backgroundColor: `${SCORE_AXES[i]?.color ?? "var(--color-accent)"}15`,
+                      color: SCORE_AXES[i]?.color ?? "var(--color-accent)",
+                    }}
+                  >
                     {i + 1}
                   </span>
-                  <p className="font-body text-[14px] text-text-primary leading-[1.6]">
-                    {reason}
-                  </p>
+                  <div className="flex-1">
+                    {SCORE_AXES[i] && (
+                      <span
+                        className="font-body text-[11px] font-medium leading-[1]"
+                        style={{ color: SCORE_AXES[i].color }}
+                      >
+                        {SCORE_AXES[i].fullLabel}
+                      </span>
+                    )}
+                    <p className="font-body text-[14px] text-text-primary leading-[1.6] mt-[2px]">
+                      {reason}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>

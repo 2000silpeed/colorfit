@@ -100,9 +100,17 @@ export default function ProfilePage() {
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
+  const isGuest = typeof window !== "undefined" && !localStorage.getItem("colorfit_token");
+
   const handleLogout = useCallback(() => {
     clearColorfitStorage();
     router.replace("/login");
+  }, [router]);
+
+  const handleRestart = useCallback(() => {
+    clearColorfitStorage();
+    sessionStorage.clear();
+    router.replace("/onboarding/step1");
   }, [router]);
 
   const handleDeleteAccount = useCallback(async () => {
@@ -336,24 +344,40 @@ export default function ProfilePage() {
         </h2>
 
         <div className="space-y-[2px]">
-          <Button
-            variant="ghost"
-            onClick={handleLogout}
-            className="flex items-center justify-between w-full py-[14px] h-auto rounded-none px-0"
-          >
-            <span className="font-body text-[15px] text-text-primary">로그아웃</span>
-            <ChevronRight />
-          </Button>
-          <Separator className="bg-border" />
-          <Button
-            variant="ghost"
-            onClick={() => setShowDeleteDialog(true)}
-            className="flex items-center justify-between w-full py-[14px] h-auto rounded-none px-0"
-          >
-            <span className="font-body text-[15px] text-accent">계정 삭제</span>
-            <ChevronRight />
-          </Button>
-          <Separator className="bg-border" />
+          {isGuest ? (
+            <>
+              <Button
+                variant="ghost"
+                onClick={handleRestart}
+                className="flex items-center justify-between w-full py-[14px] h-auto rounded-none px-0"
+              >
+                <span className="font-body text-[15px] text-text-primary">처음부터 다시 시작</span>
+                <ChevronRight />
+              </Button>
+              <Separator className="bg-border" />
+            </>
+          ) : (
+            <>
+              <Button
+                variant="ghost"
+                onClick={handleLogout}
+                className="flex items-center justify-between w-full py-[14px] h-auto rounded-none px-0"
+              >
+                <span className="font-body text-[15px] text-text-primary">로그아웃</span>
+                <ChevronRight />
+              </Button>
+              <Separator className="bg-border" />
+              <Button
+                variant="ghost"
+                onClick={() => setShowDeleteDialog(true)}
+                className="flex items-center justify-between w-full py-[14px] h-auto rounded-none px-0"
+              >
+                <span className="font-body text-[15px] text-accent">계정 삭제</span>
+                <ChevronRight />
+              </Button>
+              <Separator className="bg-border" />
+            </>
+          )}
         </div>
       </motion.div>
 

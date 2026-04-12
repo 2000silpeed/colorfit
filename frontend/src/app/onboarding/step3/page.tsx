@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -94,6 +94,7 @@ const MAX_MOOD = 5;
 export default function Step3Page() {
   const router = useRouter();
   const prefersReducedMotion = useReducedMotion();
+  const carouselRef = useRef<HTMLDivElement>(null);
 
   const [gender, setGender] = useState<string>(() => {
     if (typeof window === "undefined") return "female";
@@ -193,11 +194,14 @@ export default function Step3Page() {
             {selectedTpos.length} / {MAX_TPO}
           </span>
         </div>
-        <div
-          className="flex gap-[var(--space-sm)] overflow-x-auto pb-[var(--space-xs)] [&::-webkit-scrollbar]:hidden"
-          style={{ scrollbarWidth: "none" }}
-        >
-          {tpoOptions.map((tpo, i) => {
+        <motion.div ref={carouselRef} className="overflow-hidden cursor-grab active:cursor-grabbing" whileTap={{ cursor: "grabbing" }}>
+          <motion.div
+            drag="x"
+            dragConstraints={carouselRef}
+            dragElastic={0.2}
+            className="flex gap-[var(--space-sm)] pb-[var(--space-xs)] w-max pr-[20px]"
+          >
+            {tpoOptions.map((tpo, i) => {
             const isSelected = selectedTpos.includes(tpo.id);
             return (
               <motion.button
@@ -211,14 +215,14 @@ export default function Step3Page() {
                     ? { duration: 0 }
                     : { duration: 0.3, delay: i * 0.04, ease: "easeOut" }
                 }
-                className="flex-shrink-0 px-[var(--space-md)] py-[var(--space-sm)] rounded-full font-body text-[14px] font-medium cursor-pointer border-2"
+                className="flex-shrink-0 px-[var(--space-md)] py-[var(--space-sm)] rounded-full font-body text-[14px] font-medium cursor-pointer border-2 backdrop-blur-md shadow-sm"
                 style={{
                   backgroundColor: isSelected
                     ? "var(--color-accent)"
-                    : "#FFFFFF",
+                    : "rgba(255, 255, 255, 0.6)",
                   borderColor: isSelected
                     ? "var(--color-accent)"
-                    : "#E0DCD7",
+                    : "rgba(255, 255, 255, 0.4)",
                   color: isSelected ? "#FFFFFF" : "var(--color-text-primary)",
                   transition:
                     "background-color 0.2s ease-out, border-color 0.2s ease-out, color 0.2s ease-out",
@@ -229,8 +233,9 @@ export default function Step3Page() {
                 {tpo.label}
               </motion.button>
             );
-          })}
-        </div>
+            })}
+          </motion.div>
+        </motion.div>
       </div>
 
       {/* 무드 선택 */}
@@ -258,13 +263,11 @@ export default function Step3Page() {
                     ? { duration: 0 }
                     : { duration: 0.3, delay: 0.2 + i * 0.05, ease: "easeOut" }
                 }
-                className="bg-transparent border-none cursor-pointer p-0 pb-[2px] font-body text-[16px]"
+                className="bg-transparent border-none cursor-pointer px-[12px] py-[6px] rounded-full font-body text-[15px] backdrop-blur-sm transition-all"
                 style={{
-                  fontWeight: isSelected ? 700 : 400,
-                  color: "#222222",
-                  borderBottom: isSelected
-                    ? "2px solid var(--color-accent)"
-                    : "2px solid transparent",
+                  fontWeight: isSelected ? 600 : 400,
+                  color: isSelected ? "#FFFFFF" : "#222222",
+                  backgroundColor: isSelected ? "var(--color-accent)" : "rgba(255, 255, 255, 0.4)",
                   transition:
                     "font-weight 0.2s ease-out, border-color 0.2s ease-out",
                 }}

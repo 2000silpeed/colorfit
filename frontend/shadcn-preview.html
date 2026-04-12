@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ColorFit — shadcn/ui Preview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', sans-serif;
+    background: #D5D0CB;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    gap: 48px;
+    flex-wrap: wrap;
+  }
+  .col-label {
+    text-align: center;
+    font-size: 13px;
+    color: #8C8578;
+    margin-bottom: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .phone {
+    width: 390px;
+    min-height: 780px;
+    background: #F8F6F3;
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(0,0,0,0.08);
+    position: relative;
+    padding-bottom: 80px;
+  }
+
+  /* ========================
+     BEFORE — 현재 (커스텀)
+     ======================== */
+  .before .header {
+    padding: 56px 20px 12px;
+  }
+  .before .header h1 {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 22px; color: #222;
+  }
+  .before .card {
+    margin: 12px 20px;
+    background: #F0EDE8;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .before .card-img {
+    height: 180px;
+    background: linear-gradient(135deg, #d4a5a5, #e8c4c4);
+    position: relative;
+  }
+  .before .badge {
+    position: absolute; bottom: 8px; left: 8px;
+    background: rgba(0,0,0,0.5); color: white;
+    font-size: 11px; padding: 4px 10px; border-radius: 999px;
+  }
+  .before .card-body { padding: 10px 14px; }
+  .before .card-body h3 { font-size: 14px; color: #222; }
+  .before .card-body p { font-size: 12px; color: #8C8578; margin-top: 3px; }
+  .before .btn-row { display: flex; gap: 8px; margin: 16px 20px; }
+  .before .btn-primary {
+    flex: 1; padding: 12px; background: #964F4C; color: white;
+    border: none; border-radius: 12px; font-size: 14px; font-weight: 600;
+  }
+  .before .btn-outline {
+    flex: 1; padding: 12px; background: transparent; color: #964F4C;
+    border: 1px solid #E5E1DA; border-radius: 12px; font-size: 14px;
+  }
+  .before .btn-ghost {
+    padding: 8px 16px; background: transparent; color: #8C8578;
+    border: none; font-size: 13px; margin: 0 20px;
+  }
+  .before .chip-row { display: flex; gap: 6px; margin: 12px 20px; flex-wrap: wrap; }
+  .before .chip {
+    padding: 6px 12px; background: #F0EDE8; color: #8C8578;
+    border-radius: 999px; font-size: 12px; border: none;
+  }
+  .before .chip.active { background: #964F4C; color: white; }
+  .before .input-group { margin: 12px 20px; }
+  .before .input-label { font-size: 12px; color: #8C8578; margin-bottom: 4px; }
+  .before input[type="text"] {
+    width: 100%; padding: 10px 12px; border: 1px solid #E5E1DA;
+    border-radius: 8px; font-size: 14px; background: white; color: #222;
+    outline: none;
+  }
+  .before .toast {
+    margin: 12px 20px; padding: 12px 16px; background: #F5EDEC;
+    border-radius: 8px; font-size: 13px; color: #964F4C;
+    border-left: 3px solid #964F4C;
+  }
+  .before .divider { height: 1px; background: #E5E1DA; margin: 16px 20px; }
+  .before .switch-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin: 12px 20px;
+  }
+  .before .switch-label { font-size: 14px; color: #222; }
+  .before .switch {
+    width: 44px; height: 24px; background: #E5E1DA; border-radius: 12px;
+    position: relative; cursor: pointer;
+  }
+  .before .switch.on { background: #964F4C; }
+  .before .switch::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 20px; height: 20px; background: white; border-radius: 50%;
+    transition: transform 0.2s;
+  }
+  .before .switch.on::after { transform: translateX(20px); }
+  .before .avatar-row {
+    display: flex; align-items: center; gap: 12px; margin: 12px 20px;
+  }
+  .before .avatar {
+    width: 40px; height: 40px; background: #D4A5A5; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 16px; font-weight: 600;
+  }
+  .before .avatar-info h4 { font-size: 14px; color: #222; }
+  .before .avatar-info p { font-size: 12px; color: #8C8578; }
+  .before .tab-bar {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 72px;
+    background: #F8F6F3; border-top: 1px solid #E5E1DA;
+    display: flex; align-items: center; justify-content: space-around; padding-bottom: 8px;
+  }
+  .before .tab-item { font-size: 10px; color: #8C8578; }
+  .before .tab-item.active { color: #964F4C; }
+
+  /* ========================
+     AFTER — shadcn/ui 스타일
+     ======================== */
+  .after .header {
+    padding: 56px 20px 12px;
+  }
+  .after .header h1 {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 22px; color: #222;
+  }
+  /* shadcn Card */
+  .after .card {
+    margin: 12px 20px;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #E5E1DA;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+    transition: box-shadow 0.15s ease;
+  }
+  .after .card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .after .card-img {
+    height: 180px;
+    background: linear-gradient(135deg, #d4a5a5, #e8c4c4);
+    position: relative;
+  }
+  .after .badge {
+    position: absolute; bottom: 8px; left: 8px;
+    background: #F8F6F3; color: #222;
+    font-size: 11px; font-weight: 500;
+    padding: 4px 10px; border-radius: 6px;
+    border: 1px solid #E5E1DA;
+  }
+  .after .card-body { padding: 12px 16px; }
+  .after .card-body h3 { font-size: 14px; color: #222; font-weight: 600; }
+  .after .card-body p { font-size: 12px; color: #8C8578; margin-top: 3px; }
+
+  /* shadcn Button */
+  .after .btn-row { display: flex; gap: 8px; margin: 16px 20px; }
+  .after .btn-primary {
+    flex: 1; padding: 10px 16px; background: #222; color: white;
+    border: none; border-radius: 8px; font-size: 14px; font-weight: 500;
+    transition: opacity 0.15s;
+    cursor: pointer;
+  }
+  .after .btn-primary:hover { opacity: 0.9; }
+  .after .btn-outline {
+    flex: 1; padding: 10px 16px; background: transparent; color: #222;
+    border: 1px solid #E5E1DA; border-radius: 8px; font-size: 14px;
+    transition: background 0.15s; cursor: pointer;
+  }
+  .after .btn-outline:hover { background: #F0EDE8; }
+  .after .btn-ghost {
+    padding: 8px 16px; background: transparent; color: #8C8578;
+    border: none; font-size: 13px; margin: 0 20px;
+    border-radius: 8px; transition: background 0.15s; cursor: pointer;
+  }
+  .after .btn-ghost:hover { background: #F0EDE8; }
+
+  /* shadcn Badge/Chip (Toggle Group) */
+  .after .chip-row { display: flex; gap: 6px; margin: 12px 20px; flex-wrap: wrap; }
+  .after .chip {
+    padding: 6px 14px; background: transparent; color: #222;
+    border-radius: 8px; font-size: 12px; font-weight: 500;
+    border: 1px solid #E5E1DA; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .after .chip:hover { background: #F0EDE8; }
+  .after .chip.active {
+    background: #222; color: white; border-color: #222;
+  }
+
+  /* shadcn Input */
+  .after .input-group { margin: 12px 20px; }
+  .after .input-label {
+    font-size: 13px; color: #222; margin-bottom: 6px; font-weight: 500;
+  }
+  .after input[type="text"] {
+    width: 100%; padding: 10px 12px;
+    border: 1px solid #E5E1DA; border-radius: 8px;
+    font-size: 14px; background: white; color: #222;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .after input[type="text"]:focus {
+    border-color: #222;
+    box-shadow: 0 0 0 2px rgba(34,34,34,0.08);
+  }
+
+  /* shadcn Alert */
+  .after .toast {
+    margin: 12px 20px; padding: 12px 16px;
+    background: white;
+    border-radius: 8px; font-size: 13px; color: #222;
+    border: 1px solid #E5E1DA;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .after .toast-icon {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #964F4C; color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
+  }
+
+  /* shadcn Separator */
+  .after .divider { height: 1px; background: #E5E1DA; margin: 16px 20px; }
+
+  /* shadcn Switch */
+  .after .switch-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin: 12px 20px;
+  }
+  .after .switch-label { font-size: 14px; color: #222; font-weight: 500; }
+  .after .switch {
+    width: 44px; height: 24px; background: #E5E1DA; border-radius: 12px;
+    position: relative; cursor: pointer; border: none;
+    transition: background 0.15s;
+  }
+  .after .switch.on { background: #222; }
+  .after .switch::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 20px; height: 20px; background: white; border-radius: 50%;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  .after .switch.on::after { transform: translateX(20px); }
+
+  /* shadcn Avatar */
+  .after .avatar-row {
+    display: flex; align-items: center; gap: 12px; margin: 12px 20px;
+  }
+  .after .avatar {
+    width: 40px; height: 40px; background: #F0EDE8; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #964F4C; font-size: 15px; font-weight: 600;
+    border: 1px solid #E5E1DA;
+  }
+  .after .avatar-info h4 { font-size: 14px; color: #222; font-weight: 600; }
+  .after .avatar-info p { font-size: 12px; color: #8C8578; }
+
+  /* Tab bar */
+  .after .tab-bar {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 72px;
+    background: #F8F6F3;
+    border-top: 1px solid #E5E1DA;
+    display: flex; align-items: center; justify-content: space-around; padding-bottom: 8px;
+  }
+  .after .tab-item {
+    font-size: 10px; color: #8C8578;
+    padding: 4px 12px; border-radius: 6px;
+    transition: all 0.15s;
+  }
+  .after .tab-item.active {
+    color: #222; font-weight: 600;
+    background: #F0EDE8;
+  }
+
+  /* 섹션 라벨 */
+  .sec-label {
+    font-size: 10px; color: #B5AFA6; text-transform: uppercase;
+    letter-spacing: 1.5px; margin: 18px 20px 6px;
+  }
+</style>
+</head>
+<body>
+
+<!-- BEFORE -->
+<div>
+  <p class="col-label">BEFORE (현재 커스텀)</p>
+  <div class="phone before">
+    <div class="header"><h1>Today's Pick</h1></div>
+
+    <div class="card">
+      <div class="card-img"><span class="badge">코랄</span></div>
+      <div class="card-body">
+        <h3>소프트 코랄 데이트 룩</h3>
+        <p>COS 니트 + 유니클로 슬랙스</p>
+      </div>
+    </div>
+
+    <p class="sec-label">Actions</p>
+    <div class="btn-row">
+      <button class="btn-primary">저장하기</button>
+      <button class="btn-outline">비교하기</button>
+    </div>
+    <button class="before btn-ghost">더 보기 &rarr;</button>
+
+    <p class="sec-label">Filters</p>
+    <div class="chip-row">
+      <button class="chip active">데이트</button>
+      <button class="chip">출근</button>
+      <button class="chip">캐주얼</button>
+      <button class="chip">포멀</button>
+    </div>
+
+    <p class="sec-label">Input</p>
+    <div class="input-group">
+      <div class="input-label">예산 범위</div>
+      <input type="text" placeholder="예: 100,000" />
+    </div>
+
+    <div class="toast">저장이 완료되었습니다.</div>
+
+    <div class="divider"></div>
+
+    <div class="switch-row">
+      <span class="switch-label">알림 받기</span>
+      <div class="switch on"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="avatar-row">
+      <div class="avatar">민</div>
+      <div class="avatar-info">
+        <h4>김민지</h4>
+        <p>Summer Cool Soft</p>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <div class="tab-item active">홈</div>
+      <div class="tab-item">옷장</div>
+      <div class="tab-item">저장</div>
+      <div class="tab-item">프로필</div>
+    </div>
+  </div>
+</div>
+
+<!-- AFTER -->
+<div>
+  <p class="col-label">AFTER (shadcn/ui)</p>
+  <div class="phone after">
+    <div class="header"><h1>Today's Pick</h1></div>
+
+    <div class="card">
+      <div class="card-img"><span class="badge">코랄</span></div>
+      <div class="card-body">
+        <h3>소프트 코랄 데이트 룩</h3>
+        <p>COS 니트 + 유니클로 슬랙스</p>
+      </div>
+    </div>
+
+    <p class="sec-label">Actions</p>
+    <div class="btn-row">
+      <button class="btn-primary">저장하기</button>
+      <button class="btn-outline">비교하기</button>
+    </div>
+    <button class="after btn-ghost">더 보기 &rarr;</button>
+
+    <p class="sec-label">Filters</p>
+    <div class="chip-row">
+      <button class="chip active">데이트</button>
+      <button class="chip">출근</button>
+      <button class="chip">캐주얼</button>
+      <button class="chip">포멀</button>
+    </div>
+
+    <p class="sec-label">Input</p>
+    <div class="input-group">
+      <div class="input-label">예산 범위</div>
+      <input type="text" placeholder="예: 100,000" />
+    </div>
+
+    <div class="toast">
+      <span class="toast-icon">!</span>
+      저장이 완료되었습니다.
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="switch-row">
+      <span class="switch-label">알림 받기</span>
+      <div class="switch on"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="avatar-row">
+      <div class="avatar">민</div>
+      <div class="avatar-info">
+        <h4>김민지</h4>
+        <p>Summer Cool Soft</p>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <div class="tab-item active">홈</div>
+      <div class="tab-item">옷장</div>
+      <div class="tab-item">저장</div>
+      <div class="tab-item">프로필</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

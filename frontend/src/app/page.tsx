@@ -1,12 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { motion } from "framer-motion";
 
 import { migrateLegacyTones } from "@/lib/toneMigration";
 
 export default function Home() {
   const router = useRouter();
+  const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
     migrateLegacyTones();
@@ -14,15 +17,42 @@ export default function Home() {
     const tone = localStorage.getItem("colorfit_tone");
     const userId = localStorage.getItem("colorfit_user_id");
 
-    if (token && tone) {
-      router.replace("/feed");
-    } else if (userId && tone) {
-      // guest with tone → feed
-      router.replace("/feed");
-    } else {
-      router.replace("/login");
-    }
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+      if (token && tone) {
+        router.replace("/feed");
+      } else if (userId && tone) {
+        // guest with tone → feed
+        router.replace("/feed");
+      } else {
+        router.replace("/login");
+      }
+    }, 1500); // 1.5s splash
+
+    return () => clearTimeout(timer);
   }, [router]);
+
+  if (showSplash) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F8F6F3]">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="relative w-[260px] h-[90px] mix-blend-multiply opacity-95"
+        >
+          <Image
+            src="/colorfit-logo.png"
+            alt="ColorFit Splash Logo"
+            fill
+            className="object-contain"
+            priority
+          />
+        </motion.div>
+      </div>
+    );
+  }
 
   return null;
 }

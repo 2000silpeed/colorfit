@@ -94,6 +94,14 @@ export interface ProductBrief {
   color_options: ColorOption[] | null;
 }
 
+export interface ScoreExplanations {
+  pcf: string;
+  of: string;
+  ch: string;
+  pe: string;
+  sf: string;
+}
+
 export interface OutfitDetailResponse {
   id: string;
   gender: string | null;
@@ -106,13 +114,16 @@ export interface OutfitDetailResponse {
   tags: string[] | null;
   scores: ScoresResponse | null;
   reasons: string[] | null;
+  score_explanations: ScoreExplanations | null;
   items: ProductBrief[];
 }
 
 export async function fetchOutfitDetail(
   outfitId: string,
+  toneId?: string,
 ): Promise<OutfitDetailResponse> {
-  const res = await fetch(`${API_BASE}/api/outfit/${outfitId}`);
+  const params = toneId ? `?tone_id=${encodeURIComponent(toneId)}` : "";
+  const res = await fetch(`${API_BASE}/api/outfit/${outfitId}${params}`);
   if (!res.ok) {
     throw new Error(`Outfit API error: ${res.status}`);
   }

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ColorFit — Coated Paper Feel</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', sans-serif;
+    background: #D5D0CB;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    gap: 48px;
+    flex-wrap: wrap;
+  }
+
+  .phone {
+    width: 390px;
+    min-height: 720px;
+    border-radius: 40px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .col-label {
+    text-align: center;
+    font-size: 13px;
+    color: #8C8578;
+    margin-bottom: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  /* ==============================
+     BEFORE — 현재 (매트/플랫)
+     ============================== */
+  .before {
+    background: #F8F6F3;
+    box-shadow: 0 0 40px rgba(0,0,0,0.08);
+  }
+  .before .header {
+    padding: 56px 20px 16px;
+  }
+  .before .header h1 {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 22px;
+    color: #222;
+  }
+  .before .card {
+    margin: 12px 20px;
+    background: #F0EDE8;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .before .card-img {
+    height: 220px;
+    background: linear-gradient(135deg, #d4a5a5, #e8c4c4);
+    position: relative;
+  }
+  .before .badge {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+  .before .heart-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .before .card-body { padding: 12px 14px; }
+  .before .card-body h3 { font-size: 14px; color: #222; }
+  .before .card-body p { font-size: 12px; color: #8C8578; margin-top: 4px; }
+  .before .score-row {
+    margin: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .before .score-label { font-size: 12px; color: #8C8578; width: 68px; }
+  .before .score-track {
+    flex: 1; height: 6px; background: #E5E1DA; border-radius: 3px; overflow: hidden;
+  }
+  .before .score-fill { height: 100%; border-radius: 3px; }
+  .before .btn-row { display: flex; gap: 8px; margin: 20px 20px; }
+  .before .btn-primary {
+    flex: 1; padding: 13px; background: #964F4C; color: white;
+    border: none; border-radius: 12px; font-size: 14px; font-weight: 600;
+  }
+  .before .btn-secondary {
+    flex: 1; padding: 13px; background: transparent; color: #964F4C;
+    border: 1px solid #E5E1DA; border-radius: 12px; font-size: 14px;
+  }
+  .before .tab-bar {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 72px;
+    background: #F8F6F3; border-top: 1px solid #E5E1DA;
+    display: flex; align-items: center; justify-content: space-around; padding-bottom: 8px;
+  }
+  .before .tab-item { font-size: 10px; color: #8C8578; }
+  .before .tab-item.active { color: #964F4C; }
+
+  /* ==============================
+     AFTER — 코팅지 (Coated Paper)
+     ============================== */
+  .after {
+    background: #F8F6F3;
+    box-shadow: 0 0 40px rgba(0,0,0,0.08);
+  }
+
+  /* 전체 코팅 레이어 — 미세한 광택 + 노이즈 텍스처 */
+  .after::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      /* 상단 하이라이트 — 빛이 비추는 느낌 */
+      linear-gradient(
+        175deg,
+        rgba(255,255,255,0.12) 0%,
+        rgba(255,255,255,0.04) 25%,
+        transparent 50%,
+        rgba(0,0,0,0.01) 100%
+      );
+    pointer-events: none;
+    z-index: 100;
+    border-radius: 40px;
+  }
+
+  /* 노이즈 텍스처 오버레이 — 종이 질감 */
+  .after::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 101;
+    border-radius: 40px;
+    mix-blend-mode: multiply;
+  }
+
+  .after .header {
+    padding: 56px 20px 16px;
+    position: relative;
+  }
+  .after .header h1 {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 22px;
+    color: #222;
+    /* 잉크가 코팅지 위에 앉은 느낌 — 아주 미세한 섀도우 */
+    text-shadow: 0 0.5px 0 rgba(0,0,0,0.06);
+  }
+
+  .after .card {
+    margin: 12px 20px;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    /* 코팅지 카드 — 미세한 광택 보더 + 부드러운 리프트 */
+    background: linear-gradient(
+      168deg,
+      rgba(255,255,255,0.7) 0%,
+      rgba(255,255,255,0.35) 40%,
+      rgba(240,237,232,0.9) 100%
+    );
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.8),          /* 상단 반사 엣지 */
+      0 2px 8px rgba(0,0,0,0.04),              /* 부드러운 드롭 */
+      0 8px 24px rgba(0,0,0,0.03);             /* 앰비언트 */
+    border: 1px solid rgba(255,255,255,0.6);
+  }
+  /* 카드 위 미세 광택 */
+  .after .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
+    background: linear-gradient(
+      180deg,
+      rgba(255,255,255,0.18) 0%,
+      rgba(255,255,255,0.03) 60%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 2;
+    border-radius: 14px 14px 0 0;
+  }
+
+  .after .card-img {
+    height: 220px;
+    background: linear-gradient(135deg, #d4a5a5, #e8c4c4);
+    position: relative;
+    /* 코팅된 사진 느낌 — 살짝 대비 높이고 새틴 처리 */
+    filter: contrast(1.03) saturate(1.05);
+  }
+  /* 이미지 위 새틴 반사 */
+  .after .card-img::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      155deg,
+      rgba(255,255,255,0.08) 0%,
+      transparent 35%,
+      transparent 65%,
+      rgba(255,255,255,0.04) 100%
+    );
+    pointer-events: none;
+  }
+
+  .after .badge {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    background: rgba(248,246,243,0.85);
+    color: #222;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 999px;
+    /* 코팅 뱃지 — 약간 돌출된 느낌 */
+    box-shadow:
+      0 0.5px 0 rgba(255,255,255,0.7),
+      0 1px 4px rgba(0,0,0,0.08);
+    border: 1px solid rgba(255,255,255,0.5);
+    z-index: 3;
+  }
+
+  .after .heart-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(248,246,243,0.7);
+    border-radius: 50%;
+    box-shadow:
+      0 0.5px 0 rgba(255,255,255,0.6),
+      0 1px 4px rgba(0,0,0,0.08);
+    border: 1px solid rgba(255,255,255,0.4);
+    z-index: 3;
+  }
+
+  .after .card-body { padding: 14px 16px; }
+  .after .card-body h3 {
+    font-size: 14px; color: #222;
+    text-shadow: 0 0.5px 0 rgba(0,0,0,0.04);
+  }
+  .after .card-body p { font-size: 12px; color: #8C8578; margin-top: 4px; }
+
+  .after .section-title {
+    font-size: 11px;
+    color: #B5AFA6;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 20px 20px 8px;
+  }
+
+  .after .score-row {
+    margin: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .after .score-label { font-size: 12px; color: #8C8578; width: 68px; }
+  .after .score-track {
+    flex: 1; height: 7px;
+    background: linear-gradient(180deg, #E8E4DF, #EDEAE6);
+    border-radius: 4px; overflow: hidden;
+    box-shadow:
+      inset 0 1px 2px rgba(0,0,0,0.04),
+      0 0.5px 0 rgba(255,255,255,0.6);
+  }
+  .after .score-fill {
+    height: 100%; border-radius: 4px;
+    /* 코팅 바 — 새틴 그래디언트 */
+    background-image: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--c) 80%, white) 0%,
+      var(--c) 45%,
+      color-mix(in srgb, var(--c) 90%, black) 100%
+    );
+    box-shadow: 0 0.5px 0 rgba(255,255,255,0.3);
+  }
+
+  .after .btn-row { display: flex; gap: 8px; margin: 24px 20px; }
+  .after .btn-primary {
+    flex: 1; padding: 14px;
+    color: white; border: none; border-radius: 14px;
+    font-size: 14px; font-weight: 600;
+    /* 코팅 버튼 — 새틴 그래디언트 + 반사 엣지 */
+    background: linear-gradient(
+      180deg,
+      #A85C59 0%,
+      #964F4C 40%,
+      #8A4744 100%
+    );
+    box-shadow:
+      0 0.5px 0 rgba(255,255,255,0.2),
+      inset 0 1px 0 rgba(255,255,255,0.15),
+      0 2px 8px rgba(150,79,76,0.25);
+  }
+  .after .btn-secondary {
+    flex: 1; padding: 14px; color: #964F4C;
+    border-radius: 14px; font-size: 14px;
+    /* 코팅 세컨더리 — 미세 광택 */
+    background: linear-gradient(
+      180deg,
+      rgba(255,255,255,0.8) 0%,
+      rgba(248,246,243,0.9) 100%
+    );
+    border: 1px solid rgba(255,255,255,0.6);
+    box-shadow:
+      0 0.5px 0 rgba(255,255,255,0.8),
+      0 1px 4px rgba(0,0,0,0.04);
+  }
+
+  .after .tab-bar {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 72px;
+    /* 코팅 탭바 — 위에 미세한 광택 라인 */
+    background: linear-gradient(
+      180deg,
+      rgba(255,255,255,0.5) 0%,
+      #F8F6F3 2px,
+      #F8F6F3 100%
+    );
+    display: flex; align-items: center; justify-content: space-around; padding-bottom: 8px;
+  }
+  .after .tab-item { font-size: 10px; color: #8C8578; }
+  .after .tab-item.active { color: #964F4C; font-weight: 600; }
+
+  .section-title {
+    font-size: 11px;
+    color: #B5AFA6;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 20px 20px 8px;
+  }
+</style>
+</head>
+<body>
+
+<!-- BEFORE -->
+<div>
+  <p class="col-label">BEFORE (매트/플랫)</p>
+  <div class="phone before">
+    <div class="header"><h1>Today's Pick</h1></div>
+    <div class="card">
+      <div class="card-img">
+        <span class="badge">코랄</span>
+        <span class="heart-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </span>
+      </div>
+      <div class="card-body">
+        <h3>소프트 코랄 데이트 룩</h3>
+        <p>COS 니트 + 유니클로 슬랙스</p>
+      </div>
+    </div>
+    <p class="section-title">Score</p>
+    <div class="score-row">
+      <span class="score-label">퍼스널컬러</span>
+      <div class="score-track"><div class="score-fill" style="width:85%;background:#964F4C"></div></div>
+    </div>
+    <div class="score-row">
+      <span class="score-label">TPO 적합</span>
+      <div class="score-track"><div class="score-fill" style="width:92%;background:#4F97A3"></div></div>
+    </div>
+    <div class="score-row">
+      <span class="score-label">색상 조화</span>
+      <div class="score-track"><div class="score-fill" style="width:78%;background:#DDB67D"></div></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-primary">저장하기</button>
+      <button class="btn-secondary">비교하기</button>
+    </div>
+    <div class="tab-bar">
+      <div class="tab-item active">홈</div>
+      <div class="tab-item">옷장</div>
+      <div class="tab-item">저장</div>
+      <div class="tab-item">프로필</div>
+    </div>
+  </div>
+</div>
+
+<!-- AFTER -->
+<div>
+  <p class="col-label">AFTER (코팅지)</p>
+  <div class="phone after">
+    <div class="header"><h1>Today's Pick</h1></div>
+    <div class="card">
+      <div class="card-img">
+        <span class="badge">코랄</span>
+        <span class="heart-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#964F4C" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </span>
+      </div>
+      <div class="card-body">
+        <h3>소프트 코랄 데이트 룩</h3>
+        <p>COS 니트 + 유니클로 슬랙스</p>
+      </div>
+    </div>
+    <p class="section-title">Score</p>
+    <div class="score-row">
+      <span class="score-label">퍼스널컬러</span>
+      <div class="score-track"><div class="score-fill" style="width:85%;--c:#964F4C"></div></div>
+    </div>
+    <div class="score-row">
+      <span class="score-label">TPO 적합</span>
+      <div class="score-track"><div class="score-fill" style="width:92%;--c:#4F97A3"></div></div>
+    </div>
+    <div class="score-row">
+      <span class="score-label">색상 조화</span>
+      <div class="score-track"><div class="score-fill" style="width:78%;--c:#DDB67D"></div></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-primary">저장하기</button>
+      <button class="btn-secondary">비교하기</button>
+    </div>
+    <div class="tab-bar">
+      <div class="tab-item active">홈</div>
+      <div class="tab-item">옷장</div>
+      <div class="tab-item">저장</div>
+      <div class="tab-item">프로필</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

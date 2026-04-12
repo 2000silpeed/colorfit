@@ -2,6 +2,7 @@
 
 import { Suspense, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { sanitizeReturnUrl } from "@/lib/auth";
 import { migrateLegacyTones } from "@/lib/toneMigration";
@@ -58,26 +59,46 @@ function LoginContent() {
   }, [router, returnUrl]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-[32px] bg-bg-primary">
+    <div className="relative min-h-screen flex flex-col items-center px-[32px] pt-[12vh] pb-[6vh] overflow-hidden bg-bg-primary">
+      {/* 에디토리얼 패션 배경 */}
+      <Image
+        src="/editorial-bg.png"
+        alt="Editorial Fashion Background"
+        fill
+        className="object-cover object-top opacity-85 z-0"
+        priority
+      />
+      {/* 그라데이션 ও버레이 (글라스모피즘/페이드 효과) */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#F8F6F3]/30 via-[#F8F6F3]/60 to-[#F8F6F3] z-0 pointer-events-none" />
+
+      {/* 내부 콘텐츠 (z-index) */}
+      <div className="relative z-10 w-full flex-1 flex flex-col justify-between items-center max-w-[380px] mx-auto">
       {/* 로��� + 서브카피 */}
       <motion.div
-        className="flex flex-col items-center mb-[64px]"
-        initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+        className="flex flex-col items-center w-full"
+        initial={prefersReducedMotion ? false : { opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
       >
-        <h1 className="font-display text-[36px] leading-[1.2] font-[800] text-accent">
-          ColorFit
-        </h1>
-        <p className="mt-[12px] font-body text-[15px] text-center leading-[1.5] text-text-secondary">
-          퍼스널컬러로 찾는{"\n"}나만의 코디
+        <div className="w-[200px] h-[75px] relative mix-blend-multiply opacity-95">
+          <Image
+            src="/colorfit-logo.png"
+            alt="ColorFit Logo"
+            fill
+            className="object-contain"
+            priority
+          />
+        </div>
+        <p className="mt-[20px] font-body text-[15px] font-medium tracking-[0.02em] text-center leading-[1.6] text-text-primary/90 drop-shadow-sm">
+          내 색을 아는 순간,<br />선택이 쉬워진다
         </p>
       </motion.div>
 
-      {/* 로그인 카드 */}
-      <motion.div
-        className="w-full"
-        initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+      {/* 하단 영역: 로그인 카드 + 게스트 */}
+      <div className="w-full flex flex-col items-center gap-[24px]">
+        <motion.div
+          className="w-full"
+          initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={
           prefersReducedMotion
@@ -85,7 +106,7 @@ function LoginContent() {
             : { duration: 0.6, delay: 0.15 }
         }
       >
-        <Card className="border-border shadow-sm">
+        <Card className="border-white/50 bg-white/75 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-[16px] overflow-hidden">
           <CardContent className="flex flex-col gap-[12px] p-[20px]">
             {/* 카카오 로그인 */}
             <Button
@@ -154,6 +175,8 @@ function LoginContent() {
           게스트로 둘러보기
         </Button>
       </motion.div>
+      </div>
+      </div>
     </div>
   );
 }

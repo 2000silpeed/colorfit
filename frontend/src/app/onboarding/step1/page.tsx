@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -12,9 +13,9 @@ type AgeGroup = "20s" | "30s" | "40plus";
 
 const MotionCard = motion.create(Card);
 
-const GENDER_CARDS: { value: Gender; label: string; initial: string }[] = [
-  { value: "female", label: "여성", initial: "W" },
-  { value: "male", label: "남성", initial: "M" },
+const GENDER_CARDS: { value: Gender; label: string; image: string }[] = [
+  { value: "female", label: "여성", image: "/gender-female.png" },
+  { value: "male", label: "남성", image: "/gender-male.png" },
 ];
 
 const AGE_CARDS: { value: AgeGroup; label: string; sub: string }[] = [
@@ -91,13 +92,18 @@ export default function Step1Page() {
                       ? { duration: 0 }
                       : { duration: 0.4, delay: i * 0.15, ease: "easeOut" }
                   }
-                  className="w-[45%] aspect-[3/4] rounded-[var(--radius-xl)] flex flex-col items-center justify-center cursor-pointer border-2 border-transparent bg-white ring-0 p-0"
+                  className="relative group w-[45%] aspect-[3/4] rounded-[var(--radius-xl)] flex flex-col items-center justify-center cursor-pointer border-2 border-white/40 bg-white/70 overflow-hidden shadow-md ring-0 p-0"
                   aria-label={`${card.label} 선택`}
                 >
-                  <span className="font-display text-[48px] font-normal text-text-primary leading-none">
-                    {card.initial}
-                  </span>
-                  <span className="mt-[var(--space-sm)] font-body text-[15px] text-text-secondary">
+                  <Image
+                    src={card.image}
+                    alt={card.label}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+                  
+                  <span className="absolute bottom-[24px] font-body text-[17px] font-semibold text-white tracking-widest drop-shadow-md">
                     {card.label}
                   </span>
                 </MotionCard>
@@ -144,10 +150,10 @@ export default function Step1Page() {
                       : { duration: 0.3, delay: i * 0.1, ease: "easeOut" }
                   }
                   className={cn(
-                    "w-full rounded-[var(--radius-lg)] flex flex-row items-center justify-between px-[24px] py-[20px] cursor-pointer border-2 bg-white ring-0 transition-[border-color] duration-300 ease-out",
+                    "w-full rounded-[var(--radius-lg)] flex flex-row items-center justify-between px-[24px] py-[20px] cursor-pointer border-2 bg-white/70 backdrop-blur-md shadow-sm ring-0 transition-all duration-300 ease-out hover:bg-white/90",
                     selectedAge === card.value
-                      ? "border-[var(--color-accent)]"
-                      : "border-transparent"
+                      ? "border-[var(--color-accent)] shadow-md"
+                      : "border-white/40"
                   )}
                   aria-pressed={selectedAge === card.value}
                   aria-label={`${card.label} 선택`}

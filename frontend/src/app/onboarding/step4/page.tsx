@@ -292,12 +292,12 @@ export default function Step4Page() {
                     ? { duration: 0 }
                     : { duration: 0.3, delay: i * 0.05, ease: "easeOut" }
                 }
-                className="flex-1 py-[var(--space-sm)] rounded-full font-body text-[14px] font-medium cursor-pointer border-2"
+                className="flex-1 py-[var(--space-sm)] rounded-full font-body text-[14px] font-medium cursor-pointer border-2 backdrop-blur-md shadow-sm"
                 style={{
                   backgroundColor: isActive
                     ? "var(--color-accent)"
-                    : "#FFFFFF",
-                  borderColor: isActive ? "var(--color-accent)" : "#E0DCD7",
+                    : "rgba(255, 255, 255, 0.6)",
+                  borderColor: isActive ? "var(--color-accent)" : "rgba(255, 255, 255, 0.4)",
                   color: isActive ? "#FFFFFF" : "var(--color-text-primary)",
                   transition:
                     "background-color 0.2s ease-out, border-color 0.2s ease-out, color 0.2s ease-out",

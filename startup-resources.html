@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Startup Resources</title>
+  <style>
+    :root {
+      --bg: #FAFAFA;
+      --surface: #FFFFFF;
+      --text: #1A1A1A;
+      --muted: #777;
+      --border: #E5E5E5;
+      --accent: #333;
+      --blue: #2563EB;
+      --green: #059669;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Pretendard Variable', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+      padding: 48px 20px 80px;
+    }
+
+    .container { max-width: 680px; margin: 0 auto; }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 48px;
+    }
+
+    .resource {
+      margin-bottom: 48px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .resource:last-of-type {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .resource-meta {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tag-video { background: #EFF6FF; color: var(--blue); }
+    .tag-essay { background: #ECFDF5; color: var(--green); }
+
+    .author {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .resource h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      letter-spacing: -0.3px;
+    }
+
+    .resource h2 a {
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 1px solid var(--border);
+      transition: border-color 0.15s;
+    }
+
+    .resource h2 a:hover {
+      border-color: var(--accent);
+    }
+
+    .summary {
+      font-size: 15px;
+      color: #333;
+    }
+
+    .summary p { margin-bottom: 14px; }
+
+    .summary strong { font-weight: 600; }
+
+    .points {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0;
+    }
+
+    .points li {
+      padding: 8px 0 8px 16px;
+      position: relative;
+      font-size: 15px;
+    }
+
+    .points li::before {
+      content: "\2014";
+      position: absolute;
+      left: 0;
+      color: var(--muted);
+    }
+
+    blockquote {
+      border-left: 2px solid #CCC;
+      padding: 8px 16px;
+      margin: 16px 0;
+      color: #555;
+      font-size: 14px;
+      font-style: italic;
+    }
+
+    blockquote cite {
+      display: block;
+      font-style: normal;
+      font-size: 12px;
+      color: #999;
+      margin-top: 4px;
+    }
+
+    .section-break {
+      margin: 56px 0 48px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .connection {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      font-size: 15px;
+      line-height: 1.8;
+    }
+
+    .connection h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .connection p { margin-bottom: 10px; }
+    .connection p:last-child { margin-bottom: 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <h1>Startup Resources</h1>
+    <p class="subtitle">2026-04-06 Office Hours 추천 리소스 요약</p>
+
+    <!-- 1 -->
+    <article class="resource">
+      <div class="resource-meta">
+        <span class="tag tag-video">Video 8min</span>
+        <span class="author">Garry Tan</span>
+      </div>
+      <h2><a href="https://www.youtube.com/watch?v=rWUWfj_PqmM" target="_blank" rel="noopener">The New Way To Build A Startup</a></h2>
+      <div class="summary">
+        <p>AI가 스타트업의 게임 룰을 바꿨다. Garry Tan이 "20x Company"라는 개념을 소개한다. 기존에 100명이 필요하던 일을 5명이 하는 게 아니라, 아예 다른 종류의 회사가 가능해진 것.</p>
+        <ul class="points">
+          <li>소수 인원이 AI를 활용해 기존 대기업 제품을 이기거나 대체한 실제 사례 3개를 보여준다.</li>
+          <li>대기업은 관료주의와 레거시에 묶여 있고, 스타트업은 AI를 제로에서 적용하니까 속도와 효율 모두에서 유리하다.</li>
+          <li>자본이나 팀 규모가 아니라, 문제를 직접 풀 수 있는 빌더가 가장 유리한 포지션. 코드를 짤 수 있는 파운더가 역대 가장 강한 무기를 갖게 된 시대.</li>
+          <li>"엔지니어링 장벽은 사라졌다. 남은 건 취향(taste)뿐이다."</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- 2 -->
+    <article class="resource">
+      <div class="resource-meta">
+        <span class="tag tag-video">Video 12min</span>
+        <span class="author">Tyler Bosmeny, YC Startup School</span>
+      </div>
+      <h2><a href="https://www.youtube.com/watch?v=Nsx5RDVKZSk" target="_blank" rel="noopener">Why Startup Founders Should Launch Companies Sooner Than They Think</a></h2>
+      <div class="summary">
+        <p>대부분의 빌더는 과도하게 준비하고 부족하게 출시한다. 이 영상은 "아직 준비 안 됐어"라는 본능이 왜 거의 항상 틀리는지를 설명한다.</p>
+        <ul class="points">
+          <li>"Ready"는 환상이다. 완벽하게 준비된 상태란 존재하지 않고, 출시를 미루는 이유의 대부분은 두려움이지 합리적 판단이 아니다.</li>
+          <li>제품을 만드는 동안은 가설만 쌓인다. 실제 사용자 앞에 놓는 순간부터 진짜 학습이 시작된다. 사용자는 항상 예상과 다르게 행동하고, 그 차이에서 핵심 인사이트가 나온다.</li>
+          <li>"한 가지만 더 고치고"를 반복하면 수주가 날아간다. 그 시간에 10명의 피드백을 받았다면 제품이 완전히 다른 방향으로 발전했을 것.</li>
+          <li>사용자는 코드 품질이 아니라 자기 문제가 해결되는지를 본다.</li>
+        </ul>
+        <blockquote>
+          "If you're not embarrassed by the first version of your product, you've launched too late."
+          <cite>Reid Hoffman</cite>
+        </blockquote>
+      </div>
+    </article>
+
+    <!-- 3 -->
+    <article class="resource">
+      <div class="resource-meta">
+        <span class="tag tag-essay">Essay</span>
+        <span class="author">Paul Graham</span>
+      </div>
+      <h2><a href="https://paulgraham.com/schlep.html" target="_blank" rel="noopener">Schlep Blindness</a></h2>
+      <div class="summary">
+        <p><strong>Schlep</strong>은 이디시어로 "지루하고 불쾌한 작업". Paul Graham은 사람들이 무의식적으로 이런 번거로운 문제를 포함한 아이디어를 회피한다고 지적한다. 의식적으로 "어려우니까 안 할래"가 아니라, 아예 그 아이디어가 눈에 보이지 않게 된다. 이걸 <strong>Schlep Blindness</strong>라고 부른다.</p>
+
+        <ul class="points">
+          <li><strong>Stripe 사례:</strong> 수천 명의 개발자가 온라인 결제의 고통을 겪었지만, 아무도 직접 풀려고 하지 않았다. 은행 협상, 사기 방지, 규제 준수 같은 schlep이 무의식적으로 거부감을 일으켰기 때문. 대신 레시피 사이트나 지역 이벤트 앱 같은 "깨끗한" 아이디어를 선택했다.</li>
+          <li><strong>회사의 정의:</strong> 회사는 기꺼이 감수하는 번거로움으로 정의된다. 남들이 피하는 schlep을 감수하는 것 자체가 경쟁 우위.</li>
+          <li><strong>질문을 바꿔라:</strong> "어떤 문제를 풀어야 할까?"가 아니라 "누군가 나 대신 풀어줬으면 하는 문제가 뭘까?" 이 질문이 schlep blindness를 뚫는다.</li>
+          <li><strong>무지의 가치:</strong> 성공한 창업자들은 종종 장애물을 몰랐기 때문에 시작할 수 있었다.</li>
+        </ul>
+
+        <blockquote>
+          "Your unconscious won't even let you see ideas that involve painful schleps."
+          <cite>Paul Graham</cite>
+        </blockquote>
+        <blockquote>
+          "Instead of asking 'what problem should I solve?' ask 'what problem do I wish someone else would solve for me?'"
+          <cite>Paul Graham</cite>
+        </blockquote>
+        <blockquote>
+          "A company is defined by the schleps it will undertake."
+          <cite>Paul Graham</cite>
+        </blockquote>
+      </div>
+    </article>
+
+    <!-- Connection -->
+    <div class="section-break">Connecting the dots</div>
+
+    <div class="connection">
+      <h3>3개를 관통하는 한 문장</h3>
+      <p>AI가 실행 비용을 극단적으로 낮췄고(Garry Tan), 완벽을 기다리는 건 학습을 미루는 것이고(Tyler Bosmeny), 가장 좋은 기회는 남들이 귀찮아서 피하는 문제 안에 있다(Paul Graham).</p>
+      <p>세 사람이 다른 맥락에서 같은 말을 하고 있다. <strong>지금 만들어라, 지금 내놓아라, 남들이 싫어하는 문제를 골라라.</strong></p>
+    </div>
+
+  </div>
+</body>
+</html>

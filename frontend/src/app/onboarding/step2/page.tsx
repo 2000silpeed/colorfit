@@ -25,7 +25,7 @@ const SEASONS: Season[] = [
   {
     id: "spring_warm",
     label: "봄웜",
-    gradient: "linear-gradient(90deg, #FF7F7F, #FFAA8A, #FFF5E1)",
+    gradient: "linear-gradient(90deg, rgba(237,208,198,0.7), rgba(246,233,228,0.4))",
     tones: [
       { id: "spring_warm_light", label: "라이트", color: "#FFCBA4" },
       { id: "spring_warm_bright", label: "브라이트", color: "#FF6B6B" },
@@ -35,7 +35,7 @@ const SEASONS: Season[] = [
   {
     id: "summer_cool",
     label: "여름쿨",
-    gradient: "linear-gradient(90deg, #B8A9D4, #87CEEB, #98D4BB)",
+    gradient: "linear-gradient(90deg, rgba(206,212,224,0.7), rgba(231,235,241,0.4))",
     tones: [
       { id: "summer_cool_light", label: "라이트", color: "#9FB5D4" },
       { id: "summer_cool_soft", label: "소프트", color: "#B0A6C6" },
@@ -45,7 +45,7 @@ const SEASONS: Season[] = [
   {
     id: "autumn_warm",
     label: "가을웜",
-    gradient: "linear-gradient(90deg, #800020, #CC5533, #C4A265)",
+    gradient: "linear-gradient(90deg, rgba(186,163,149,0.7), rgba(220,209,203,0.4))",
     tones: [
       { id: "autumn_warm_deep", label: "딥", color: "#8B5A2B" },
       { id: "autumn_warm_mute", label: "뮤트", color: "#A0856C" },
@@ -55,7 +55,7 @@ const SEASONS: Season[] = [
   {
     id: "winter_cool",
     label: "겨울쿨",
-    gradient: "linear-gradient(90deg, #1A1A2E, #2E4A8E, #F0C0D0)",
+    gradient: "linear-gradient(90deg, rgba(175,178,190,0.7), rgba(215,217,224,0.4))",
     tones: [
       { id: "winter_cool_deep", label: "딥", color: "#1E1E4E" },
       { id: "winter_cool_strong", label: "스트롱", color: "#6B2E8E" },
@@ -357,7 +357,7 @@ function Step2Content() {
               role="dialog"
               aria-modal="true"
               aria-label="퍼스널컬러 간이 진단"
-              className="fixed bottom-0 left-0 right-0 z-50 rounded-t-[var(--radius-lg)] bg-[var(--color-bg-primary)] px-[var(--space-lg)] pt-[var(--space-lg)] pb-[var(--space-2xl)]"
+              className="fixed bottom-0 left-0 right-0 z-50 rounded-t-[calc(var(--radius-lg)*1.5)] border-t border-white/50 bg-white/80 backdrop-blur-2xl shadow-[0_-8px_30px_rgb(0,0,0,0.08)] px-[var(--space-lg)] pt-[var(--space-lg)] pb-[var(--space-2xl)]"
             >
               <div className="w-10 h-1 rounded-full bg-[var(--color-border)] mx-auto mb-[var(--space-lg)]" />
 
@@ -373,7 +373,7 @@ function Step2Content() {
                     {Q1_OPTIONS.map((opt) => (
                       <Card
                         key={opt.id}
-                        className="cursor-pointer border-2 border-transparent bg-[var(--color-surface)] ring-0 transition-[border-color] duration-200 ease-out hover:border-[var(--color-accent)] p-0"
+                        className="cursor-pointer border-2 border-white/40 bg-white/60 backdrop-blur-md shadow-sm ring-0 transition-all duration-300 ease-out hover:border-[var(--color-accent)] hover:bg-white/90 p-0"
                         onClick={() => handleDiagnosisQ1(opt.id)}
                         role="button"
                         aria-label={`${opt.label} 선택`}
@@ -408,7 +408,7 @@ function Step2Content() {
                     ]).map((opt) => (
                       <Card
                         key={opt.label}
-                        className="cursor-pointer border-2 border-transparent bg-[var(--color-surface)] ring-0 transition-[border-color] duration-200 ease-out hover:border-[var(--color-accent)] p-0"
+                        className="cursor-pointer border-2 border-white/40 bg-white/60 backdrop-blur-md shadow-sm ring-0 transition-all duration-300 ease-out hover:border-[var(--color-accent)] hover:bg-white/90 p-0"
                         onClick={() => handleDiagnosisQ2(opt.choice)}
                         role="button"
                         aria-label={`${opt.label} 선택`}

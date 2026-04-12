@@ -289,6 +289,7 @@ def rerank(
     tone_count: dict[str, int] = {}
     main_item_seen: set[str] = set()
     item_set_seen: set[frozenset[str]] = set()
+    image_seen: set[str] = set()
 
     for o in candidates:
         tone = o.get("dominant_tone")
@@ -300,6 +301,12 @@ def rerank(
             continue
         if item_ids:
             item_set_seen.add(item_ids)
+
+        img = o.get("image_url")
+        if img and img in image_seen:
+            continue
+        if img:
+            image_seen.add(img)
 
         if main_item and main_item in main_item_seen:
             continue
