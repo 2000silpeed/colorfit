@@ -36,7 +36,7 @@ const TONE_GRADIENTS: Record<string, string> = {
 /* ── 스켈레톤 ── */
 function ProfileSkeleton() {
   return (
-    <div className="min-h-screen bg-bg-primary pb-[80px]">
+    <div className="min-h-screen bg-bg-primary pb-[72px]">
       <div className="h-[180px] bg-[#E0DCD7] animate-pulse" />
       <div className="px-[20px] pt-[24px]">
         <div className="flex gap-[12px] mb-[32px]">
@@ -157,7 +157,7 @@ export default function ProfilePage() {
 
   if (error || !tone) {
     return (
-      <div className="min-h-screen bg-bg-primary flex flex-col items-center justify-center px-[20px] pb-[80px]">
+      <div className="min-h-screen bg-bg-primary flex flex-col items-center justify-center px-[20px] pb-[72px]">
         <p className="font-body text-text-secondary text-[15px] mb-[16px]">
           {error ?? "톤 정보를 불러올 수 없습니다"}
         </p>
@@ -180,7 +180,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-bg-primary pb-[80px]">
+    <div className="min-h-screen bg-bg-primary pb-[72px]">
       {/* 톤 카드 히어로 */}
       <motion.button
         onClick={() => router.push(`/tone/${toneId}`)}

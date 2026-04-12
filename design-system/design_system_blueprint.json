@@ -1,0 +1,259 @@
+{
+  "brand_name": "ColorFit",
+  "system_name": "ColorFit System",
+  "product_summary": "퍼스널컬러 진단 결과를 실제 쇼핑과 코디 의사결정으로 연결하는 AI 패션 추천 앱",
+  "positioning": {
+    "audiences": [
+      "퍼스널컬러 기반 쇼핑 결정을 돕고 싶은 사용자",
+      "코디 추천과 실제 구매 연결을 원하는 모바일 쇼핑 사용자",
+      "내 취향과 톤에 맞는 패션 큐레이션을 원하는 사용자"
+    ],
+    "brand_keywords": [
+      "editorial",
+      "precise",
+      "trustworthy",
+      "warm"
+    ],
+    "anti_keywords": [
+      "generic",
+      "noisy",
+      "clinical",
+      "cheap"
+    ],
+    "tone_of_voice": [
+      "clear",
+      "reassuring",
+      "curated",
+      "confident"
+    ],
+    "platforms": [
+      "mobile web"
+    ],
+    "accessibility_targets": [
+      "WCAG 2.2 AA"
+    ]
+  },
+  "principles": [
+    {
+      "keyword": "editorial",
+      "name": "Editorial Hierarchy",
+      "rule": "타이포그래피와 여백으로 위계를 만들고, 장식은 의미를 돕는 범위에서만 사용합니다.",
+      "implications": [
+        "텍스트 중심 레이아웃",
+        "강한 heading rhythm",
+        "콘텐츠 읽기 흐름 우선"
+      ]
+    },
+    {
+      "keyword": "precise",
+      "name": "Precision Over Ornament",
+      "rule": "장식보다 정보의 정렬, 상태의 정확성, 반응의 일관성을 우선합니다.",
+      "implications": [
+        "명확한 상태 규칙",
+        "촘촘한 spacing scale",
+        "컴포넌트 변형 최소화"
+      ]
+    },
+    {
+      "keyword": "trustworthy",
+      "name": "Trust Through Consistency",
+      "rule": "예측 가능한 인터랙션과 안정적인 시각 언어로 신뢰를 쌓습니다.",
+      "implications": [
+        "일관된 disabled/error/success 패턴",
+        "접근성 기준 우선",
+        "위험 액션 명시적 구분"
+      ]
+    },
+    {
+      "keyword": "warm",
+      "name": "Warm",
+      "rule": "`warm`를 시각적 선택과 인터랙션 선택의 기본 기준으로 삼습니다.",
+      "implications": [
+        "warm와 충돌하는 컴포넌트 변형은 만들지 않기",
+        "warm를 토큰 네이밍과 문서화 기준에 반영하기"
+      ]
+    }
+  ],
+  "reference_strategy": {
+    "seed_article": "https://carbondesignsystem.com",
+    "top_sources_by_concept_coverage": [
+      {
+        "source_label": "Primer",
+        "covered_concepts": [
+          "accessibility",
+          "brand",
+          "color",
+          "component",
+          "content",
+          "design_system",
+          "design_token",
+          "foundation",
+          "iconography",
+          "layout",
+          "motion",
+          "pattern",
+          "spacing",
+          "style_guide",
+          "typography"
+        ]
+      },
+      {
+        "source_label": "Carbon Design System",
+        "covered_concepts": [
+          "accessibility",
+          "brand",
+          "color",
+          "component",
+          "content",
+          "design_system",
+          "design_token",
+          "foundation",
+          "iconography",
+          "layout",
+          "pattern",
+          "spacing",
+          "typography"
+        ]
+      }
+    ],
+    "rule": "레퍼런스는 그대로 복제하지 않고, 원칙과 구조만 가져와 브랜드 아이덴티티에 맞게 재구성합니다."
+  },
+  "token_strategy": {
+    "color": {
+      "goal": "브랜드 개성을 드러내되 UI 전체를 지배하지 않는 팔레트",
+      "rules": [
+        "brand color는 1개의 primary accent를 중심으로 설계",
+        "semantic color는 brand color와 분리해서 유지",
+        "contrast ratio는 접근성 목표를 우선",
+        "지원하는 theme 모드마다 semantic surface/text/border 쌍을 함께 정의",
+        "하드코딩 색상보다 semantic token 적용을 우선"
+      ]
+    },
+    "typography": {
+      "goal": "정보 구조와 브랜드 톤을 동시에 전달하는 타입 시스템",
+      "rules": [
+        "heading/body/caption 역할을 토큰으로 고정",
+        "텍스트 길이가 긴 화면에서 리듬이 무너지지 않도록 line-height를 계층별로 정의",
+        "편집형 제품이면 typography scale을 먼저 확정"
+      ],
+      "signal": true
+    },
+    "spacing": {
+      "goal": "밀도와 여백의 성격을 제품 전반에서 일관되게 유지",
+      "rules": [
+        "4pt 또는 8pt 기반 scale을 정하고 예외 사용을 제한",
+        "컴포넌트 내부 spacing과 레이아웃 spacing을 분리"
+      ]
+    },
+    "motion": {
+      "goal": "상태 변화를 설명하는 수준의 모션만 허용",
+      "rules": [
+        "transition duration/easing을 토큰화",
+        "주의 환기용 모션과 구조적 모션을 구분"
+      ],
+      "brand_signal": [
+        "guided decision flow",
+        "explainable scoring",
+        "low-noise motion",
+        "confidence-building comparison"
+      ]
+    },
+    "visual_keywords": [
+      "warm neutrals",
+      "serif-sans contrast",
+      "measured whitespace",
+      "fashion editorial hierarchy",
+      "tonal accent cues"
+    ]
+  },
+  "component_strategy": {
+    "product_primitives": [
+      "personal color onboarding",
+      "recommendation feed",
+      "outfit detail and comparison",
+      "shopping price comparison",
+      "closet analysis",
+      "ai try-on"
+    ],
+    "required_component_families": [
+      "button",
+      "input",
+      "navigation",
+      "feedback",
+      "overlay"
+    ],
+    "rules": [
+      "primitive 단위로 책임을 먼저 정의하고 컴포넌트는 그 위에 매핑",
+      "variant proliferation을 막기 위해 상태와 강조 레벨을 먼저 표준화",
+      "브랜드 표현은 surface, emphasis, typography에서 주고 구조는 안정적으로 유지",
+      "기존 기능 진입점은 유지한 채 내부 구현과 시각 언어부터 교체",
+      "전체 셸을 한 번에 다시 그리기보다 feature surface 단위로 순차 적용"
+    ],
+    "concept_alignment": [
+      "accessibility",
+      "color",
+      "component",
+      "content",
+      "design_system",
+      "iconography",
+      "layout",
+      "pattern"
+    ]
+  },
+  "color_reference": null,
+  "governance": {
+    "source_of_truth": [
+      "brand profile",
+      "design tokens",
+      "component specs",
+      "usage rules",
+      "existing product surfaces and task flows"
+    ],
+    "change_policy": [
+      "새 컴포넌트보다 기존 primitive 확장을 우선",
+      "예외 케이스는 variant로 흡수 가능한지 먼저 검토",
+      "브랜드 키워드와 anti-keyword를 위반하면 추가하지 않음"
+    ],
+    "implementation_guardrails": [
+      "기존 핵심 화면, 진입점, 작업 흐름은 명시적 승인 없이 제거하거나 숨기지 않음",
+      "전면 셸 리라이트보다 토큰 -> primitive -> feature surface 순서의 점진적 롤아웃을 우선",
+      "새 시각 규칙은 지원 대상 테마와 breakpoint 전체에서 먼저 검증",
+      "기존 데이터 밀도와 업무 완료 경로를 유지한 상태에서 시각 품질을 높이는 방향을 우선",
+      "기능 위치 변경, 정보 구조 변경, 패널 제거는 별도의 migration plan이 있을 때만 수행"
+    ]
+  },
+  "ontology_targets": [
+    {
+      "concept_id": "component",
+      "count": 121
+    },
+    {
+      "concept_id": "design_system",
+      "count": 68
+    },
+    {
+      "concept_id": "layout",
+      "count": 42
+    },
+    {
+      "concept_id": "content",
+      "count": 36
+    },
+    {
+      "concept_id": "accessibility",
+      "count": 35
+    },
+    {
+      "concept_id": "color",
+      "count": 35
+    },
+    {
+      "concept_id": "pattern",
+      "count": 35
+    },
+    {
+      "concept_id": "iconography",
+      "count": 30
+    }
+  ]
+}

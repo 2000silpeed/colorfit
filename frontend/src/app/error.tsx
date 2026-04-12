@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -28,12 +29,12 @@ export default function RouteError({ error, reset }: ErrorProps) {
         >
           다시 시도
         </button>
-        <a
+        <Link
           href="/"
           className="inline-flex min-h-[44px] min-w-[112px] items-center justify-center rounded-lg border border-[var(--color-border)] px-5 text-sm font-semibold text-[var(--color-text-primary)]"
         >
           홈으로
-        </a>
+        </Link>
       </div>
     </div>
   );

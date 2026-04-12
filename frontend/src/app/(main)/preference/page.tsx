@@ -51,7 +51,7 @@ function getSeedLabel(axis: string, value: string | null): string {
 /* ── 스켈레톤 ── */
 function PreferenceSkeleton() {
   return (
-    <div className="min-h-screen bg-bg-primary pb-[80px]">
+    <div className="min-h-screen bg-bg-primary pb-[72px]">
       <div className="px-[20px] pt-[56px]">
         <div className="h-[24px] w-1/3 rounded bg-[#E0DCD7] animate-pulse mb-[32px]" />
         <div className="grid grid-cols-2 gap-[12px] mb-[32px]">
@@ -307,7 +307,7 @@ export default function PreferencePage() {
 
   if (!userId) {
     return (
-      <div className="min-h-screen bg-bg-primary flex flex-col items-center justify-center px-[20px] pb-[80px]">
+      <div className="min-h-screen bg-bg-primary flex flex-col items-center justify-center px-[20px] pb-[72px]">
         <p className="text-text-secondary text-[15px] mb-[16px]" style={{ fontFamily: "var(--font-body)" }}>
           로그인이 필요합니다
         </p>
@@ -317,7 +317,7 @@ export default function PreferencePage() {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen bg-bg-primary flex flex-col items-center justify-center px-[20px] pb-[80px]">
+      <div className="min-h-screen bg-bg-primary flex flex-col items-center justify-center px-[20px] pb-[72px]">
         <p className="text-text-secondary text-[15px] mb-[16px]" style={{ fontFamily: "var(--font-body)" }}>
           {error ?? "취향 정보를 불러올 수 없습니다"}
         </p>
@@ -340,7 +340,7 @@ export default function PreferencePage() {
       : "학습 완료";
 
   return (
-    <div className="min-h-screen bg-bg-primary pb-[80px]">
+    <div className="min-h-screen bg-bg-primary pb-[72px]">
       {/* 헤더 */}
       <div className="sticky top-0 z-10 bg-bg-primary border-b" style={{ borderColor: "var(--color-border)" }}>
         <div className="flex items-center h-[56px] px-[20px]">

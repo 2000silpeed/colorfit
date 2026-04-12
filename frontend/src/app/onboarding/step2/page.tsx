@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { Suspense, useState, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -116,30 +116,35 @@ function needsLightText(color: string): boolean {
 }
 
 export default function Step2Page() {
+  return (
+    <Suspense fallback={<div className="flex-1 bg-bg-primary" />}>
+      <Step2Content />
+    </Suspense>
+  );
+}
+
+function Step2Content() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isChangeMode = searchParams.get("mode") === "change";
   const prefersReducedMotion = useReducedMotion();
 
-  const [selectedSeason, setSelectedSeason] = useState<SeasonId | null>(null);
-  const [selectedTone, setSelectedTone] = useState<string | null>(null);
-
-  /* 톤 변경 모드: 현재 톤 미리 선택 */
-  useEffect(() => {
-    if (!isChangeMode) return;
+  const [selectedSeason, setSelectedSeason] = useState<SeasonId | null>(() => {
+    if (!isChangeMode || typeof window === "undefined") return null;
     const currentTone = localStorage.getItem("colorfit_tone_id") ?? localStorage.getItem("colorfit_tone");
-    if (!currentTone) return;
-    // 정확한 tone 매칭 우선
+    if (!currentTone) return null;
     const exact = SEASONS.find((s) => s.tones.some((t) => t.id === currentTone));
-    if (exact) {
-      setSelectedSeason(exact.id);
-      setSelectedTone(currentTone);
-      return;
-    }
-    // season prefix로 fallback (e.g. spring_warm_vivid → spring_warm)
-    const seasonId = SEASONS.find((s) => currentTone.startsWith(s.id))?.id;
-    if (seasonId) setSelectedSeason(seasonId as SeasonId);
-  }, [isChangeMode]);
+    if (exact) return exact.id;
+    const season = SEASONS.find((s) => currentTone.startsWith(s.id));
+    return (season?.id as SeasonId) ?? null;
+  });
+  const [selectedTone, setSelectedTone] = useState<string | null>(() => {
+    if (!isChangeMode || typeof window === "undefined") return null;
+    const currentTone = localStorage.getItem("colorfit_tone_id") ?? localStorage.getItem("colorfit_tone");
+    if (!currentTone) return null;
+    const exact = SEASONS.find((s) => s.tones.some((t) => t.id === currentTone));
+    return exact ? currentTone : null;
+  });
   const [showBottomSheet, setShowBottomSheet] = useState(false);
   const [diagnosisStep, setDiagnosisStep] = useState(0);
   const [diagnosisAnswer, setDiagnosisAnswer] = useState<string | null>(null);

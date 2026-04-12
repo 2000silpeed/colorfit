@@ -197,7 +197,8 @@ export default function BrandsPage() {
       {/* 저장 버튼 (sticky bottom) */}
       {hasChanges && (
         <motion.div
-          className="fixed bottom-[80px] left-0 right-0 px-[20px] z-40"
+          className="fixed left-0 right-0 px-[20px] z-40"
+          style={{ bottom: "calc(72px + env(safe-area-inset-bottom, 0px))" }}
           initial={{ y: 40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -14,17 +14,13 @@ interface TryonImage {
 export default function TryonGalleryPage() {
   const router = useRouter();
   const prefersReducedMotion = useReducedMotion();
-  const [images, setImages] = useState<TryonImage[]>([]);
-  const [selectedImage, setSelectedImage] = useState<TryonImage | null>(null);
-
-  useEffect(() => {
+  const [images, setImages] = useState<TryonImage[]>(() => {
+    if (typeof window === "undefined") return [];
     const raw = localStorage.getItem("colorfit_tryon_images");
-    if (raw) {
-      try {
-        setImages(JSON.parse(raw));
-      } catch { /* ignore */ }
-    }
-  }, []);
+    if (!raw) return [];
+    try { return JSON.parse(raw); } catch { return []; }
+  });
+  const [selectedImage, setSelectedImage] = useState<TryonImage | null>(null);
 
   const handleDelete = useCallback((imageUrl: string) => {
     setImages((prev) => {
@@ -79,7 +75,7 @@ export default function TryonGalleryPage() {
             저장된 착장이 없어요
           </p>
           <p className="font-body text-[14px] text-[var(--color-text-secondary)] text-center mb-[24px]">
-            코디 상세에서 "착장으로 보기"를 사용하면{"\n"}생성된 이미지를 여기서 볼 수 있어요
+            코디 상세에서 &ldquo;착장으로 보기&rdquo;를 사용하면{"\n"}생성된 이미지를 여기서 볼 수 있어요
           </p>
           <button
             type="button"

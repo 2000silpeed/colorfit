@@ -264,7 +264,7 @@ export default function ClosetPage() {
   /* -- Loading -- */
   if (state === "loading") {
     return (
-      <div className="min-h-screen bg-bg-primary px-[20px] pt-[60px] pb-[100px]">
+      <div className="min-h-screen bg-bg-primary px-[20px] pt-[60px] pb-[72px]">
         <div className="flex justify-center mb-[24px]">
           <div className="w-[140px] h-[140px] rounded-full bg-bg-secondary animate-pulse" />
         </div>
@@ -308,7 +308,7 @@ export default function ClosetPage() {
   /* -- Empty -- */
   if (state === "empty") {
     return (
-      <div className="min-h-screen bg-bg-primary flex flex-col items-center justify-center px-[20px] pb-[80px]">
+      <div className="min-h-screen bg-bg-primary flex flex-col items-center justify-center px-[20px] pb-[72px]">
         <div className="w-[80px] h-[80px] rounded-full bg-bg-secondary flex items-center justify-center mb-[16px]">
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-tertiary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9.5 2H14.5L17 7H7L9.5 2Z" />
@@ -337,7 +337,7 @@ export default function ClosetPage() {
   const diagnosis = buildCategoryDiagnosis(items);
 
   return (
-    <div className="min-h-screen bg-bg-primary pb-[100px]">
+    <div className="min-h-screen bg-bg-primary" style={{ paddingBottom: "calc(72px + env(safe-area-inset-bottom, 0px))" }}>
       {/* Header */}
       <div className="px-[20px] pt-[56px]">
         <h1 className="font-display text-[24px] text-text-primary leading-[1.25]">
@@ -399,8 +399,8 @@ export default function ClosetPage() {
       <Button
         size="icon"
         onClick={handleAdd}
-        className="fixed bottom-[80px] right-[20px] w-[56px] h-[56px] rounded-full bg-accent text-white flex items-center justify-center z-40 hover:bg-accent/90"
-        style={{ boxShadow: "0 4px 12px rgba(150, 79, 76, 0.3)" }}
+        className="fixed right-[20px] w-[56px] h-[56px] rounded-full bg-accent text-white flex items-center justify-center z-40 hover:bg-accent/90"
+        style={{ bottom: "calc(72px + env(safe-area-inset-bottom, 0px))", boxShadow: "0 4px 12px rgba(150, 79, 76, 0.3)" }}
         aria-label="옷 추가"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">

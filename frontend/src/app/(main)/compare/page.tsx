@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
@@ -152,6 +152,14 @@ function CompareSkeleton() {
 
 /* ── 메인 ── */
 export default function ComparePage() {
+  return (
+    <Suspense fallback={<CompareSkeleton />}>
+      <CompareContent />
+    </Suspense>
+  );
+}
+
+function CompareContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const prefersReducedMotion = useReducedMotion();
@@ -471,8 +479,9 @@ export default function ComparePage() {
         style={{
           backgroundColor: "var(--color-bg-primary)",
           borderColor: "var(--color-border)",
-          bottom: "calc(60px + env(safe-area-inset-bottom, 0px))",
+          bottom: "calc(56px + env(safe-area-inset-bottom, 0px))",
           paddingBottom: "12px",
+          paddingTop: "12px",
         }}
       >
         <div className="flex gap-[12px] px-[20px] py-[12px] max-w-[430px] mx-auto">

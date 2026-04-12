@@ -1,10 +1,14 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { postOAuthCallback } from "@/lib/api";
 
 export default function KakaoCallbackPage() {
+  return <Suspense fallback={null}><KakaoCallbackContent /></Suspense>;
+}
+
+function KakaoCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const processed = useRef(false);

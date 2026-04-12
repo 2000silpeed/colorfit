@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { Suspense, useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -15,7 +15,6 @@ import {
   type ClosetRecommendationResponse,
   type TpoOutfitSuggestion,
   type RecommendedProduct,
-  type TryonUsageResponse,
 } from "@/lib/api";
 
 type PageState = "loading" | "success" | "error";
@@ -428,6 +427,14 @@ function TpoCodiCard({
 
 /* ── 메인 페이지 ── */
 export default function ClosetAnalyzeResultPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-bg-primary" />}>
+      <ClosetAnalyzeContent />
+    </Suspense>
+  );
+}
+
+function ClosetAnalyzeContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const prefersReducedMotion = useReducedMotion();
@@ -436,10 +443,11 @@ export default function ClosetAnalyzeResultPage() {
   const userToneId = searchParams.get("user_tone_id") ?? "";
   const category = searchParams.get("category") ?? "top";
 
-  const [state, setState] = useState<PageState>("loading");
+  const hasRequiredParams = !!(imageUrl && userToneId);
+  const [state, setState] = useState<PageState>(hasRequiredParams ? "loading" : "error");
   const [analyzeResult, setAnalyzeResult] = useState<ClosetAnalyzeResponse | null>(null);
   const [recommendations, setRecommendations] = useState<ClosetRecommendationResponse | null>(null);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState(hasRequiredParams ? "" : "분석에 필요한 정보가 없습니다.");
 
   /* 옷장 추가 상태 */
   const [addingToCloset, setAddingToCloset] = useState(false);
@@ -454,11 +462,7 @@ export default function ClosetAnalyzeResultPage() {
   const [tryonRemaining, setTryonRemaining] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!imageUrl || !userToneId) {
-      setState("error");
-      setErrorMessage("\uBD84\uC11D\uC5D0 \uD544\uC694\uD55C \uC815\uBCF4\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4.");
-      return;
-    }
+    if (!imageUrl || !userToneId) return;
 
     let cancelled = false;
 
@@ -506,7 +510,7 @@ export default function ClosetAnalyzeResultPage() {
   }, []);
 
   /* 착장 생성 핸들러 */
-  const abortRef = { current: null as AbortController | null };
+  const abortRef = useRef<AbortController | null>(null);
 
   const handleTryOn = useCallback(async (itemUrls: string[]) => {
     const userId = localStorage.getItem("colorfit_user_id");

@@ -53,7 +53,6 @@ function formatPrice(price: number): string {
 
 /* ── 스코어 바 컴포넌트 ── */
 function ScoreBar({
-  label,
   fullLabel,
   value,
   color,
@@ -294,7 +293,6 @@ export default function OutfitDetailPage() {
 
   /* 옷장 코디 매칭 로드 */
   useEffect(() => {
-    setClosetOutfit(null);
     if (!closetItemId) return;
     const uid = localStorage.getItem("colorfit_user_id") ?? "";
     if (!uid) return;
@@ -312,7 +310,7 @@ export default function OutfitDetailPage() {
       }
     }
     loadClosetOutfit();
-    return () => { cancelled = true; };
+    return () => { cancelled = true; setClosetOutfit(null); };
   }, [closetItemId, outfitId]);
 
   /* 카탈로그(구매 필요) 아이템 ID Set */
@@ -443,7 +441,7 @@ export default function OutfitDetailPage() {
     }
   }, [outfitId, userId]);
 
-  const handleTryOn = useCallback(async () => {
+  const handleTryOn = async () => {
     if (tryonState === "loading" || tryonState === "color-select") return;
     if (!isLoggedIn()) {
       setLoginToast(true);
@@ -501,7 +499,7 @@ export default function OutfitDetailPage() {
         startTryonGeneration();
       }
     }
-  }, [outfitId, userId, router, tryonState, outfit, startTryonGeneration]);
+  };
 
   const handleColorConfirm = useCallback(() => {
     const overrides: Record<string, string> = {};
@@ -523,10 +521,10 @@ export default function OutfitDetailPage() {
     router.push("/premium");
   }, [router]);
 
-  const handleCompareSelect = useCallback((targetId: string) => {
+  const handleCompareSelect = (targetId: string) => {
     setShowComparePicker(false);
     router.push(`/compare?a=${outfitId}&b=${targetId}`);
-  }, [outfitId, router]);
+  };
 
   const handleBack = useCallback(() => {
     if (window.history.length > 1) {
@@ -868,7 +866,7 @@ export default function OutfitDetailPage() {
       {/* ── 하단 CTA (BottomTabBar 위에 고정) ── */}
       <div
         className="fixed left-0 right-0 z-40 bg-bg-primary/95 backdrop-blur-sm border-t border-border"
-        style={{ bottom: "calc(60px + env(safe-area-inset-bottom, 0px))" }}
+        style={{ bottom: "calc(56px + env(safe-area-inset-bottom, 0px))" }}
       >
         <div className="flex flex-col gap-[8px] px-[20px] py-[12px] max-w-[768px] mx-auto">
           <Button

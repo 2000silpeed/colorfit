@@ -1,0 +1,686 @@
+{
+  "families": [
+    {
+      "family": "button",
+      "priority": "high",
+      "required_states": [
+        "default",
+        "hover",
+        "active",
+        "disabled",
+        "loading"
+      ],
+      "components": [
+        "primary-button",
+        "secondary-button",
+        "ghost-button",
+        "icon-button",
+        "cta-button"
+      ]
+    },
+    {
+      "family": "feedback",
+      "priority": "high",
+      "required_states": [
+        "info",
+        "success",
+        "warning",
+        "danger"
+      ],
+      "components": [
+        "reason-chip",
+        "top-pick-badge",
+        "price-highlight-badge",
+        "inline-alert",
+        "empty-state",
+        "toast"
+      ]
+    },
+    {
+      "family": "input",
+      "priority": "high",
+      "required_states": [
+        "default",
+        "focus",
+        "error",
+        "disabled"
+      ],
+      "components": [
+        "tone-selector",
+        "mood-tag-selector",
+        "budget-range-slider",
+        "upload-dropzone",
+        "multi-item-selector",
+        "text-field",
+        "search-field",
+        "segmented-control"
+      ]
+    },
+    {
+      "family": "navigation",
+      "priority": "high",
+      "required_states": [
+        "default",
+        "active",
+        "hover",
+        "collapsed"
+      ],
+      "components": [
+        "mobile-topbar",
+        "mobile-tab-bar",
+        "back-button",
+        "section-tabs"
+      ]
+    },
+    {
+      "family": "data-display",
+      "priority": "medium",
+      "required_states": [
+        "default"
+      ],
+      "components": [
+        "score-bar-chart",
+        "comparison-overlay-chart",
+        "price-compare-table",
+        "closet-grid",
+        "item-score-badge",
+        "analysis-summary-card"
+      ]
+    },
+    {
+      "family": "foundation",
+      "priority": "medium",
+      "required_states": [
+        "default"
+      ],
+      "components": [
+        "step-progress",
+        "preference-card",
+        "outfit-feed-card",
+        "tpo-filter-tab",
+        "save-toggle",
+        "recommendation-reason-list",
+        "merchant-row",
+        "similar-item-card",
+        "premium-gate-card"
+      ]
+    },
+    {
+      "family": "overlay",
+      "priority": "medium",
+      "required_states": [
+        "closed",
+        "opening",
+        "open"
+      ],
+      "components": [
+        "outfit-detail-sheet",
+        "try-on-preview",
+        "generation-state-panel",
+        "bottom-sheet",
+        "modal-dialog"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "step-progress",
+      "family": "foundation",
+      "supports_primitive": "personal color onboarding",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "tone-selector",
+      "family": "input",
+      "supports_primitive": "personal color onboarding",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "mood-tag-selector",
+      "family": "input",
+      "supports_primitive": "personal color onboarding",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "budget-range-slider",
+      "family": "input",
+      "supports_primitive": "personal color onboarding",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "preference-card",
+      "family": "foundation",
+      "supports_primitive": "personal color onboarding",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "outfit-feed-card",
+      "family": "foundation",
+      "supports_primitive": "recommendation feed",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "score-bar-chart",
+      "family": "data-display",
+      "supports_primitive": "recommendation feed",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "reason-chip",
+      "family": "feedback",
+      "supports_primitive": "recommendation feed",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "tpo-filter-tab",
+      "family": "foundation",
+      "supports_primitive": "recommendation feed",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "save-toggle",
+      "family": "foundation",
+      "supports_primitive": "recommendation feed",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "outfit-detail-sheet",
+      "family": "overlay",
+      "supports_primitive": "outfit detail and comparison",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "comparison-overlay-chart",
+      "family": "data-display",
+      "supports_primitive": "outfit detail and comparison",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "top-pick-badge",
+      "family": "feedback",
+      "supports_primitive": "outfit detail and comparison",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "recommendation-reason-list",
+      "family": "foundation",
+      "supports_primitive": "outfit detail and comparison",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "price-compare-table",
+      "family": "data-display",
+      "supports_primitive": "shopping price comparison",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "merchant-row",
+      "family": "foundation",
+      "supports_primitive": "shopping price comparison",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "price-highlight-badge",
+      "family": "feedback",
+      "supports_primitive": "shopping price comparison",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "similar-item-card",
+      "family": "foundation",
+      "supports_primitive": "shopping price comparison",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "closet-grid",
+      "family": "data-display",
+      "supports_primitive": "closet analysis",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "item-score-badge",
+      "family": "data-display",
+      "supports_primitive": "closet analysis",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "upload-dropzone",
+      "family": "input",
+      "supports_primitive": "closet analysis",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "analysis-summary-card",
+      "family": "data-display",
+      "supports_primitive": "closet analysis",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "try-on-preview",
+      "family": "overlay",
+      "supports_primitive": "ai try-on",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "generation-state-panel",
+      "family": "overlay",
+      "supports_primitive": "ai try-on",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "premium-gate-card",
+      "family": "foundation",
+      "supports_primitive": "ai try-on",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "multi-item-selector",
+      "family": "input",
+      "supports_primitive": "ai try-on",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "primary-button",
+      "family": "button",
+      "supports_primitive": "system baseline",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "secondary-button",
+      "family": "button",
+      "supports_primitive": "system baseline",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "ghost-button",
+      "family": "button",
+      "supports_primitive": "system baseline",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "icon-button",
+      "family": "button",
+      "supports_primitive": "system baseline",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "cta-button",
+      "family": "button",
+      "supports_primitive": "system baseline",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "mobile-topbar",
+      "family": "navigation",
+      "supports_primitive": "system baseline",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "mobile-tab-bar",
+      "family": "navigation",
+      "supports_primitive": "system baseline",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "back-button",
+      "family": "navigation",
+      "supports_primitive": "system baseline",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "section-tabs",
+      "family": "navigation",
+      "supports_primitive": "system baseline",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "inline-alert",
+      "family": "feedback",
+      "supports_primitive": "system baseline",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "empty-state",
+      "family": "feedback",
+      "supports_primitive": "system baseline",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "toast",
+      "family": "feedback",
+      "supports_primitive": "system baseline",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "bottom-sheet",
+      "family": "overlay",
+      "supports_primitive": "system baseline",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "modal-dialog",
+      "family": "overlay",
+      "supports_primitive": "system baseline",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "text-field",
+      "family": "input",
+      "supports_primitive": "system baseline",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "search-field",
+      "family": "input",
+      "supports_primitive": "system baseline",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    },
+    {
+      "name": "segmented-control",
+      "family": "input",
+      "supports_primitive": "system baseline",
+      "status": "planned",
+      "must_document": [
+        "anatomy",
+        "states",
+        "content rules",
+        "accessibility",
+        "dos and donts"
+      ]
+    }
+  ]
+}

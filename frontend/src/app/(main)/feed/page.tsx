@@ -7,8 +7,6 @@ import OutfitCard from "@/components/OutfitCard";
 import { fetchFeed, postReaction, type OutfitFeedItem } from "@/lib/api";
 import { isLoggedIn } from "@/lib/auth";
 import { migrateLegacyTones } from "@/lib/toneMigration";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 /* ── TPO 탭 데이터 ── */
 const TPO_TABS = [
@@ -23,7 +21,7 @@ const TPO_TABS = [
   { id: "workout", label: "운동" },
 ];
 
-/* ── 예산 프리셋 ── */
+/* ── 예산 ── */
 const BUDGET_MIN_DEFAULT = 30000;
 const BUDGET_MAX_DEFAULT = 100000;
 const BUDGET_STEP = 10000;
@@ -36,21 +34,28 @@ function formatBudgetLabel(min: number, max: number): string {
   return `₩${fmtMin}~₩${fmtMax}`;
 }
 
-/* ── 스켈레톤 카드 ── */
+/* ── 스켈레톤 ── */
 function SkeletonCard() {
   return (
-    <div className="px-[20px] mb-[20px]">
+    <div className="mb-[24px]">
       <div
-        className="w-full rounded-[var(--radius-lg)] bg-[#E0DCD7] animate-pulse"
-        style={{ aspectRatio: "3/4" }}
+        className="w-full bg-bg-secondary animate-pulse"
+        style={{ aspectRatio: "1/1", borderRadius: "var(--radius-lg)" }}
       />
-      <div className="mt-[12px] h-[16px] w-3/4 rounded bg-[#E0DCD7] animate-pulse" />
-      <div className="mt-[8px] h-[14px] w-1/2 rounded bg-[#E0DCD7] animate-pulse" />
+      <div className="mt-[12px] px-[2px]">
+        <div className="h-[16px] w-3/4 rounded bg-bg-secondary animate-pulse" />
+        <div className="mt-[8px] h-[14px] w-1/3 rounded bg-bg-secondary animate-pulse" />
+        <div className="mt-[6px] h-[13px] w-2/3 rounded bg-bg-secondary animate-pulse" />
+        <div className="mt-[8px] flex gap-[6px]">
+          <div className="h-[22px] w-[56px] rounded-full bg-bg-secondary animate-pulse" />
+          <div className="h-[22px] w-[52px] rounded-full bg-bg-secondary animate-pulse" />
+        </div>
+      </div>
     </div>
   );
 }
 
-/* ── 오늘의 컬러핏 특별 카드 ── */
+/* ── 오늘의 컬러핏 ── */
 interface TodayColorFitCardProps {
   outfit: OutfitFeedItem;
   isSaved: boolean;
@@ -60,8 +65,17 @@ interface TodayColorFitCardProps {
 
 function TodayColorFitCard({ outfit, isSaved, onTap, onSaveToggle }: TodayColorFitCardProps) {
   return (
-    <div className="mx-[20px] mb-[24px] bg-bg-secondary rounded-[var(--radius-xl)] p-[24px]">
-      <span className="font-display text-[18px] text-accent">
+    <div
+      className="mb-[32px] p-[20px]"
+      style={{
+        backgroundColor: "var(--color-bg-secondary)",
+        borderRadius: "var(--radius-xl)",
+      }}
+    >
+      <span
+        className="text-[18px] font-semibold"
+        style={{ fontFamily: "var(--font-display)", color: "var(--color-accent)" }}
+      >
         오늘의 컬러핏
       </span>
       <div className="mt-[12px]">
@@ -88,12 +102,12 @@ export default function FeedPage() {
   const prefersReducedMotion = useReducedMotion();
   const router = useRouter();
 
-  /* 사용자 프로필 (localStorage에서 로드) */
+  /* 프로필 */
   const [toneId, setToneId] = useState<string>("");
   const [gender, setGender] = useState<string>("");
   const [ageGroup, setAgeGroup] = useState<string>("");
 
-  /* 필터 상태 */
+  /* 필터 */
   const [activeTpo, setActiveTpo] = useState("all");
   const [budgetMin, setBudgetMin] = useState(BUDGET_MIN_DEFAULT);
   const [budgetMax, setBudgetMax] = useState(BUDGET_MAX_DEFAULT);
@@ -111,19 +125,28 @@ export default function FeedPage() {
     toastTimerRef.current = setTimeout(() => setToast(null), 1500);
   }, []);
 
-  /* 저장된 코디 ID Set */
+  /* 저장 */
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
 
-  /* 피드 데이터 */
+  /* 피드 */
   const [outfits, setOutfits] = useState<OutfitFeedItem[]>([]);
   const [page, setPage] = useState(1);
   const [hasNext, setHasNext] = useState(false);
   const [status, setStatus] = useState<"loading" | "success" | "empty" | "error">("loading");
   const [loadingMore, setLoadingMore] = useState(false);
 
-  /* refs */
+  /* 헤더 스크롤 상태 */
+  const [scrolled, setScrolled] = useState(false);
+
   const sentinelRef = useRef<HTMLDivElement>(null);
   const tpoScrollRef = useRef<HTMLDivElement>(null);
+
+  /* 스크롤 감지 */
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 8);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   /* 프로필 로드 */
   useEffect(() => {
@@ -184,43 +207,36 @@ export default function FeedPage() {
         setLoadingMore(false);
       }
     },
-    [toneId, gender, ageGroup, activeTpo, budgetMin, budgetMax, verifiedOnly, preferredBrands],
+    [toneId, gender, ageGroup, activeTpo, budgetMin, budgetMax, verifiedOnly, preferredBrands, router],
   );
 
   /* 필터 변경 시 리로드 */
   useEffect(() => {
-    if (toneId) {
-      loadFeed(1, false);
-    }
+    if (toneId) loadFeed(1, false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toneId, gender, ageGroup, activeTpo, budgetMin, budgetMax, verifiedOnly]);
 
-  /* 무한 스크롤 (IntersectionObserver) */
+  /* 무한 스크롤 */
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
-
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && hasNext && !loadingMore && status === "success") {
           loadFeed(page + 1, true);
         }
       },
-      { rootMargin: "200px" },
+      { rootMargin: "300px" },
     );
-
     observer.observe(sentinel);
     return () => observer.disconnect();
   }, [hasNext, loadingMore, page, status, loadFeed]);
 
-  /* toastTimer cleanup */
   useEffect(() => {
-    return () => {
-      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    };
+    return () => { if (toastTimerRef.current) clearTimeout(toastTimerRef.current); };
   }, []);
 
-  /* save/dislike 핸들러 */
+  /* 핸들러 */
   const userId = (() => {
     if (typeof window === "undefined") return "";
     let id = localStorage.getItem("colorfit_user_id");
@@ -234,96 +250,110 @@ export default function FeedPage() {
   const handleSaveToggle = useCallback((id: string) => {
     if (!isLoggedIn()) {
       showToast("로그인이 필요해요");
-      sessionStorage.setItem("colorfit_return_url", `/feed`);
+      sessionStorage.setItem("colorfit_return_url", "/feed");
       router.push("/login?returnUrl=/feed");
       return;
     }
     const wasSaved = savedIds.has(id);
     setSavedIds((prev) => {
       const next = new Set(prev);
-      if (wasSaved) next.delete(id);
-      else next.add(id);
+      if (wasSaved) next.delete(id); else next.add(id);
       return next;
     });
     showToast(wasSaved ? "저장 취소" : "저장했어요");
-    if (userId) {
-      postReaction(userId, id, "save").catch(() => {});
-    }
+    if (userId) postReaction(userId, id, "save").catch(() => {});
   }, [savedIds, userId, showToast, router]);
 
-  const handleDislike = useCallback(
-    (id: string) => {
-      if (!isLoggedIn()) {
-        showToast("로그인이 필요해요");
-        sessionStorage.setItem("colorfit_return_url", `/feed`);
-        router.push("/login?returnUrl=/feed");
-        return;
-      }
-      setOutfits((prev) => prev.filter((o) => o.id !== id));
-      showToast("관심없음");
-      if (userId) {
-        postReaction(userId, id, "dislike").catch(() => {});
-      }
-    },
-    [userId, showToast, router],
-  );
+  const handleDislike = useCallback((id: string) => {
+    if (!isLoggedIn()) {
+      showToast("로그인이 필요해요");
+      sessionStorage.setItem("colorfit_return_url", "/feed");
+      router.push("/login?returnUrl=/feed");
+      return;
+    }
+    setOutfits((prev) => prev.filter((o) => o.id !== id));
+    showToast("관심없음");
+    if (userId) postReaction(userId, id, "dislike").catch(() => {});
+  }, [userId, showToast, router]);
 
   const handleCardTap = useCallback((id: string) => {
     router.push(`/outfit/${id}`);
   }, [router]);
 
-  /* 오늘의 컬러핏 (피드 첫 번째 아이템) */
   const todayPick = outfits[0] ?? null;
   const feedOutfits = outfits.slice(1);
 
   return (
-    <div className="min-h-screen bg-bg-primary">
-      {/* ── 헤더 (sticky) ── */}
-      <header className="sticky top-0 z-30 bg-bg-primary/95 backdrop-blur-sm">
-        <div className="flex items-center justify-between px-[20px] h-[52px] max-w-[768px] mx-auto">
-          <span className="font-display text-[20px] text-text-primary font-bold">
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-primary)" }}>
+      {/* ── Sticky Header ── */}
+      <header
+        className="sticky top-0 z-30 transition-shadow duration-150"
+        style={{
+          backgroundColor: scrolled ? "rgba(248, 246, 243, 0.95)" : "var(--color-bg-primary)",
+          backdropFilter: scrolled ? "blur(12px)" : "none",
+          WebkitBackdropFilter: scrolled ? "blur(12px)" : "none",
+          boxShadow: scrolled ? "0 1px 0 var(--color-border)" : "none",
+        }}
+      >
+        {/* Logo + Profile */}
+        <div className="flex items-center justify-between px-[20px] h-[48px] max-w-[430px] mx-auto">
+          <span
+            className="text-[20px] font-bold tracking-[-0.02em]"
+            style={{ fontFamily: "var(--font-display)", color: "var(--color-text-primary)" }}
+          >
             ColorFit
           </span>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="w-[44px] h-[44px] rounded-full bg-bg-secondary"
+          <button
+            type="button"
+            className="w-[36px] h-[36px] flex items-center justify-center rounded-full"
+            style={{ backgroundColor: "var(--color-bg-secondary)" }}
             aria-label="프로필"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
               <circle cx="12" cy="7" r="4" />
             </svg>
-          </Button>
+          </button>
         </div>
 
-        {/* ── TPO 탭 필터 ── */}
+        {/* TPO Filter Chips */}
         <div
           ref={tpoScrollRef}
-          className="flex gap-[8px] px-[20px] pb-[12px] overflow-x-auto scrollbar-hide max-w-[768px] mx-auto"
-          style={{ scrollbarWidth: "none" }}
+          className="flex gap-[6px] pl-[20px] pb-[10px] overflow-x-auto max-w-[430px] mx-auto"
+          style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
         >
-          {TPO_TABS.map((tab) => (
-            <Badge
-              key={tab.id}
-              onClick={() => setActiveTpo(tab.id)}
-              className={`shrink-0 min-h-[36px] px-[16px] py-[8px] rounded-full text-[14px] font-body cursor-pointer transition-colors whitespace-nowrap ${
-                activeTpo === tab.id
-                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                  : "bg-secondary text-secondary-foreground border border-border hover:bg-muted"
-              }`}
-            >
-              {tab.label}
-            </Badge>
-          ))}
+          {TPO_TABS.map((tab) => {
+            const isActive = activeTpo === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTpo(tab.id)}
+                className="shrink-0 min-h-[34px] px-[14px] py-[6px] text-[13px] transition-colors active:scale-[0.97] active:opacity-80"
+                style={{
+                  fontFamily: "var(--font-body)",
+                  borderRadius: "var(--radius-full)",
+                  whiteSpace: "nowrap",
+                  backgroundColor: isActive ? "var(--color-accent)" : "transparent",
+                  color: isActive ? "#FFFFFF" : "var(--color-text-secondary)",
+                  border: isActive ? "none" : "1px solid var(--color-border)",
+                  fontWeight: isActive ? 600 : 400,
+                }}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+          <div className="shrink-0 w-[20px]" aria-hidden="true" />
         </div>
 
-        {/* ── 필터 바 (예산 + 추천 브랜드) ── */}
-        <div className="px-[20px] pb-[12px] max-w-[768px] mx-auto flex items-center gap-[12px]">
+        {/* Filter bar */}
+        <div className="px-[20px] pb-[8px] max-w-[430px] mx-auto flex items-center gap-[8px]">
           <button
             type="button"
             onClick={() => setBudgetOpen((prev) => !prev)}
-            className="flex items-center gap-[6px] min-h-[44px] py-[10px] text-[13px] font-body text-text-secondary"
+            className="flex items-center gap-[4px] min-h-[44px] py-[8px] text-[13px]"
+            style={{ fontFamily: "var(--font-body)", color: "var(--color-text-secondary)" }}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" />
@@ -334,49 +364,55 @@ export default function FeedPage() {
             </svg>
             <span>{formatBudgetLabel(budgetMin, budgetMax)}</span>
             <svg
-              width="12"
-              height="12"
+              width="10"
+              height="10"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
-              className={`transition-transform ${budgetOpen ? "rotate-180" : ""}`}
+              strokeWidth="2.5"
+              className={`transition-transform duration-150 ${budgetOpen ? "rotate-180" : ""}`}
             >
               <polyline points="6 9 12 15 18 9" />
             </svg>
           </button>
 
-          {/* 추천 브랜드만 토글 */}
-          <Badge
+          <button
+            type="button"
             onClick={() => setVerifiedOnly((prev) => !prev)}
-            className={`shrink-0 inline-flex items-center gap-[4px] min-h-[36px] px-[12px] py-[8px] rounded-full text-[13px] font-body cursor-pointer transition-colors ${
-              verifiedOnly
-                ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                : "bg-secondary text-secondary-foreground border border-border hover:bg-muted"
-            }`}
+            className="shrink-0 inline-flex items-center gap-[3px] min-h-[32px] px-[10px] py-[6px] text-[12px] transition-colors active:scale-[0.97]"
+            style={{
+              fontFamily: "var(--font-body)",
+              borderRadius: "var(--radius-full)",
+              backgroundColor: verifiedOnly ? "var(--color-accent)" : "transparent",
+              color: verifiedOnly ? "#FFFFFF" : "var(--color-text-secondary)",
+              border: verifiedOnly ? "none" : "1px solid var(--color-border)",
+              fontWeight: verifiedOnly ? 600 : 400,
+            }}
           >
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+            <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor">
               <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zm3.41 5.09L7.2 9.3 5.3 7.4a.75.75 0 0 0-1.1 1.02l.08.08 2.5 2.5a.75.75 0 0 0 1.02.08l.08-.08 4.8-4.8a.75.75 0 0 0-1.1-1.02l-.07.01z" />
             </svg>
             추천 브랜드
-          </Badge>
+          </button>
         </div>
 
-        {/* ── 예산 슬라이더 (확장) ── */}
-        <div className="px-[20px] pb-[12px] max-w-[768px] mx-auto">
+        {/* Budget slider (expandable) */}
+        <div className="px-[20px] max-w-[430px] mx-auto">
           <AnimatePresence>
             {budgetOpen && (
               <motion.div
                 initial={prefersReducedMotion ? false : { height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.25 }}
                 className="overflow-hidden"
               >
-                <div className="pt-[12px] flex flex-col gap-[8px]">
-                  <label className="flex items-center justify-between text-[12px] font-body text-text-tertiary">
+                <div className="pb-[12px] flex flex-col gap-[8px]">
+                  <label className="flex items-center justify-between text-[12px]"
+                    style={{ fontFamily: "var(--font-body)", color: "var(--color-text-tertiary)" }}
+                  >
                     <span>최소</span>
-                    <span>₩{budgetMin.toLocaleString("ko-KR")}</span>
+                    <span style={{ fontVariantNumeric: "tabular-nums" }}>₩{budgetMin.toLocaleString("ko-KR")}</span>
                   </label>
                   <input
                     type="range"
@@ -388,9 +424,11 @@ export default function FeedPage() {
                     className="w-full accent-accent"
                     aria-label="최소 예산"
                   />
-                  <label className="flex items-center justify-between text-[12px] font-body text-text-tertiary">
+                  <label className="flex items-center justify-between text-[12px]"
+                    style={{ fontFamily: "var(--font-body)", color: "var(--color-text-tertiary)" }}
+                  >
                     <span>최대</span>
-                    <span>₩{budgetMax.toLocaleString("ko-KR")}</span>
+                    <span style={{ fontVariantNumeric: "tabular-nums" }}>₩{budgetMax.toLocaleString("ko-KR")}</span>
                   </label>
                   <input
                     type="range"
@@ -409,8 +447,8 @@ export default function FeedPage() {
         </div>
       </header>
 
-      {/* ── 메인 콘텐츠 ── */}
-      <main className="max-w-[768px] mx-auto">
+      {/* ── Main Content ── */}
+      <main className="max-w-[430px] mx-auto px-[20px] pt-[8px]">
         {/* Loading */}
         {status === "loading" && (
           <div>
@@ -422,32 +460,46 @@ export default function FeedPage() {
 
         {/* Error */}
         {status === "error" && (
-          <div className="flex flex-col items-center justify-center py-[80px] px-[20px]">
-            <p className="font-body text-[16px] text-text-primary mb-[16px]">
+          <div className="flex flex-col items-center justify-center py-[80px]">
+            <p
+              className="text-[16px] mb-[16px]"
+              style={{ fontFamily: "var(--font-body)", color: "var(--color-text-primary)" }}
+            >
               불러오지 못했어요
             </p>
-            <Button
-              variant="outline"
+            <button
+              type="button"
               onClick={() => loadFeed(1, false)}
-              className="rounded-full border-accent text-accent font-body hover:bg-accent/10"
+              className="px-[20px] py-[10px] text-[14px] font-medium"
+              style={{
+                fontFamily: "var(--font-body)",
+                borderRadius: "var(--radius-full)",
+                border: "1px solid var(--color-accent)",
+                color: "var(--color-accent)",
+                backgroundColor: "transparent",
+              }}
             >
               다시 시도
-            </Button>
+            </button>
           </div>
         )}
 
         {/* Empty */}
         {status === "empty" && (
-          <div className="flex flex-col items-center justify-center py-[80px] px-[20px]">
-            <svg width="64" height="64" viewBox="0 0 64 64" fill="none" className="mb-[16px]">
+          <div className="flex flex-col items-center justify-center py-[80px]">
+            <svg width="48" height="48" viewBox="0 0 64 64" fill="none" className="mb-[16px]">
               <rect x="20" y="8" width="4" height="40" rx="2" fill="var(--color-border)" />
               <rect x="40" y="8" width="4" height="40" rx="2" fill="var(--color-border)" />
               <path d="M16 8h32" stroke="var(--color-border)" strokeWidth="4" strokeLinecap="round" />
             </svg>
-            <p className="font-body text-[16px] text-text-primary mb-[4px]">
+            <p
+              className="text-[15px] mb-[4px]"
+              style={{ fontFamily: "var(--font-body)", color: "var(--color-text-primary)" }}
+            >
               조건에 맞는 코디가 없어요
             </p>
-            <Button
+            <button
+              type="button"
               onClick={() => {
                 setActiveTpo("all");
                 setBudgetMin(BUDGET_MIN_DEFAULT);
@@ -455,17 +507,22 @@ export default function FeedPage() {
                 setVerifiedOnly(false);
                 setPreferredBrands([]);
               }}
-              className="mt-[12px] rounded-full font-body"
+              className="mt-[12px] px-[20px] py-[10px] text-[14px] font-medium"
+              style={{
+                fontFamily: "var(--font-body)",
+                borderRadius: "var(--radius-full)",
+                backgroundColor: "var(--color-accent)",
+                color: "#FFFFFF",
+              }}
             >
-              필터를 변경해보세요
-            </Button>
+              필터 초기화
+            </button>
           </div>
         )}
 
         {/* Success */}
         {status === "success" && (
           <>
-            {/* 오늘의 컬러핏 */}
             {todayPick && (
               <TodayColorFitCard
                 outfit={todayPick}
@@ -475,7 +532,6 @@ export default function FeedPage() {
               />
             )}
 
-            {/* 코디 카드 리스트 */}
             {feedOutfits.map((outfit, i) => (
               <OutfitCard
                 key={outfit.id}
@@ -485,10 +541,7 @@ export default function FeedPage() {
                 title={outfit.reasons[0] ?? "코디 추천"}
                 totalPrice={outfit.total_price ?? 0}
                 reason={outfit.reasons[1] ?? ""}
-                scores={{
-                  pcf: outfit.scores?.pcf ?? 0,
-                  of: outfit.scores?.of ?? 0,
-                }}
+                scores={{ pcf: outfit.scores?.pcf ?? 0, of: outfit.scores?.of ?? 0 }}
                 itemCount={outfit.items?.length ?? 0}
                 isSaved={savedIds.has(outfit.id)}
                 index={i}
@@ -498,31 +551,39 @@ export default function FeedPage() {
               />
             ))}
 
-            {/* 무한 스크롤 센티널 */}
             <div ref={sentinelRef} className="h-[1px]" />
 
-            {/* 추가 로딩 */}
             {loadingMore && (
-              <div className="py-[20px]">
+              <div className="py-[16px]">
                 <SkeletonCard />
               </div>
             )}
           </>
         )}
 
-        {/* 하단 여백 (탭바 겹침 방지) */}
-        <div className="h-[80px]" />
+        {/* Bottom padding for tab bar */}
+        <div style={{ height: "calc(72px + env(safe-area-inset-bottom, 0px))" }} />
       </main>
 
-      {/* 토스트 */}
+      {/* Toast */}
       <AnimatePresence>
         {toast && (
           <motion.div
-            className="fixed bottom-[100px] left-1/2 -translate-x-1/2 z-50 bg-[#333] text-white text-[14px] font-body px-[20px] py-[10px] rounded-full shadow-lg"
-            initial={{ opacity: 0, y: 20 }}
+            className="fixed z-50 left-1/2 -translate-x-1/2"
+            style={{
+              bottom: "calc(72px + env(safe-area-inset-bottom, 0px))",
+              backgroundColor: "var(--color-text-primary)",
+              color: "var(--color-bg-primary)",
+              fontFamily: "var(--font-body)",
+              fontSize: "13px",
+              padding: "8px 16px",
+              borderRadius: "var(--radius-full)",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.2 }}
+            exit={{ opacity: 0, y: 12 }}
+            transition={{ duration: 0.15 }}
           >
             {toast}
           </motion.div>

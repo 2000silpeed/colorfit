@@ -53,6 +53,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
             >
               다시 시도
             </button>
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- global-error is outside Router context */}
             <a
               href="/"
               style={{

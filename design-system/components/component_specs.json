@@ -1,0 +1,3375 @@
+{
+  "brand": "ColorFit",
+  "total_components": 61,
+  "families": [
+    "button",
+    "data-display",
+    "feedback",
+    "input",
+    "navigation",
+    "overlay"
+  ],
+  "brand_keywords": [
+    "editorial",
+    "precise",
+    "trustworthy",
+    "warm"
+  ],
+  "anti_keywords": [
+    "generic",
+    "noisy",
+    "clinical",
+    "cheap"
+  ],
+  "global_adaptation": {
+    "hover": "텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+    "motion": "콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration",
+    "color": "타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음",
+    "density": "넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+    "feedback": "콘텐츠 맥락 안에서 인라인 표시, 토스트보다 인라인 선호 + 명확한 상태 구분, 진행률/결과를 수치로 표시 + 결과를 반드시 확인, 실패 시 복구 방법 안내"
+  },
+  "specs": [
+    {
+      "name": "primary-button",
+      "family": "button",
+      "role": "주요 행동을 유도하는 CTA 버튼",
+      "source_pattern": "baseline",
+      "anatomy": {
+        "parts": [
+          "container",
+          "label",
+          "leading-icon(optional)",
+          "trailing-icon(optional)"
+        ],
+        "states": [
+          "default",
+          "hover",
+          "active",
+          "disabled",
+          "loading"
+        ]
+      },
+      "tokens": {
+        "surface": "primary-button.surface.{state}",
+        "text": "primary-button.text.{state}",
+        "border": "primary-button.border.{state}",
+        "radius": "radius.md",
+        "padding": "spacing.12 spacing.24",
+        "font": "typography.text.md.semibold"
+      },
+      "accessibility": [
+        "role=\"button\"",
+        "aria-disabled=\"true\" when disabled",
+        "aria-busy=\"true\" when loading",
+        "최소 44x44 터치 영역",
+        "텍스트 대비 4.5:1 이상"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/guidelines/carbon-for-ai",
+          "matched_term": "button",
+          "excerpt": "These components can toggle between the AI variant and the default variant depending on the user’s interaction. If the user manually overrides the ..."
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/about",
+          "matched_term": "button",
+          "excerpt": "I get so much joy from writing HTML and CSS, and design systems are one level up - systematically making UIs accessible and consistent. I love conc..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "size prop: sm / md / lg (터치 영역은 항상 최소 44px 보장)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "secondary-button",
+      "family": "button",
+      "role": "보조 행동 버튼",
+      "source_pattern": "baseline",
+      "anatomy": {
+        "parts": [
+          "container",
+          "label",
+          "leading-icon(optional)",
+          "trailing-icon(optional)"
+        ],
+        "states": [
+          "default",
+          "hover",
+          "active",
+          "disabled",
+          "loading"
+        ]
+      },
+      "tokens": {
+        "surface": "secondary-button.surface.{state}",
+        "text": "secondary-button.text.{state}",
+        "border": "secondary-button.border.{state}",
+        "radius": "radius.md",
+        "padding": "spacing.12 spacing.24",
+        "font": "typography.text.md.semibold"
+      },
+      "accessibility": [
+        "role=\"button\"",
+        "aria-disabled=\"true\" when disabled",
+        "aria-busy=\"true\" when loading",
+        "최소 44x44 터치 영역",
+        "텍스트 대비 4.5:1 이상"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/guidelines/carbon-for-ai",
+          "matched_term": "button",
+          "excerpt": "These components can toggle between the AI variant and the default variant depending on the user’s interaction. If the user manually overrides the ..."
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/about",
+          "matched_term": "button",
+          "excerpt": "I get so much joy from writing HTML and CSS, and design systems are one level up - systematically making UIs accessible and consistent. I love conc..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "size prop: sm / md / lg (터치 영역은 항상 최소 44px 보장)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "ghost-button",
+      "family": "button",
+      "role": "최소한의 시각적 무게를 가진 버튼",
+      "source_pattern": "baseline",
+      "anatomy": {
+        "parts": [
+          "container",
+          "label",
+          "leading-icon(optional)",
+          "trailing-icon(optional)"
+        ],
+        "states": [
+          "default",
+          "hover",
+          "active",
+          "disabled",
+          "loading"
+        ]
+      },
+      "tokens": {
+        "surface": "ghost-button.surface.{state}",
+        "text": "ghost-button.text.{state}",
+        "border": "ghost-button.border.{state}",
+        "radius": "radius.md",
+        "padding": "spacing.12 spacing.24",
+        "font": "typography.text.md.semibold"
+      },
+      "accessibility": [
+        "role=\"button\"",
+        "aria-disabled=\"true\" when disabled",
+        "aria-busy=\"true\" when loading",
+        "최소 44x44 터치 영역",
+        "텍스트 대비 4.5:1 이상"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/guidelines/carbon-for-ai",
+          "matched_term": "button",
+          "excerpt": "These components can toggle between the AI variant and the default variant depending on the user’s interaction. If the user manually overrides the ..."
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/about",
+          "matched_term": "button",
+          "excerpt": "I get so much joy from writing HTML and CSS, and design systems are one level up - systematically making UIs accessible and consistent. I love conc..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "size prop: sm / md / lg (터치 영역은 항상 최소 44px 보장)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "icon-button",
+      "family": "button",
+      "role": "아이콘만 있는 액션 버튼",
+      "source_pattern": "baseline",
+      "anatomy": {
+        "parts": [
+          "container",
+          "label",
+          "leading-icon(optional)",
+          "trailing-icon(optional)"
+        ],
+        "states": [
+          "default",
+          "hover",
+          "active",
+          "disabled",
+          "loading"
+        ]
+      },
+      "tokens": {
+        "surface": "icon-button.surface.{state}",
+        "text": "icon-button.text.{state}",
+        "border": "icon-button.border.{state}",
+        "radius": "radius.md",
+        "padding": "spacing.12 spacing.24",
+        "font": "typography.text.md.semibold"
+      },
+      "accessibility": [
+        "role=\"button\"",
+        "aria-disabled=\"true\" when disabled",
+        "aria-busy=\"true\" when loading",
+        "최소 44x44 터치 영역",
+        "텍스트 대비 4.5:1 이상"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/guidelines/carbon-for-ai",
+          "matched_term": "button",
+          "excerpt": "These components can toggle between the AI variant and the default variant depending on the user’s interaction. If the user manually overrides the ..."
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/about",
+          "matched_term": "button",
+          "excerpt": "I get so much joy from writing HTML and CSS, and design systems are one level up - systematically making UIs accessible and consistent. I love conc..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "size prop: sm / md / lg (터치 영역은 항상 최소 44px 보장)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "link-button",
+      "family": "button",
+      "role": "텍스트 링크 스타일 버튼",
+      "source_pattern": "baseline",
+      "anatomy": {
+        "parts": [
+          "container",
+          "label",
+          "leading-icon(optional)",
+          "trailing-icon(optional)"
+        ],
+        "states": [
+          "default",
+          "hover",
+          "active",
+          "disabled",
+          "loading"
+        ]
+      },
+      "tokens": {
+        "surface": "link-button.surface.{state}",
+        "text": "link-button.text.{state}",
+        "border": "link-button.border.{state}",
+        "radius": "radius.md",
+        "padding": "spacing.12 spacing.24",
+        "font": "typography.text.md.semibold"
+      },
+      "accessibility": [
+        "role=\"button\"",
+        "aria-disabled=\"true\" when disabled",
+        "aria-busy=\"true\" when loading",
+        "최소 44x44 터치 영역",
+        "텍스트 대비 4.5:1 이상"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/guidelines/carbon-for-ai",
+          "matched_term": "button",
+          "excerpt": "These components can toggle between the AI variant and the default variant depending on the user’s interaction. If the user manually overrides the ..."
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/about",
+          "matched_term": "button",
+          "excerpt": "I get so much joy from writing HTML and CSS, and design systems are one level up - systematically making UIs accessible and consistent. I love conc..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "size prop: sm / md / lg (터치 영역은 항상 최소 44px 보장)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "data-table",
+      "family": "data-display",
+      "role": "정렬·필터 가능한 데이터 테이블",
+      "source_pattern": "data tables",
+      "anatomy": {
+        "parts": [
+          "container",
+          "header",
+          "content-area",
+          "footer(optional)",
+          "action(optional)"
+        ],
+        "states": [
+          "default",
+          "loading",
+          "empty",
+          "error"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.card.default",
+        "border": "border.subtle",
+        "radius": "radius.md",
+        "padding": "spacing.16 spacing.20",
+        "shadow": "elevation.raised"
+      },
+      "accessibility": [
+        "적절한 heading level 사용",
+        "데이터 테이블은 scope와 caption 필수",
+        "빈 상태에서 안내 텍스트 제공"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/guidelines/carbon-for-ai",
+          "matched_term": "data table",
+          "excerpt": "Data table Modal"
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/product/components",
+          "matched_term": "datatable",
+          "excerpt": "DataTable DataTable is a 2-dimensional data structure where each row is an item, and each column is a data point about the item."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "빈 상태(empty-state)와 에러 상태를 반드시 처리",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "column-header",
+      "family": "data-display",
+      "role": "테이블 컬럼 헤더 (정렬 토글)",
+      "source_pattern": "data tables",
+      "anatomy": {
+        "parts": [
+          "container",
+          "header",
+          "content-area",
+          "footer(optional)",
+          "action(optional)"
+        ],
+        "states": [
+          "default",
+          "loading",
+          "empty",
+          "error"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.card.default",
+        "border": "border.subtle",
+        "radius": "radius.md",
+        "padding": "spacing.16 spacing.20",
+        "shadow": "elevation.raised"
+      },
+      "accessibility": [
+        "적절한 heading level 사용",
+        "데이터 테이블은 scope와 caption 필수",
+        "빈 상태에서 안내 텍스트 제공"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "빈 상태(empty-state)와 에러 상태를 반드시 처리",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "row-actions",
+      "family": "data-display",
+      "role": "행별 액션 메뉴",
+      "source_pattern": "data tables",
+      "anatomy": {
+        "parts": [
+          "container",
+          "header",
+          "content-area",
+          "footer(optional)",
+          "action(optional)"
+        ],
+        "states": [
+          "default",
+          "loading",
+          "empty",
+          "error"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.card.default",
+        "border": "border.subtle",
+        "radius": "radius.md",
+        "padding": "spacing.16 spacing.20",
+        "shadow": "elevation.raised"
+      },
+      "accessibility": [
+        "적절한 heading level 사용",
+        "데이터 테이블은 scope와 caption 필수",
+        "빈 상태에서 안내 텍스트 제공"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "빈 상태(empty-state)와 에러 상태를 반드시 처리",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "pagination",
+      "family": "navigation",
+      "role": "페이지 이동 컨트롤",
+      "source_pattern": "data tables",
+      "anatomy": {
+        "parts": [
+          "container",
+          "nav-item",
+          "icon(optional)",
+          "label",
+          "indicator(active)",
+          "badge(optional)"
+        ],
+        "states": [
+          "default",
+          "hover",
+          "active",
+          "collapsed"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.nav.{state}",
+        "text": "text.nav.{state}",
+        "indicator": "color.accent.500",
+        "padding": "spacing.8 spacing.16"
+      },
+      "accessibility": [
+        "nav landmark (role=\"navigation\")",
+        "aria-current=\"page\" for active item",
+        "키보드 화살표 탐색 지원"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/designing/kits/sketch",
+          "matched_term": "navigation",
+          "excerpt": "Library menu navigation There are two kinds of symbols — library symbols and document symbols. Library symbols are available in any Sketch document..."
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/octicons",
+          "matched_term": "navigation",
+          "excerpt": "Octicon nav items navigation 12 px"
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "active 상태는 URL/라우터와 자동 동기화",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "filter-chip",
+      "family": "input",
+      "role": "활성 필터를 칩으로 표시/해제",
+      "source_pattern": "data tables",
+      "anatomy": {
+        "parts": [
+          "container",
+          "label",
+          "input-area",
+          "helper-text(optional)",
+          "leading-icon(optional)",
+          "clear-button(optional)"
+        ],
+        "states": [
+          "default",
+          "focus",
+          "filled",
+          "error",
+          "disabled",
+          "readonly"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.input.{state}",
+        "text": "text.input.{state}",
+        "border": "border.input.{state}",
+        "radius": "radius.sm",
+        "padding": "spacing.8 spacing.12",
+        "font": "typography.text.md.regular"
+      },
+      "accessibility": [
+        "label과 input을 for/id로 연결",
+        "aria-describedby로 helper/error text 연결",
+        "aria-invalid=\"true\" when error",
+        "aria-required=\"true\" when required"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] feedback: 콘텐츠 맥락 안에서 인라인 표시, 토스트보다 인라인 선호 + 명확한 상태 구분, 진행률/결과를 수치로 표시 + 결과를 반드시 확인, 실패 시 복구 방법 안내"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/guidelines/carbon-for-ai",
+          "matched_term": "input",
+          "excerpt": "Number input Text input"
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/about",
+          "matched_term": "input",
+          "excerpt": "I worked in data visualization and map-making for most of my career, and solving design problems with data is my jam. To me there's something uniqu..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "error 상태에서 helper text → error message로 자동 전환",
+        "label은 항상 visible (placeholder만으로 대체 금지)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "text-field",
+      "family": "input",
+      "role": "단일 줄 텍스트 입력",
+      "source_pattern": "forms",
+      "anatomy": {
+        "parts": [
+          "container",
+          "label",
+          "input-area",
+          "helper-text(optional)",
+          "leading-icon(optional)",
+          "clear-button(optional)"
+        ],
+        "states": [
+          "default",
+          "focus",
+          "filled",
+          "error",
+          "disabled",
+          "readonly"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.input.{state}",
+        "text": "text.input.{state}",
+        "border": "border.input.{state}",
+        "radius": "radius.sm",
+        "padding": "spacing.8 spacing.12",
+        "font": "typography.text.md.regular"
+      },
+      "accessibility": [
+        "label과 input을 for/id로 연결",
+        "aria-describedby로 helper/error text 연결",
+        "aria-invalid=\"true\" when error",
+        "aria-required=\"true\" when required"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] feedback: 콘텐츠 맥락 안에서 인라인 표시, 토스트보다 인라인 선호 + 명확한 상태 구분, 진행률/결과를 수치로 표시 + 결과를 반드시 확인, 실패 시 복구 방법 안내"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/guidelines/carbon-for-ai",
+          "matched_term": "input",
+          "excerpt": "Number input Text input"
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/about",
+          "matched_term": "input",
+          "excerpt": "I worked in data visualization and map-making for most of my career, and solving design problems with data is my jam. To me there's something uniqu..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "error 상태에서 helper text → error message로 자동 전환",
+        "label은 항상 visible (placeholder만으로 대체 금지)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "textarea",
+      "family": "input",
+      "role": "여러 줄 텍스트 입력",
+      "source_pattern": "forms",
+      "anatomy": {
+        "parts": [
+          "container",
+          "label",
+          "input-area",
+          "helper-text(optional)",
+          "leading-icon(optional)",
+          "clear-button(optional)"
+        ],
+        "states": [
+          "default",
+          "focus",
+          "filled",
+          "error",
+          "disabled",
+          "readonly"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.input.{state}",
+        "text": "text.input.{state}",
+        "border": "border.input.{state}",
+        "radius": "radius.sm",
+        "padding": "spacing.8 spacing.12",
+        "font": "typography.text.md.regular"
+      },
+      "accessibility": [
+        "label과 input을 for/id로 연결",
+        "aria-describedby로 helper/error text 연결",
+        "aria-invalid=\"true\" when error",
+        "aria-required=\"true\" when required"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] feedback: 콘텐츠 맥락 안에서 인라인 표시, 토스트보다 인라인 선호 + 명확한 상태 구분, 진행률/결과를 수치로 표시 + 결과를 반드시 확인, 실패 시 복구 방법 안내"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/guidelines/carbon-for-ai",
+          "matched_term": "input",
+          "excerpt": "Number input Text input"
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/about",
+          "matched_term": "input",
+          "excerpt": "I worked in data visualization and map-making for most of my career, and solving design problems with data is my jam. To me there's something uniqu..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "error 상태에서 helper text → error message로 자동 전환",
+        "label은 항상 visible (placeholder만으로 대체 금지)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "select",
+      "family": "input",
+      "role": "드롭다운 선택",
+      "source_pattern": "forms",
+      "anatomy": {
+        "parts": [
+          "container",
+          "label",
+          "input-area",
+          "helper-text(optional)",
+          "leading-icon(optional)",
+          "clear-button(optional)"
+        ],
+        "states": [
+          "default",
+          "focus",
+          "filled",
+          "error",
+          "disabled",
+          "readonly"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.input.{state}",
+        "text": "text.input.{state}",
+        "border": "border.input.{state}",
+        "radius": "radius.sm",
+        "padding": "spacing.8 spacing.12",
+        "font": "typography.text.md.regular"
+      },
+      "accessibility": [
+        "label과 input을 for/id로 연결",
+        "aria-describedby로 helper/error text 연결",
+        "aria-invalid=\"true\" when error",
+        "aria-required=\"true\" when required"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] feedback: 콘텐츠 맥락 안에서 인라인 표시, 토스트보다 인라인 선호 + 명확한 상태 구분, 진행률/결과를 수치로 표시 + 결과를 반드시 확인, 실패 시 복구 방법 안내"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/guidelines/carbon-for-ai",
+          "matched_term": "select",
+          "excerpt": "Select Data table"
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/product/primitives",
+          "matched_term": "select",
+          "excerpt": "Primer color design tokens are made available within data-attribute selectors on the body tag or other high level dom element. There are three dist..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "error 상태에서 helper text → error message로 자동 전환",
+        "label은 항상 visible (placeholder만으로 대체 금지)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "checkbox",
+      "family": "input",
+      "role": "체크박스",
+      "source_pattern": "forms",
+      "anatomy": {
+        "parts": [
+          "container",
+          "label",
+          "input-area",
+          "helper-text(optional)",
+          "leading-icon(optional)",
+          "clear-button(optional)"
+        ],
+        "states": [
+          "default",
+          "focus",
+          "filled",
+          "error",
+          "disabled",
+          "readonly"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.input.{state}",
+        "text": "text.input.{state}",
+        "border": "border.input.{state}",
+        "radius": "radius.sm",
+        "padding": "spacing.8 spacing.12",
+        "font": "typography.text.md.regular"
+      },
+      "accessibility": [
+        "label과 input을 for/id로 연결",
+        "aria-describedby로 helper/error text 연결",
+        "aria-invalid=\"true\" when error",
+        "aria-required=\"true\" when required"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] feedback: 콘텐츠 맥락 안에서 인라인 표시, 토스트보다 인라인 선호 + 명확한 상태 구분, 진행률/결과를 수치로 표시 + 결과를 반드시 확인, 실패 시 복구 방법 안내"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/guidelines/carbon-for-ai",
+          "matched_term": "checkbox",
+          "excerpt": "Checkbox Form"
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/about",
+          "matched_term": "input",
+          "excerpt": "I worked in data visualization and map-making for most of my career, and solving design problems with data is my jam. To me there's something uniqu..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "error 상태에서 helper text → error message로 자동 전환",
+        "label은 항상 visible (placeholder만으로 대체 금지)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "radio-group",
+      "family": "input",
+      "role": "라디오 버튼 그룹",
+      "source_pattern": "forms",
+      "anatomy": {
+        "parts": [
+          "container",
+          "label",
+          "input-area",
+          "helper-text(optional)",
+          "leading-icon(optional)",
+          "clear-button(optional)"
+        ],
+        "states": [
+          "default",
+          "focus",
+          "filled",
+          "error",
+          "disabled",
+          "readonly"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.input.{state}",
+        "text": "text.input.{state}",
+        "border": "border.input.{state}",
+        "radius": "radius.sm",
+        "padding": "spacing.8 spacing.12",
+        "font": "typography.text.md.regular"
+      },
+      "accessibility": [
+        "label과 input을 for/id로 연결",
+        "aria-describedby로 helper/error text 연결",
+        "aria-invalid=\"true\" when error",
+        "aria-required=\"true\" when required"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] feedback: 콘텐츠 맥락 안에서 인라인 표시, 토스트보다 인라인 선호 + 명확한 상태 구분, 진행률/결과를 수치로 표시 + 결과를 반드시 확인, 실패 시 복구 방법 안내"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/guidelines/carbon-for-ai",
+          "matched_term": "input",
+          "excerpt": "Number input Text input"
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/about",
+          "matched_term": "input",
+          "excerpt": "I worked in data visualization and map-making for most of my career, and solving design problems with data is my jam. To me there's something uniqu..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "error 상태에서 helper text → error message로 자동 전환",
+        "label은 항상 visible (placeholder만으로 대체 금지)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "form-section",
+      "family": "input",
+      "role": "폼 섹션 그룹핑과 레이블",
+      "source_pattern": "forms",
+      "anatomy": {
+        "parts": [
+          "container",
+          "label",
+          "input-area",
+          "helper-text(optional)",
+          "leading-icon(optional)",
+          "clear-button(optional)"
+        ],
+        "states": [
+          "default",
+          "focus",
+          "filled",
+          "error",
+          "disabled",
+          "readonly"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.input.{state}",
+        "text": "text.input.{state}",
+        "border": "border.input.{state}",
+        "radius": "radius.sm",
+        "padding": "spacing.8 spacing.12",
+        "font": "typography.text.md.regular"
+      },
+      "accessibility": [
+        "label과 input을 for/id로 연결",
+        "aria-describedby로 helper/error text 연결",
+        "aria-invalid=\"true\" when error",
+        "aria-required=\"true\" when required"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] feedback: 콘텐츠 맥락 안에서 인라인 표시, 토스트보다 인라인 선호 + 명확한 상태 구분, 진행률/결과를 수치로 표시 + 결과를 반드시 확인, 실패 시 복구 방법 안내"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/guidelines/carbon-for-ai",
+          "matched_term": "input",
+          "excerpt": "Number input Text input"
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/about",
+          "matched_term": "input",
+          "excerpt": "I worked in data visualization and map-making for most of my career, and solving design problems with data is my jam. To me there's something uniqu..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "error 상태에서 helper text → error message로 자동 전환",
+        "label은 항상 visible (placeholder만으로 대체 금지)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "form-actions",
+      "family": "button",
+      "role": "폼 하단 제출/취소 버튼 영역",
+      "source_pattern": "forms",
+      "anatomy": {
+        "parts": [
+          "container",
+          "label",
+          "leading-icon(optional)",
+          "trailing-icon(optional)"
+        ],
+        "states": [
+          "default",
+          "hover",
+          "active",
+          "disabled",
+          "loading"
+        ]
+      },
+      "tokens": {
+        "surface": "form-actions.surface.{state}",
+        "text": "form-actions.text.{state}",
+        "border": "form-actions.border.{state}",
+        "radius": "radius.md",
+        "padding": "spacing.12 spacing.24",
+        "font": "typography.text.md.semibold"
+      },
+      "accessibility": [
+        "role=\"button\"",
+        "aria-disabled=\"true\" when disabled",
+        "aria-busy=\"true\" when loading",
+        "최소 44x44 터치 영역",
+        "텍스트 대비 4.5:1 이상"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/guidelines/carbon-for-ai",
+          "matched_term": "button",
+          "excerpt": "These components can toggle between the AI variant and the default variant depending on the user’s interaction. If the user manually overrides the ..."
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/about",
+          "matched_term": "button",
+          "excerpt": "I get so much joy from writing HTML and CSS, and design systems are one level up - systematically making UIs accessible and consistent. I love conc..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "size prop: sm / md / lg (터치 영역은 항상 최소 44px 보장)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "tag",
+      "family": "data-display",
+      "role": "분류/라벨 태그",
+      "source_pattern": "tags and labels",
+      "anatomy": {
+        "parts": [
+          "container",
+          "header",
+          "content-area",
+          "footer(optional)",
+          "action(optional)"
+        ],
+        "states": [
+          "default",
+          "loading",
+          "empty",
+          "error"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.card.default",
+        "border": "border.subtle",
+        "radius": "radius.md",
+        "padding": "spacing.16 spacing.20",
+        "shadow": "elevation.raised"
+      },
+      "accessibility": [
+        "적절한 heading level 사용",
+        "데이터 테이블은 scope와 caption 필수",
+        "빈 상태에서 안내 텍스트 제공"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/guidelines/carbon-for-ai",
+          "matched_term": "tag",
+          "excerpt": "Tag Date picker"
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/product/primitives",
+          "matched_term": "tag",
+          "excerpt": "Primer color design tokens are made available within data-attribute selectors on the body tag or other high level dom element. There are three dist..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "빈 상태(empty-state)와 에러 상태를 반드시 처리",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "status-badge",
+      "family": "feedback",
+      "role": "상태를 색상으로 표시하는 뱃지",
+      "source_pattern": "tags and labels",
+      "anatomy": {
+        "parts": [
+          "container",
+          "icon",
+          "message",
+          "action(optional)",
+          "close-button(optional)"
+        ],
+        "states": [
+          "info",
+          "success",
+          "warning",
+          "danger"
+        ]
+      },
+      "tokens": {
+        "surface": "feedback.info.surface",
+        "text": "feedback.info.text",
+        "icon": "feedback.info.icon",
+        "border": "feedback.info.border",
+        "radius": "radius.sm"
+      },
+      "accessibility": [
+        "role=\"alert\" for urgent messages",
+        "role=\"status\" for non-urgent",
+        "aria-live=\"polite\" or \"assertive\"",
+        "닫기 버튼에 aria-label 필수"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] feedback: 콘텐츠 맥락 안에서 인라인 표시, 토스트보다 인라인 선호 + 명확한 상태 구분, 진행률/결과를 수치로 표시 + 결과를 반드시 확인, 실패 시 복구 방법 안내",
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com",
+          "matched_term": "feedback",
+          "excerpt": "We welcome all feedback, designs, or ideas in order to produce the best possible experience for our users. If you're interested in contributing, ch..."
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/product/ui-patterns",
+          "matched_term": "feedback",
+          "excerpt": "Messaging components are used to provide important and relevant information to the user, including feedback, contextual information, product update..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "auto-dismiss 시간은 내용 길이에 비례 (기본 5초)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "chip",
+      "family": "input",
+      "role": "선택/해제 가능한 칩",
+      "source_pattern": "tags and labels",
+      "anatomy": {
+        "parts": [
+          "container",
+          "label",
+          "input-area",
+          "helper-text(optional)",
+          "leading-icon(optional)",
+          "clear-button(optional)"
+        ],
+        "states": [
+          "default",
+          "focus",
+          "filled",
+          "error",
+          "disabled",
+          "readonly"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.input.{state}",
+        "text": "text.input.{state}",
+        "border": "border.input.{state}",
+        "radius": "radius.sm",
+        "padding": "spacing.8 spacing.12",
+        "font": "typography.text.md.regular"
+      },
+      "accessibility": [
+        "label과 input을 for/id로 연결",
+        "aria-describedby로 helper/error text 연결",
+        "aria-invalid=\"true\" when error",
+        "aria-required=\"true\" when required"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] feedback: 콘텐츠 맥락 안에서 인라인 표시, 토스트보다 인라인 선호 + 명확한 상태 구분, 진행률/결과를 수치로 표시 + 결과를 반드시 확인, 실패 시 복구 방법 안내"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/guidelines/carbon-for-ai",
+          "matched_term": "input",
+          "excerpt": "Number input Text input"
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/about",
+          "matched_term": "input",
+          "excerpt": "I worked in data visualization and map-making for most of my career, and solving design problems with data is my jam. To me there's something uniqu..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "error 상태에서 helper text → error message로 자동 전환",
+        "label은 항상 visible (placeholder만으로 대체 금지)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "app-shell",
+      "family": "navigation",
+      "role": "전체 앱 레이아웃과 네비게이션 컨테이너",
+      "source_pattern": "workspace navigation",
+      "anatomy": {
+        "parts": [
+          "container",
+          "nav-item",
+          "icon(optional)",
+          "label",
+          "indicator(active)",
+          "badge(optional)"
+        ],
+        "states": [
+          "default",
+          "hover",
+          "active",
+          "collapsed"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.nav.{state}",
+        "text": "text.nav.{state}",
+        "indicator": "color.accent.500",
+        "padding": "spacing.8 spacing.16"
+      },
+      "accessibility": [
+        "nav landmark (role=\"navigation\")",
+        "aria-current=\"page\" for active item",
+        "키보드 화살표 탐색 지원"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/designing/kits/sketch",
+          "matched_term": "navigation",
+          "excerpt": "Library menu navigation There are two kinds of symbols — library symbols and document symbols. Library symbols are available in any Sketch document..."
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/octicons",
+          "matched_term": "navigation",
+          "excerpt": "Octicon nav items navigation 12 px"
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "active 상태는 URL/라우터와 자동 동기화",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "sidebar-nav",
+      "family": "navigation",
+      "role": "주요 섹션 간 이동을 위한 사이드 네비게이션",
+      "source_pattern": "workspace navigation",
+      "anatomy": {
+        "parts": [
+          "container",
+          "nav-item",
+          "icon(optional)",
+          "label",
+          "indicator(active)",
+          "badge(optional)"
+        ],
+        "states": [
+          "default",
+          "hover",
+          "active",
+          "collapsed"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.nav.{state}",
+        "text": "text.nav.{state}",
+        "indicator": "color.accent.500",
+        "padding": "spacing.8 spacing.16"
+      },
+      "accessibility": [
+        "nav landmark (role=\"navigation\")",
+        "aria-current=\"page\" for active item",
+        "키보드 화살표 탐색 지원"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/designing/kits/sketch",
+          "matched_term": "sidebar nav",
+          "excerpt": "Total panel width (“sidebar nav”) + Left outside margin + Right outside margin = Total margins Artboard width - Total margins = Total width"
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/octicons",
+          "matched_term": "navigation",
+          "excerpt": "Octicon nav items navigation 12 px"
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "active 상태는 URL/라우터와 자동 동기화",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "topbar",
+      "family": "navigation",
+      "role": "앱 상단 바 (로고, 검색, 사용자 메뉴)",
+      "source_pattern": "workspace navigation",
+      "anatomy": {
+        "parts": [
+          "container",
+          "nav-item",
+          "icon(optional)",
+          "label",
+          "indicator(active)",
+          "badge(optional)"
+        ],
+        "states": [
+          "default",
+          "hover",
+          "active",
+          "collapsed"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.nav.{state}",
+        "text": "text.nav.{state}",
+        "indicator": "color.accent.500",
+        "padding": "spacing.8 spacing.16"
+      },
+      "accessibility": [
+        "nav landmark (role=\"navigation\")",
+        "aria-current=\"page\" for active item",
+        "키보드 화살표 탐색 지원"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/designing/kits/sketch",
+          "matched_term": "navigation",
+          "excerpt": "Library menu navigation There are two kinds of symbols — library symbols and document symbols. Library symbols are available in any Sketch document..."
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/octicons",
+          "matched_term": "navigation",
+          "excerpt": "Octicon nav items navigation 12 px"
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "active 상태는 URL/라우터와 자동 동기화",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "breadcrumb",
+      "family": "navigation",
+      "role": "현재 위치를 계층적으로 표시",
+      "source_pattern": "workspace navigation",
+      "anatomy": {
+        "parts": [
+          "container",
+          "nav-item",
+          "icon(optional)",
+          "label",
+          "indicator(active)",
+          "badge(optional)"
+        ],
+        "states": [
+          "default",
+          "hover",
+          "active",
+          "collapsed"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.nav.{state}",
+        "text": "text.nav.{state}",
+        "indicator": "color.accent.500",
+        "padding": "spacing.8 spacing.16"
+      },
+      "accessibility": [
+        "nav landmark (role=\"navigation\")",
+        "aria-current=\"page\" for active item",
+        "키보드 화살표 탐색 지원"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/designing/kits/sketch",
+          "matched_term": "navigation",
+          "excerpt": "Library menu navigation There are two kinds of symbols — library symbols and document symbols. Library symbols are available in any Sketch document..."
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/octicons",
+          "matched_term": "navigation",
+          "excerpt": "Octicon nav items navigation 12 px"
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "active 상태는 URL/라우터와 자동 동기화",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "tab-bar",
+      "family": "navigation",
+      "role": "섹션 내 하위 탭 전환",
+      "source_pattern": "workspace navigation",
+      "anatomy": {
+        "parts": [
+          "container",
+          "nav-item",
+          "icon(optional)",
+          "label",
+          "indicator(active)",
+          "badge(optional)"
+        ],
+        "states": [
+          "default",
+          "hover",
+          "active",
+          "collapsed"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.nav.{state}",
+        "text": "text.nav.{state}",
+        "indicator": "color.accent.500",
+        "padding": "spacing.8 spacing.16"
+      },
+      "accessibility": [
+        "nav landmark (role=\"navigation\")",
+        "aria-current=\"page\" for active item",
+        "키보드 화살표 탐색 지원"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/designing/kits/sketch",
+          "matched_term": "navigation",
+          "excerpt": "Library menu navigation There are two kinds of symbols — library symbols and document symbols. Library symbols are available in any Sketch document..."
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/octicons",
+          "matched_term": "navigation",
+          "excerpt": "Octicon nav items navigation 12 px"
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "active 상태는 URL/라우터와 자동 동기화",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "modal-dialog",
+      "family": "overlay",
+      "role": "확인/입력을 받는 모달",
+      "source_pattern": "modal and dialog",
+      "anatomy": {
+        "parts": [
+          "backdrop",
+          "container",
+          "header",
+          "content",
+          "footer(optional)",
+          "close-button"
+        ],
+        "states": [
+          "closed",
+          "opening",
+          "open",
+          "closing"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.overlay",
+        "backdrop": "color.neutral.900/60",
+        "radius": "radius.lg",
+        "shadow": "elevation.modal",
+        "padding": "spacing.24"
+      },
+      "accessibility": [
+        "role=\"dialog\" with aria-modal=\"true\"",
+        "focus trap (Tab 순환)",
+        "Escape로 닫기",
+        "aria-labelledby로 제목 연결",
+        "닫은 후 trigger 요소로 포커스 복귀"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Primer",
+          "url": "https://primer.style/product/components",
+          "matched_term": "overlay",
+          "excerpt": "ActionMenu is composed of ActionList and Overlay patterns used for quick actions and selections. AnchoredOverlay"
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "Escape / backdrop click으로 닫기, 열 때 첫 focusable 요소로 이동",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "bottom-sheet",
+      "family": "overlay",
+      "role": "모바일용 하단 시트",
+      "source_pattern": "modal and dialog",
+      "anatomy": {
+        "parts": [
+          "backdrop",
+          "container",
+          "header",
+          "content",
+          "footer(optional)",
+          "close-button"
+        ],
+        "states": [
+          "closed",
+          "opening",
+          "open",
+          "closing"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.overlay",
+        "backdrop": "color.neutral.900/60",
+        "radius": "radius.lg",
+        "shadow": "elevation.modal",
+        "padding": "spacing.24"
+      },
+      "accessibility": [
+        "role=\"dialog\" with aria-modal=\"true\"",
+        "focus trap (Tab 순환)",
+        "Escape로 닫기",
+        "aria-labelledby로 제목 연결",
+        "닫은 후 trigger 요소로 포커스 복귀"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Primer",
+          "url": "https://primer.style/product/components",
+          "matched_term": "overlay",
+          "excerpt": "ActionMenu is composed of ActionList and Overlay patterns used for quick actions and selections. AnchoredOverlay"
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "Escape / backdrop click으로 닫기, 열 때 첫 focusable 요소로 이동",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "confirm-dialog",
+      "family": "overlay",
+      "role": "삭제/위험 작업 확인 다이얼로그",
+      "source_pattern": "modal and dialog",
+      "anatomy": {
+        "parts": [
+          "backdrop",
+          "container",
+          "header",
+          "content",
+          "footer(optional)",
+          "close-button"
+        ],
+        "states": [
+          "closed",
+          "opening",
+          "open",
+          "closing"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.overlay",
+        "backdrop": "color.neutral.900/60",
+        "radius": "radius.lg",
+        "shadow": "elevation.modal",
+        "padding": "spacing.24"
+      },
+      "accessibility": [
+        "role=\"dialog\" with aria-modal=\"true\"",
+        "focus trap (Tab 순환)",
+        "Escape로 닫기",
+        "aria-labelledby로 제목 연결",
+        "닫은 후 trigger 요소로 포커스 복귀"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Primer",
+          "url": "https://primer.style/product/components",
+          "matched_term": "overlay",
+          "excerpt": "ActionMenu is composed of ActionList and Overlay patterns used for quick actions and selections. AnchoredOverlay"
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "Escape / backdrop click으로 닫기, 열 때 첫 focusable 요소로 이동",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "pricing-card",
+      "family": "data-display",
+      "role": "플랜별 가격/기능 비교 카드",
+      "source_pattern": "pricing and plans",
+      "anatomy": {
+        "parts": [
+          "container",
+          "header",
+          "content-area",
+          "footer(optional)",
+          "action(optional)"
+        ],
+        "states": [
+          "default",
+          "loading",
+          "empty",
+          "error"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.card.default",
+        "border": "border.subtle",
+        "radius": "radius.md",
+        "padding": "spacing.16 spacing.20",
+        "shadow": "elevation.raised"
+      },
+      "accessibility": [
+        "적절한 heading level 사용",
+        "데이터 테이블은 scope와 caption 필수",
+        "빈 상태에서 안내 텍스트 제공"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "빈 상태(empty-state)와 에러 상태를 반드시 처리",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "feature-comparison",
+      "family": "data-display",
+      "role": "플랜 간 기능 비교 테이블",
+      "source_pattern": "pricing and plans",
+      "anatomy": {
+        "parts": [
+          "container",
+          "header",
+          "content-area",
+          "footer(optional)",
+          "action(optional)"
+        ],
+        "states": [
+          "default",
+          "loading",
+          "empty",
+          "error"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.card.default",
+        "border": "border.subtle",
+        "radius": "radius.md",
+        "padding": "spacing.16 spacing.20",
+        "shadow": "elevation.raised"
+      },
+      "accessibility": [
+        "적절한 heading level 사용",
+        "데이터 테이블은 scope와 caption 필수",
+        "빈 상태에서 안내 텍스트 제공"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "빈 상태(empty-state)와 에러 상태를 반드시 처리",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "upgrade-banner",
+      "family": "feedback",
+      "role": "업그레이드 유도 배너",
+      "source_pattern": "pricing and plans",
+      "anatomy": {
+        "parts": [
+          "container",
+          "icon",
+          "message",
+          "action(optional)",
+          "close-button(optional)"
+        ],
+        "states": [
+          "info",
+          "success",
+          "warning",
+          "danger"
+        ]
+      },
+      "tokens": {
+        "surface": "feedback.info.surface",
+        "text": "feedback.info.text",
+        "icon": "feedback.info.icon",
+        "border": "feedback.info.border",
+        "radius": "radius.sm"
+      },
+      "accessibility": [
+        "role=\"alert\" for urgent messages",
+        "role=\"status\" for non-urgent",
+        "aria-live=\"polite\" or \"assertive\"",
+        "닫기 버튼에 aria-label 필수"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] feedback: 콘텐츠 맥락 안에서 인라인 표시, 토스트보다 인라인 선호 + 명확한 상태 구분, 진행률/결과를 수치로 표시 + 결과를 반드시 확인, 실패 시 복구 방법 안내",
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com",
+          "matched_term": "feedback",
+          "excerpt": "We welcome all feedback, designs, or ideas in order to produce the best possible experience for our users. If you're interested in contributing, ch..."
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/product/ui-patterns",
+          "matched_term": "feedback",
+          "excerpt": "Messaging components are used to provide important and relevant information to the user, including feedback, contextual information, product update..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "auto-dismiss 시간은 내용 길이에 비례 (기본 5초)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "avatar",
+      "family": "data-display",
+      "role": "사용자 프로필 이미지/이니셜",
+      "source_pattern": "user profile and avatar",
+      "anatomy": {
+        "parts": [
+          "container",
+          "header",
+          "content-area",
+          "footer(optional)",
+          "action(optional)"
+        ],
+        "states": [
+          "default",
+          "loading",
+          "empty",
+          "error"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.card.default",
+        "border": "border.subtle",
+        "radius": "radius.md",
+        "padding": "spacing.16 spacing.20",
+        "shadow": "elevation.raised"
+      },
+      "accessibility": [
+        "적절한 heading level 사용",
+        "데이터 테이블은 scope와 caption 필수",
+        "빈 상태에서 안내 텍스트 제공"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Primer",
+          "url": "https://primer.style/product/components",
+          "matched_term": "avatar",
+          "excerpt": "Avatar Avatar is an image that represents a user or organization."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "빈 상태(empty-state)와 에러 상태를 반드시 처리",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "user-menu",
+      "family": "overlay",
+      "role": "사용자 드롭다운 메뉴",
+      "source_pattern": "user profile and avatar",
+      "anatomy": {
+        "parts": [
+          "backdrop",
+          "container",
+          "header",
+          "content",
+          "footer(optional)",
+          "close-button"
+        ],
+        "states": [
+          "closed",
+          "opening",
+          "open",
+          "closing"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.overlay",
+        "backdrop": "color.neutral.900/60",
+        "radius": "radius.lg",
+        "shadow": "elevation.modal",
+        "padding": "spacing.24"
+      },
+      "accessibility": [
+        "role=\"dialog\" with aria-modal=\"true\"",
+        "focus trap (Tab 순환)",
+        "Escape로 닫기",
+        "aria-labelledby로 제목 연결",
+        "닫은 후 trigger 요소로 포커스 복귀"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Primer",
+          "url": "https://primer.style/product/components",
+          "matched_term": "overlay",
+          "excerpt": "ActionMenu is composed of ActionList and Overlay patterns used for quick actions and selections. AnchoredOverlay"
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "Escape / backdrop click으로 닫기, 열 때 첫 focusable 요소로 이동",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "profile-card",
+      "family": "data-display",
+      "role": "사용자 프로필 요약 카드",
+      "source_pattern": "user profile and avatar",
+      "anatomy": {
+        "parts": [
+          "container",
+          "header",
+          "content-area",
+          "footer(optional)",
+          "action(optional)"
+        ],
+        "states": [
+          "default",
+          "loading",
+          "empty",
+          "error"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.card.default",
+        "border": "border.subtle",
+        "radius": "radius.md",
+        "padding": "spacing.16 spacing.20",
+        "shadow": "elevation.raised"
+      },
+      "accessibility": [
+        "적절한 heading level 사용",
+        "데이터 테이블은 scope와 caption 필수",
+        "빈 상태에서 안내 텍스트 제공"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "빈 상태(empty-state)와 에러 상태를 반드시 처리",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "step-progress",
+      "family": "feedback",
+      "role": "단계별 진행 표시",
+      "source_pattern": "onboarding and stepper",
+      "anatomy": {
+        "parts": [
+          "container",
+          "icon",
+          "message",
+          "action(optional)",
+          "close-button(optional)"
+        ],
+        "states": [
+          "info",
+          "success",
+          "warning",
+          "danger"
+        ]
+      },
+      "tokens": {
+        "surface": "feedback.info.surface",
+        "text": "feedback.info.text",
+        "icon": "feedback.info.icon",
+        "border": "feedback.info.border",
+        "radius": "radius.sm"
+      },
+      "accessibility": [
+        "role=\"alert\" for urgent messages",
+        "role=\"status\" for non-urgent",
+        "aria-live=\"polite\" or \"assertive\"",
+        "닫기 버튼에 aria-label 필수"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] feedback: 콘텐츠 맥락 안에서 인라인 표시, 토스트보다 인라인 선호 + 명확한 상태 구분, 진행률/결과를 수치로 표시 + 결과를 반드시 확인, 실패 시 복구 방법 안내",
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com",
+          "matched_term": "feedback",
+          "excerpt": "We welcome all feedback, designs, or ideas in order to produce the best possible experience for our users. If you're interested in contributing, ch..."
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/product/ui-patterns",
+          "matched_term": "feedback",
+          "excerpt": "Messaging components are used to provide important and relevant information to the user, including feedback, contextual information, product update..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "auto-dismiss 시간은 내용 길이에 비례 (기본 5초)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "wizard-layout",
+      "family": "navigation",
+      "role": "위저드 레이아웃 (이전/다음)",
+      "source_pattern": "onboarding and stepper",
+      "anatomy": {
+        "parts": [
+          "container",
+          "nav-item",
+          "icon(optional)",
+          "label",
+          "indicator(active)",
+          "badge(optional)"
+        ],
+        "states": [
+          "default",
+          "hover",
+          "active",
+          "collapsed"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.nav.{state}",
+        "text": "text.nav.{state}",
+        "indicator": "color.accent.500",
+        "padding": "spacing.8 spacing.16"
+      },
+      "accessibility": [
+        "nav landmark (role=\"navigation\")",
+        "aria-current=\"page\" for active item",
+        "키보드 화살표 탐색 지원"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/designing/kits/sketch",
+          "matched_term": "navigation",
+          "excerpt": "Library menu navigation There are two kinds of symbols — library symbols and document symbols. Library symbols are available in any Sketch document..."
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/octicons",
+          "matched_term": "navigation",
+          "excerpt": "Octicon nav items navigation 12 px"
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "active 상태는 URL/라우터와 자동 동기화",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "tooltip-guide",
+      "family": "overlay",
+      "role": "기능 안내 툴팁",
+      "source_pattern": "onboarding and stepper",
+      "anatomy": {
+        "parts": [
+          "backdrop",
+          "container",
+          "header",
+          "content",
+          "footer(optional)",
+          "close-button"
+        ],
+        "states": [
+          "closed",
+          "opening",
+          "open",
+          "closing"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.overlay",
+        "backdrop": "color.neutral.900/60",
+        "radius": "radius.lg",
+        "shadow": "elevation.modal",
+        "padding": "spacing.24"
+      },
+      "accessibility": [
+        "role=\"dialog\" with aria-modal=\"true\"",
+        "focus trap (Tab 순환)",
+        "Escape로 닫기",
+        "aria-labelledby로 제목 연결",
+        "닫은 후 trigger 요소로 포커스 복귀"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Primer",
+          "url": "https://primer.style/product/components",
+          "matched_term": "overlay",
+          "excerpt": "ActionMenu is composed of ActionList and Overlay patterns used for quick actions and selections. AnchoredOverlay"
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "Escape / backdrop click으로 닫기, 열 때 첫 focusable 요소로 이동",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "chart-container",
+      "family": "data-display",
+      "role": "차트 래퍼 (타이틀, 범례 포함)",
+      "source_pattern": "charts and visualization",
+      "anatomy": {
+        "parts": [
+          "container",
+          "header",
+          "content-area",
+          "footer(optional)",
+          "action(optional)"
+        ],
+        "states": [
+          "default",
+          "loading",
+          "empty",
+          "error"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.card.default",
+        "border": "border.subtle",
+        "radius": "radius.md",
+        "padding": "spacing.16 spacing.20",
+        "shadow": "elevation.raised"
+      },
+      "accessibility": [
+        "적절한 heading level 사용",
+        "데이터 테이블은 scope와 caption 필수",
+        "빈 상태에서 안내 텍스트 제공"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "빈 상태(empty-state)와 에러 상태를 반드시 처리",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "chart-tooltip",
+      "family": "overlay",
+      "role": "데이터 포인트 호버 시 상세 정보",
+      "source_pattern": "charts and visualization",
+      "anatomy": {
+        "parts": [
+          "backdrop",
+          "container",
+          "header",
+          "content",
+          "footer(optional)",
+          "close-button"
+        ],
+        "states": [
+          "closed",
+          "opening",
+          "open",
+          "closing"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.overlay",
+        "backdrop": "color.neutral.900/60",
+        "radius": "radius.lg",
+        "shadow": "elevation.modal",
+        "padding": "spacing.24"
+      },
+      "accessibility": [
+        "role=\"dialog\" with aria-modal=\"true\"",
+        "focus trap (Tab 순환)",
+        "Escape로 닫기",
+        "aria-labelledby로 제목 연결",
+        "닫은 후 trigger 요소로 포커스 복귀"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Primer",
+          "url": "https://primer.style/product/components",
+          "matched_term": "overlay",
+          "excerpt": "ActionMenu is composed of ActionList and Overlay patterns used for quick actions and selections. AnchoredOverlay"
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "Escape / backdrop click으로 닫기, 열 때 첫 focusable 요소로 이동",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "chart-legend",
+      "family": "data-display",
+      "role": "차트 범례",
+      "source_pattern": "charts and visualization",
+      "anatomy": {
+        "parts": [
+          "container",
+          "header",
+          "content-area",
+          "footer(optional)",
+          "action(optional)"
+        ],
+        "states": [
+          "default",
+          "loading",
+          "empty",
+          "error"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.card.default",
+        "border": "border.subtle",
+        "radius": "radius.md",
+        "padding": "spacing.16 spacing.20",
+        "shadow": "elevation.raised"
+      },
+      "accessibility": [
+        "적절한 heading level 사용",
+        "데이터 테이블은 scope와 caption 필수",
+        "빈 상태에서 안내 텍스트 제공"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "빈 상태(empty-state)와 에러 상태를 반드시 처리",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "search-field",
+      "family": "input",
+      "role": "검색 입력 필드",
+      "source_pattern": "search and filter",
+      "anatomy": {
+        "parts": [
+          "container",
+          "label",
+          "input-area",
+          "helper-text(optional)",
+          "leading-icon(optional)",
+          "clear-button(optional)"
+        ],
+        "states": [
+          "default",
+          "focus",
+          "filled",
+          "error",
+          "disabled",
+          "readonly"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.input.{state}",
+        "text": "text.input.{state}",
+        "border": "border.input.{state}",
+        "radius": "radius.sm",
+        "padding": "spacing.8 spacing.12",
+        "font": "typography.text.md.regular"
+      },
+      "accessibility": [
+        "label과 input을 for/id로 연결",
+        "aria-describedby로 helper/error text 연결",
+        "aria-invalid=\"true\" when error",
+        "aria-required=\"true\" when required"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] feedback: 콘텐츠 맥락 안에서 인라인 표시, 토스트보다 인라인 선호 + 명확한 상태 구분, 진행률/결과를 수치로 표시 + 결과를 반드시 확인, 실패 시 복구 방법 안내"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/guidelines/carbon-for-ai",
+          "matched_term": "input",
+          "excerpt": "Number input Text input"
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/about",
+          "matched_term": "input",
+          "excerpt": "I worked in data visualization and map-making for most of my career, and solving design problems with data is my jam. To me there's something uniqu..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "error 상태에서 helper text → error message로 자동 전환",
+        "label은 항상 visible (placeholder만으로 대체 금지)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "search-results",
+      "family": "data-display",
+      "role": "검색 결과 목록",
+      "source_pattern": "search and filter",
+      "anatomy": {
+        "parts": [
+          "container",
+          "header",
+          "content-area",
+          "footer(optional)",
+          "action(optional)"
+        ],
+        "states": [
+          "default",
+          "loading",
+          "empty",
+          "error"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.card.default",
+        "border": "border.subtle",
+        "radius": "radius.md",
+        "padding": "spacing.16 spacing.20",
+        "shadow": "elevation.raised"
+      },
+      "accessibility": [
+        "적절한 heading level 사용",
+        "데이터 테이블은 scope와 caption 필수",
+        "빈 상태에서 안내 텍스트 제공"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "빈 상태(empty-state)와 에러 상태를 반드시 처리",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "filter-panel",
+      "family": "input",
+      "role": "필터 옵션 패널",
+      "source_pattern": "search and filter",
+      "anatomy": {
+        "parts": [
+          "container",
+          "label",
+          "input-area",
+          "helper-text(optional)",
+          "leading-icon(optional)",
+          "clear-button(optional)"
+        ],
+        "states": [
+          "default",
+          "focus",
+          "filled",
+          "error",
+          "disabled",
+          "readonly"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.input.{state}",
+        "text": "text.input.{state}",
+        "border": "border.input.{state}",
+        "radius": "radius.sm",
+        "padding": "spacing.8 spacing.12",
+        "font": "typography.text.md.regular"
+      },
+      "accessibility": [
+        "label과 input을 for/id로 연결",
+        "aria-describedby로 helper/error text 연결",
+        "aria-invalid=\"true\" when error",
+        "aria-required=\"true\" when required"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] feedback: 콘텐츠 맥락 안에서 인라인 표시, 토스트보다 인라인 선호 + 명확한 상태 구분, 진행률/결과를 수치로 표시 + 결과를 반드시 확인, 실패 시 복구 방법 안내"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/guidelines/carbon-for-ai",
+          "matched_term": "input",
+          "excerpt": "Number input Text input"
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/about",
+          "matched_term": "input",
+          "excerpt": "I worked in data visualization and map-making for most of my career, and solving design problems with data is my jam. To me there's something uniqu..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "error 상태에서 helper text → error message로 자동 전환",
+        "label은 항상 visible (placeholder만으로 대체 금지)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "autocomplete",
+      "family": "overlay",
+      "role": "자동완성 드롭다운",
+      "source_pattern": "search and filter",
+      "anatomy": {
+        "parts": [
+          "backdrop",
+          "container",
+          "header",
+          "content",
+          "footer(optional)",
+          "close-button"
+        ],
+        "states": [
+          "closed",
+          "opening",
+          "open",
+          "closing"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.overlay",
+        "backdrop": "color.neutral.900/60",
+        "radius": "radius.lg",
+        "shadow": "elevation.modal",
+        "padding": "spacing.24"
+      },
+      "accessibility": [
+        "role=\"dialog\" with aria-modal=\"true\"",
+        "focus trap (Tab 순환)",
+        "Escape로 닫기",
+        "aria-labelledby로 제목 연결",
+        "닫은 후 trigger 요소로 포커스 복귀"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Primer",
+          "url": "https://primer.style/product/components",
+          "matched_term": "autocomplete",
+          "excerpt": "Autocomplete Autocomplete allows users to quickly filter through a list of options and pick one or more values for a field."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "Escape / backdrop click으로 닫기, 열 때 첫 focusable 요소로 이동",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "kanban-board",
+      "family": "data-display",
+      "role": "칸반 보드 레이아웃",
+      "source_pattern": "kanban and board",
+      "anatomy": {
+        "parts": [
+          "container",
+          "header",
+          "content-area",
+          "footer(optional)",
+          "action(optional)"
+        ],
+        "states": [
+          "default",
+          "loading",
+          "empty",
+          "error"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.card.default",
+        "border": "border.subtle",
+        "radius": "radius.md",
+        "padding": "spacing.16 spacing.20",
+        "shadow": "elevation.raised"
+      },
+      "accessibility": [
+        "적절한 heading level 사용",
+        "데이터 테이블은 scope와 caption 필수",
+        "빈 상태에서 안내 텍스트 제공"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "빈 상태(empty-state)와 에러 상태를 반드시 처리",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "kanban-column",
+      "family": "data-display",
+      "role": "칸반 컬럼 (상태별)",
+      "source_pattern": "kanban and board",
+      "anatomy": {
+        "parts": [
+          "container",
+          "header",
+          "content-area",
+          "footer(optional)",
+          "action(optional)"
+        ],
+        "states": [
+          "default",
+          "loading",
+          "empty",
+          "error"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.card.default",
+        "border": "border.subtle",
+        "radius": "radius.md",
+        "padding": "spacing.16 spacing.20",
+        "shadow": "elevation.raised"
+      },
+      "accessibility": [
+        "적절한 heading level 사용",
+        "데이터 테이블은 scope와 caption 필수",
+        "빈 상태에서 안내 텍스트 제공"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "빈 상태(empty-state)와 에러 상태를 반드시 처리",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "kanban-card",
+      "family": "data-display",
+      "role": "드래그 가능한 작업 카드",
+      "source_pattern": "kanban and board",
+      "anatomy": {
+        "parts": [
+          "container",
+          "header",
+          "content-area",
+          "footer(optional)",
+          "action(optional)"
+        ],
+        "states": [
+          "default",
+          "loading",
+          "empty",
+          "error"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.card.default",
+        "border": "border.subtle",
+        "radius": "radius.md",
+        "padding": "spacing.16 spacing.20",
+        "shadow": "elevation.raised"
+      },
+      "accessibility": [
+        "적절한 heading level 사용",
+        "데이터 테이블은 scope와 caption 필수",
+        "빈 상태에서 안내 텍스트 제공"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "빈 상태(empty-state)와 에러 상태를 반드시 처리",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "toast",
+      "family": "feedback",
+      "role": "일시적 성공/에러 알림",
+      "source_pattern": "notifications",
+      "anatomy": {
+        "parts": [
+          "container",
+          "icon",
+          "message",
+          "action(optional)",
+          "close-button(optional)"
+        ],
+        "states": [
+          "info",
+          "success",
+          "warning",
+          "danger"
+        ]
+      },
+      "tokens": {
+        "surface": "feedback.info.surface",
+        "text": "feedback.info.text",
+        "icon": "feedback.info.icon",
+        "border": "feedback.info.border",
+        "radius": "radius.sm"
+      },
+      "accessibility": [
+        "role=\"alert\" for urgent messages",
+        "role=\"status\" for non-urgent",
+        "aria-live=\"polite\" or \"assertive\"",
+        "닫기 버튼에 aria-label 필수"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] feedback: 콘텐츠 맥락 안에서 인라인 표시, 토스트보다 인라인 선호 + 명확한 상태 구분, 진행률/결과를 수치로 표시 + 결과를 반드시 확인, 실패 시 복구 방법 안내",
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com",
+          "matched_term": "feedback",
+          "excerpt": "We welcome all feedback, designs, or ideas in order to produce the best possible experience for our users. If you're interested in contributing, ch..."
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/product/ui-patterns",
+          "matched_term": "feedback",
+          "excerpt": "Messaging components are used to provide important and relevant information to the user, including feedback, contextual information, product update..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "auto-dismiss 시간은 내용 길이에 비례 (기본 5초)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "inline-alert",
+      "family": "feedback",
+      "role": "페이지 내 알림 배너",
+      "source_pattern": "notifications",
+      "anatomy": {
+        "parts": [
+          "container",
+          "icon",
+          "message",
+          "action(optional)",
+          "close-button(optional)"
+        ],
+        "states": [
+          "info",
+          "success",
+          "warning",
+          "danger"
+        ]
+      },
+      "tokens": {
+        "surface": "feedback.info.surface",
+        "text": "feedback.info.text",
+        "icon": "feedback.info.icon",
+        "border": "feedback.info.border",
+        "radius": "radius.sm"
+      },
+      "accessibility": [
+        "role=\"alert\" for urgent messages",
+        "role=\"status\" for non-urgent",
+        "aria-live=\"polite\" or \"assertive\"",
+        "닫기 버튼에 aria-label 필수"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] feedback: 콘텐츠 맥락 안에서 인라인 표시, 토스트보다 인라인 선호 + 명확한 상태 구분, 진행률/결과를 수치로 표시 + 결과를 반드시 확인, 실패 시 복구 방법 안내",
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com",
+          "matched_term": "feedback",
+          "excerpt": "We welcome all feedback, designs, or ideas in order to produce the best possible experience for our users. If you're interested in contributing, ch..."
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/product/ui-patterns",
+          "matched_term": "feedback",
+          "excerpt": "Messaging components are used to provide important and relevant information to the user, including feedback, contextual information, product update..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "auto-dismiss 시간은 내용 길이에 비례 (기본 5초)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "empty-state",
+      "family": "feedback",
+      "role": "데이터가 없을 때 안내 화면",
+      "source_pattern": "notifications",
+      "anatomy": {
+        "parts": [
+          "container",
+          "icon",
+          "message",
+          "action(optional)",
+          "close-button(optional)"
+        ],
+        "states": [
+          "info",
+          "success",
+          "warning",
+          "danger"
+        ]
+      },
+      "tokens": {
+        "surface": "feedback.info.surface",
+        "text": "feedback.info.text",
+        "icon": "feedback.info.icon",
+        "border": "feedback.info.border",
+        "radius": "radius.sm"
+      },
+      "accessibility": [
+        "role=\"alert\" for urgent messages",
+        "role=\"status\" for non-urgent",
+        "aria-live=\"polite\" or \"assertive\"",
+        "닫기 버튼에 aria-label 필수"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] feedback: 콘텐츠 맥락 안에서 인라인 표시, 토스트보다 인라인 선호 + 명확한 상태 구분, 진행률/결과를 수치로 표시 + 결과를 반드시 확인, 실패 시 복구 방법 안내",
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com",
+          "matched_term": "feedback",
+          "excerpt": "We welcome all feedback, designs, or ideas in order to produce the best possible experience for our users. If you're interested in contributing, ch..."
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/product/ui-patterns",
+          "matched_term": "empty state",
+          "excerpt": "Empty states Empty states are used to fill spaces when no content has been added yet, or is temporarily empty due to the nature of the feature."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "auto-dismiss 시간은 내용 길이에 비례 (기본 5초)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "banner",
+      "family": "feedback",
+      "role": "전체 화면 상단 공지 배너",
+      "source_pattern": "notifications",
+      "anatomy": {
+        "parts": [
+          "container",
+          "icon",
+          "message",
+          "action(optional)",
+          "close-button(optional)"
+        ],
+        "states": [
+          "info",
+          "success",
+          "warning",
+          "danger"
+        ]
+      },
+      "tokens": {
+        "surface": "feedback.info.surface",
+        "text": "feedback.info.text",
+        "icon": "feedback.info.icon",
+        "border": "feedback.info.border",
+        "radius": "radius.sm"
+      },
+      "accessibility": [
+        "role=\"alert\" for urgent messages",
+        "role=\"status\" for non-urgent",
+        "aria-live=\"polite\" or \"assertive\"",
+        "닫기 버튼에 aria-label 필수"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] feedback: 콘텐츠 맥락 안에서 인라인 표시, 토스트보다 인라인 선호 + 명확한 상태 구분, 진행률/결과를 수치로 표시 + 결과를 반드시 확인, 실패 시 복구 방법 안내",
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com",
+          "matched_term": "feedback",
+          "excerpt": "We welcome all feedback, designs, or ideas in order to produce the best possible experience for our users. If you're interested in contributing, ch..."
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/product/components",
+          "matched_term": "banner",
+          "excerpt": "Banner Banner is used to highlight important information."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "auto-dismiss 시간은 내용 길이에 비례 (기본 5초)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "stat-card",
+      "family": "data-display",
+      "role": "주요 수치를 표시하는 통계 카드",
+      "source_pattern": "dashboard cards",
+      "anatomy": {
+        "parts": [
+          "container",
+          "header",
+          "content-area",
+          "footer(optional)",
+          "action(optional)"
+        ],
+        "states": [
+          "default",
+          "loading",
+          "empty",
+          "error"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.card.default",
+        "border": "border.subtle",
+        "radius": "radius.md",
+        "padding": "spacing.16 spacing.20",
+        "shadow": "elevation.raised"
+      },
+      "accessibility": [
+        "적절한 heading level 사용",
+        "데이터 테이블은 scope와 caption 필수",
+        "빈 상태에서 안내 텍스트 제공"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "빈 상태(empty-state)와 에러 상태를 반드시 처리",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "insight-card",
+      "family": "data-display",
+      "role": "인사이트나 트렌드를 요약하는 카드",
+      "source_pattern": "dashboard cards",
+      "anatomy": {
+        "parts": [
+          "container",
+          "header",
+          "content-area",
+          "footer(optional)",
+          "action(optional)"
+        ],
+        "states": [
+          "default",
+          "loading",
+          "empty",
+          "error"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.card.default",
+        "border": "border.subtle",
+        "radius": "radius.md",
+        "padding": "spacing.16 spacing.20",
+        "shadow": "elevation.raised"
+      },
+      "accessibility": [
+        "적절한 heading level 사용",
+        "데이터 테이블은 scope와 caption 필수",
+        "빈 상태에서 안내 텍스트 제공"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "빈 상태(empty-state)와 에러 상태를 반드시 처리",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "activity-card",
+      "family": "data-display",
+      "role": "최근 활동 피드 카드",
+      "source_pattern": "dashboard cards",
+      "anatomy": {
+        "parts": [
+          "container",
+          "header",
+          "content-area",
+          "footer(optional)",
+          "action(optional)"
+        ],
+        "states": [
+          "default",
+          "loading",
+          "empty",
+          "error"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.card.default",
+        "border": "border.subtle",
+        "radius": "radius.md",
+        "padding": "spacing.16 spacing.20",
+        "shadow": "elevation.raised"
+      },
+      "accessibility": [
+        "적절한 heading level 사용",
+        "데이터 테이블은 scope와 caption 필수",
+        "빈 상태에서 안내 텍스트 제공"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "빈 상태(empty-state)와 에러 상태를 반드시 처리",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "section-header",
+      "family": "data-display",
+      "role": "대시보드 섹션 구분 헤더",
+      "source_pattern": "dashboard cards",
+      "anatomy": {
+        "parts": [
+          "container",
+          "header",
+          "content-area",
+          "footer(optional)",
+          "action(optional)"
+        ],
+        "states": [
+          "default",
+          "loading",
+          "empty",
+          "error"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.card.default",
+        "border": "border.subtle",
+        "radius": "radius.md",
+        "padding": "spacing.16 spacing.20",
+        "shadow": "elevation.raised"
+      },
+      "accessibility": [
+        "적절한 heading level 사용",
+        "데이터 테이블은 scope와 caption 필수",
+        "빈 상태에서 안내 텍스트 제공"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "빈 상태(empty-state)와 에러 상태를 반드시 처리",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "comment-thread",
+      "family": "data-display",
+      "role": "댓글 스레드 목록",
+      "source_pattern": "comments and discussion",
+      "anatomy": {
+        "parts": [
+          "container",
+          "header",
+          "content-area",
+          "footer(optional)",
+          "action(optional)"
+        ],
+        "states": [
+          "default",
+          "loading",
+          "empty",
+          "error"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.card.default",
+        "border": "border.subtle",
+        "radius": "radius.md",
+        "padding": "spacing.16 spacing.20",
+        "shadow": "elevation.raised"
+      },
+      "accessibility": [
+        "적절한 heading level 사용",
+        "데이터 테이블은 scope와 caption 필수",
+        "빈 상태에서 안내 텍스트 제공"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "빈 상태(empty-state)와 에러 상태를 반드시 처리",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "comment-input",
+      "family": "input",
+      "role": "댓글 입력 영역",
+      "source_pattern": "comments and discussion",
+      "anatomy": {
+        "parts": [
+          "container",
+          "label",
+          "input-area",
+          "helper-text(optional)",
+          "leading-icon(optional)",
+          "clear-button(optional)"
+        ],
+        "states": [
+          "default",
+          "focus",
+          "filled",
+          "error",
+          "disabled",
+          "readonly"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.input.{state}",
+        "text": "text.input.{state}",
+        "border": "border.input.{state}",
+        "radius": "radius.sm",
+        "padding": "spacing.8 spacing.12",
+        "font": "typography.text.md.regular"
+      },
+      "accessibility": [
+        "label과 input을 for/id로 연결",
+        "aria-describedby로 helper/error text 연결",
+        "aria-invalid=\"true\" when error",
+        "aria-required=\"true\" when required"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] feedback: 콘텐츠 맥락 안에서 인라인 표시, 토스트보다 인라인 선호 + 명확한 상태 구분, 진행률/결과를 수치로 표시 + 결과를 반드시 확인, 실패 시 복구 방법 안내"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/guidelines/carbon-for-ai",
+          "matched_term": "input",
+          "excerpt": "Number input Text input"
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/about",
+          "matched_term": "input",
+          "excerpt": "I worked in data visualization and map-making for most of my career, and solving design problems with data is my jam. To me there's something uniqu..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "error 상태에서 helper text → error message로 자동 전환",
+        "label은 항상 visible (placeholder만으로 대체 금지)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "mention-popup",
+      "family": "overlay",
+      "role": "@멘션 자동완성 팝업",
+      "source_pattern": "comments and discussion",
+      "anatomy": {
+        "parts": [
+          "backdrop",
+          "container",
+          "header",
+          "content",
+          "footer(optional)",
+          "close-button"
+        ],
+        "states": [
+          "closed",
+          "opening",
+          "open",
+          "closing"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.overlay",
+        "backdrop": "color.neutral.900/60",
+        "radius": "radius.lg",
+        "shadow": "elevation.modal",
+        "padding": "spacing.24"
+      },
+      "accessibility": [
+        "role=\"dialog\" with aria-modal=\"true\"",
+        "focus trap (Tab 순환)",
+        "Escape로 닫기",
+        "aria-labelledby로 제목 연결",
+        "닫은 후 trigger 요소로 포커스 복귀"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] motion: 콘텐츠 전환 위주, UI chrome 모션 최소화 + 120-180ms, 군더더기 없는 전환 + 모든 전환에 동일한 easing/duration",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Primer",
+          "url": "https://primer.style/product/components",
+          "matched_term": "overlay",
+          "excerpt": "ActionMenu is composed of ActionList and Overlay patterns used for quick actions and selections. AnchoredOverlay"
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "Escape / backdrop click으로 닫기, 열 때 첫 focusable 요소로 이동",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "chat-message",
+      "family": "data-display",
+      "role": "채팅 메시지 말풍선",
+      "source_pattern": "chat and messaging",
+      "anatomy": {
+        "parts": [
+          "container",
+          "header",
+          "content-area",
+          "footer(optional)",
+          "action(optional)"
+        ],
+        "states": [
+          "default",
+          "loading",
+          "empty",
+          "error"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.card.default",
+        "border": "border.subtle",
+        "radius": "radius.md",
+        "padding": "spacing.16 spacing.20",
+        "shadow": "elevation.raised"
+      },
+      "accessibility": [
+        "적절한 heading level 사용",
+        "데이터 테이블은 scope와 caption 필수",
+        "빈 상태에서 안내 텍스트 제공"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "빈 상태(empty-state)와 에러 상태를 반드시 처리",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "chat-input",
+      "family": "input",
+      "role": "메시지 입력 영역",
+      "source_pattern": "chat and messaging",
+      "anatomy": {
+        "parts": [
+          "container",
+          "label",
+          "input-area",
+          "helper-text(optional)",
+          "leading-icon(optional)",
+          "clear-button(optional)"
+        ],
+        "states": [
+          "default",
+          "focus",
+          "filled",
+          "error",
+          "disabled",
+          "readonly"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.input.{state}",
+        "text": "text.input.{state}",
+        "border": "border.input.{state}",
+        "radius": "radius.sm",
+        "padding": "spacing.8 spacing.12",
+        "font": "typography.text.md.regular"
+      },
+      "accessibility": [
+        "label과 input을 for/id로 연결",
+        "aria-describedby로 helper/error text 연결",
+        "aria-invalid=\"true\" when error",
+        "aria-required=\"true\" when required"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] hover: 텍스트 underline 또는 color shift, 장식적 효과 없음 + 정확한 border/outline 변화 + 예측 가능하고 일관된 hover 패턴",
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] feedback: 콘텐츠 맥락 안에서 인라인 표시, 토스트보다 인라인 선호 + 명확한 상태 구분, 진행률/결과를 수치로 표시 + 결과를 반드시 확인, 실패 시 복구 방법 안내"
+      ],
+      "reference_evidence": [
+        {
+          "source": "Carbon Design System",
+          "url": "https://carbondesignsystem.com/guidelines/carbon-for-ai",
+          "matched_term": "input",
+          "excerpt": "Number input Text input"
+        },
+        {
+          "source": "Primer",
+          "url": "https://primer.style/about",
+          "matched_term": "input",
+          "excerpt": "I worked in data visualization and map-making for most of my career, and solving design problems with data is my jam. To me there's something uniqu..."
+        }
+      ],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "error 상태에서 helper text → error message로 자동 전환",
+        "label은 항상 visible (placeholder만으로 대체 금지)",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    },
+    {
+      "name": "chat-thread",
+      "family": "data-display",
+      "role": "대화 스레드 목록",
+      "source_pattern": "chat and messaging",
+      "anatomy": {
+        "parts": [
+          "container",
+          "header",
+          "content-area",
+          "footer(optional)",
+          "action(optional)"
+        ],
+        "states": [
+          "default",
+          "loading",
+          "empty",
+          "error"
+        ]
+      },
+      "tokens": {
+        "surface": "surface.card.default",
+        "border": "border.subtle",
+        "radius": "radius.md",
+        "padding": "spacing.16 spacing.20",
+        "shadow": "elevation.raised"
+      },
+      "accessibility": [
+        "적절한 heading level 사용",
+        "데이터 테이블은 scope와 caption 필수",
+        "빈 상태에서 안내 텍스트 제공"
+      ],
+      "brand_adaptation": [
+        "[editorial+precise+trustworthy] density: 넉넉한 line-height와 margin, 읽기 편한 간격 + 엄격한 spacing scale 준수, 임의 값 금지 + 기존 레이아웃 유지, 갑작스런 위치 변경 없음",
+        "[editorial+precise+trustworthy] color: 타이포그래피로 위계 형성, 컬러보다 weight/size 활용 + 정확한 semantic 분리, 모호한 중간 톤 지양 + 안정적인 neutral 기반, 과한 accent 변화 없음"
+      ],
+      "reference_evidence": [],
+      "implementation_notes": [
+        "기존에 같은 역할의 컴포넌트가 있으면 토큰 교체부터 시작",
+        "variant prop으로 시각적 변형을 관리 (하드코딩 금지)",
+        "빈 상태(empty-state)와 에러 상태를 반드시 처리",
+        "텍스트 위계가 핵심 — 컬러보다 weight/size로 구분"
+      ]
+    }
+  ]
+}

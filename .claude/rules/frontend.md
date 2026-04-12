@@ -15,7 +15,7 @@ paths:
 
 ## 디자인 시스템
 - 반드시 `DESIGN.md`를 읽고 UI 구현할 것
-- 서체: Nanum Myeongjo (헤드라인), Pretendard Variable (본문)
+- 서체: Lora + Noto Serif KR (헤드라인), Pretendard Variable (본문)
 - 액센트: Marsala #964F4C. 다른 액센트 컬러 임의 사용 금지
 - 배경: #F8F6F3 (라이트), #1A1714 (다크). 순수 흰색/검정 사용 금지
 - 시맨틱 컬러는 웜 톤 사용 (표준 초록/빨강/파랑 아님). DESIGN.md 참조

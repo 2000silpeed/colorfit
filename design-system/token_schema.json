@@ -1,0 +1,222 @@
+{
+  "naming": {
+    "core": "{category}.{role}.{scale}",
+    "semantic": "{category}.{intent}.{state}",
+    "component": "{component}.{slot}.{property}"
+  },
+  "layers": [
+    {
+      "name": "core",
+      "purpose": "브랜드에 종속되지 않는 수치와 원재료 토큰",
+      "categories": [
+        "color",
+        "spacing",
+        "radius",
+        "typography",
+        "motion",
+        "elevation"
+      ]
+    },
+    {
+      "name": "semantic",
+      "purpose": "역할 중심 토큰",
+      "categories": [
+        "surface",
+        "text",
+        "border",
+        "focus",
+        "feedback"
+      ]
+    },
+    {
+      "name": "component",
+      "purpose": "컴포넌트 슬롯별 적용 토큰",
+      "categories": [
+        "button",
+        "input",
+        "navigation",
+        "overlay",
+        "editor"
+      ]
+    }
+  ],
+  "categories": {
+    "color": {
+      "core_groups": [
+        "neutral",
+        "accent",
+        "success",
+        "warning",
+        "danger",
+        "info"
+      ],
+      "scale": [
+        0,
+        50,
+        100,
+        200,
+        300,
+        400,
+        500,
+        600,
+        700,
+        800,
+        900,
+        1000
+      ],
+      "rules": [
+        "accent는 최대 1개의 주 계열로 시작",
+        "semantic feedback은 accent와 분리",
+        "text/surface 조합은 접근성 기준을 우선"
+      ]
+    },
+    "typography": {
+      "families": [
+        "display",
+        "text",
+        "mono"
+      ],
+      "size_scale": [
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "2xl",
+        "3xl",
+        "4xl"
+      ],
+      "rules": [
+        "display는 마케팅/영웅 구역으로 제한",
+        "text는 제품 본문과 UI 라벨의 기본",
+        "mono는 데이터와 shortcut hint에 제한"
+      ],
+      "recommended_fonts": {
+        "heading": "Lora",
+        "body": "Pretendard",
+        "mono": null,
+        "korean": "Pretendard"
+      },
+      "heading_note": "본문 읽기에 최적화된 세리프. 블로그, 매거진에 많이 사용.",
+      "body_note": "한글 UI 서체의 사실상 표준. Apple SD Gothic Neo 기반이지만 더 정교함. 라틴은 Inter 계열.",
+      "product_type": "editorial",
+      "pairing_source": "auto-scored",
+      "line_height_preset": "relaxed",
+      "strategy": [
+        "헤딩(세리프) + 본문(산세리프) 대비 구조 — 에디토리얼 정석",
+        "한글 서체: Pretendard — 라틴과 x-height/weight 조화",
+        "editorial 키워드 → 넉넉한 line-height, 헤딩에 serif 사용",
+        "precise 키워드 → tight letter-spacing, tabular figures 권장"
+      ],
+      "loading": {
+        "fonts": [
+          {
+            "font": "Pretendard",
+            "weights": "400;500;600",
+            "priority": "preload"
+          },
+          {
+            "font": "Lora",
+            "weights": "600;700",
+            "priority": "preload"
+          }
+        ],
+        "fallback_strategy": "system-ui → font swap",
+        "display": "swap",
+        "subset": "latin,korean",
+        "note": "본문 서체를 preload, 모노스페이스는 lazy load. font-display: swap으로 FOUT 최소화."
+      },
+      "type_scale": {
+        "base_size": 16,
+        "scale_ratio": 1.333,
+        "sizes": {
+          "xs": 12,
+          "sm": 14,
+          "md": 16,
+          "lg": 21,
+          "xl": 28,
+          "2xl": 38,
+          "3xl": 50
+        },
+        "line_heights": {
+          "tight": 1.2,
+          "normal": 1.5,
+          "comfortable": 1.6,
+          "relaxed": 1.75
+        }
+      }
+    },
+    "spacing": {
+      "scale": [
+        0,
+        2,
+        4,
+        8,
+        12,
+        16,
+        24,
+        32,
+        48,
+        64,
+        96
+      ],
+      "density_modes": [
+        "comfortable",
+        "compact"
+      ]
+    },
+    "radius": {
+      "scale": [
+        "none",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "pill"
+      ],
+      "rule": "라운딩은 브랜드 성격을 드러내지만 컴포넌트 계층별로 제한적으로 사용"
+    },
+    "motion": {
+      "durations_ms": [
+        0,
+        80,
+        120,
+        180,
+        240,
+        320
+      ],
+      "easing_tokens": [
+        "standard",
+        "enter",
+        "exit",
+        "emphasized"
+      ],
+      "rule": "모션은 상태 설명용이며 과장된 장식 효과는 금지"
+    },
+    "elevation": {
+      "levels": [
+        "flat",
+        "raised",
+        "overlay",
+        "modal"
+      ],
+      "rule": "그림자보다 layer 의미가 먼저 드러나야 함"
+    }
+  },
+  "brand_alignment": {
+    "visual_keywords": [
+      "warm neutrals",
+      "serif-sans contrast",
+      "measured whitespace",
+      "fashion editorial hierarchy",
+      "tonal accent cues"
+    ],
+    "interaction_keywords": [
+      "guided decision flow",
+      "explainable scoring",
+      "low-noise motion",
+      "confidence-building comparison"
+    ],
+    "system_name": "ColorFit System"
+  }
+}

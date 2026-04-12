@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 
@@ -21,6 +22,14 @@ interface OnboardingLayoutProps {
 }
 
 export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
+  return (
+    <Suspense fallback={<div className="min-h-dvh bg-bg-primary" />}>
+      <OnboardingLayoutContent>{children}</OnboardingLayoutContent>
+    </Suspense>
+  );
+}
+
+function OnboardingLayoutContent({ children }: OnboardingLayoutProps) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -41,12 +50,12 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
   };
 
   return (
-    <div className="min-h-dvh flex flex-col bg-bg-primary">
-      <header className="sticky top-0 z-10 bg-bg-primary px-[var(--space-md)] pt-[var(--space-md)] pb-[var(--space-sm)]">
-        <div className="h-10 flex items-center">
+    <div className="min-h-dvh flex flex-col bg-bg-primary max-w-[430px] mx-auto">
+      <header className="sticky top-0 z-10 bg-bg-primary px-[20px] pt-[16px] pb-[8px]">
+        <div className="h-[44px] flex items-center">
           <button
             onClick={handleBack}
-            className="flex items-center justify-center w-10 h-10 -ml-2 text-text-primary"
+            className="flex items-center justify-center w-[44px] h-[44px] -ml-[8px] text-text-primary active:scale-[0.95] active:opacity-70 transition-transform duration-100"
             aria-label={isChangeMode ? "프로필로 돌아가기" : currentStep === 0 ? "로그인으로 돌아가기" : "이전 단계로"}
           >
             <svg
@@ -65,7 +74,7 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
         </div>
 
         {!isChangeMode && <div
-          className="flex gap-[var(--space-xs)] mt-[var(--space-sm)]"
+          className="flex gap-[4px] mt-[8px]"
           role="progressbar"
           aria-valuenow={currentStep + 1}
           aria-valuemin={1}
@@ -97,14 +106,14 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
         </div>}
 
         {!isChangeMode && <p
-          className="mt-[var(--space-xs)] font-body text-text-secondary"
-          style={{ fontSize: "13px" }}
+          className="mt-[4px] text-[12px] text-text-secondary"
+          style={{ fontFamily: "var(--font-body)", fontVariantNumeric: "tabular-nums" }}
         >
           {currentStep + 1} / {STEPS.length}
         </p>}
       </header>
 
-      <main className="flex-1 flex flex-col px-[var(--space-md)]">
+      <main className="flex-1 flex flex-col px-[20px]">
         {children}
       </main>
     </div>

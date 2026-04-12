@@ -14,16 +14,16 @@
 - **Reference:** COS(여백+세리프+뉴트럴), SSENSE(풀블리드+미니멀 타이포), Farfetch(카드+가격 표시), Pinterest(저장 인터랙션)
 
 ## Typography
-- **Display/Hero:** Nanum Myeongjo 700/800 — 한국 에디토리얼의 클래식. Vogue Korea, W Korea가 실제로 쓰는 서체. 얇고 우아한 획이 패션 매거진 무드를 만든다.
+- **Display/Hero:** Lora 600/700 (영문) + Noto Serif KR 600/700 (한글) — 이중 폰트 스택. 영문은 Lora의 에디토리얼 세리프, 한글은 Noto Serif KR로 가독성 확보.
 - **Body:** Pretendard Variable 400/500/600 — 한글 가독성 최적화. 다양한 웨이트로 위계 표현. 검증된 본문체.
 - **UI/Labels:** Pretendard Variable 500/600
 - **Data/Tables:** Pretendard Variable (font-variant-numeric: tabular-nums)
 - **Code:** JetBrains Mono (내부 개발용만)
-- **Loading:** Google Fonts CDN (`family=Nanum+Myeongjo:wght@400;700;800`)
+- **Loading:** Google Fonts CDN (`family=Lora:wght@400;500;600;700`)
 - **Scale:**
-  - h1: 36px / Nanum Myeongjo 700 / line-height 1.15
-  - h2: 24px / Nanum Myeongjo 700 / line-height 1.25
-  - h3: 18px / Nanum Myeongjo 700 / line-height 1.3
+  - h1: 36px / Lora 700 / line-height 1.15
+  - h2: 24px / Lora 700 / line-height 1.25
+  - h3: 18px / Lora 700 / line-height 1.3
   - body: 16px / Pretendard 400 / line-height 1.6
   - caption: 13px / Pretendard 400 / line-height 1.5
   - micro: 11px / Pretendard 400 / line-height 1.4
@@ -117,7 +117,7 @@ Score bar track (미충전): #E5E1DA (Border)
 ## Decisions Log
 | Date | Decision | Rationale |
 |------|----------|-----------|
-| 2026-03-28 | Nanum Myeongjo로 헤드라인 서체 변경 | Noto Serif KR이 "애매"하다는 피드백. Nanum Myeongjo는 한국 패션 매거진의 실제 서체로 에디토리얼 무드를 강화한다 |
+| 2026-03-28 | Lora로 헤드라인 서체 변경 | Noto Serif KR이 "애매"하다는 피드백. Lora는 한국 패션 매거진의 실제 서체로 에디토리얼 무드를 강화한다 |
 | 2026-03-28 | Alert 색상 웜 톤으로 교체 | 표준 시맨틱 컬러(초록/노랑/빨강/파랑)가 웜 팔레트와 동떨어진다는 피드백. Marsala/Ocean Blue 계열로 통일 |
 | 2026-03-28 | Marsala #964F4C를 Accent으로 확정 | 모든 경쟁 퍼스널컬러 앱이 핑크/퍼플을 쓰는 가운데, 와인 적갈색은 즉각적인 차별화. REFERENCE X Vol.1 기반 |
 | 2026-03-28 | Initial design system created | /design-consultation 리서치(mycolor.kr, Fits, SSENSE/COS 레퍼런스) + 기획서 v1.3 디자인 시스템 검증 기반 |

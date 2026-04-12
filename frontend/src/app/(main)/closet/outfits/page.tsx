@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, startTransition } from "react";
+import { Suspense, useState, useEffect, useCallback, useRef, startTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -244,6 +244,14 @@ function ClosetOutfitCard({ outfit, isSaved, index, onTap, onSaveToggle }: Outfi
 
 /* ── 메인 페이지 ── */
 export default function ClosetOutfitsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-bg-primary" />}>
+      <ClosetOutfitsContent />
+    </Suspense>
+  );
+}
+
+function ClosetOutfitsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const itemId = searchParams.get("item_id") ?? "";

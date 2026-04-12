@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ColorFit Token Refactoring Report</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', sans-serif;
+    background: #F5F3F0;
+    color: #222;
+    padding: 40px 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    font-size: 14px;
+    color: #8C8578;
+    margin-bottom: 40px;
+  }
+  .section {
+    margin-bottom: 48px;
+  }
+  .section h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #E5E1DA;
+  }
+  .comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+  .comparison-item {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .comparison-item .label {
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .comparison-item.before .label {
+    background: #F0EDE8;
+    color: #8C8578;
+  }
+  .comparison-item.after .label {
+    background: #964F4C;
+    color: white;
+  }
+  .comparison-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Token structure */
+  .token-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+  }
+  .token-table th, .token-table td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid #E5E1DA;
+    font-size: 13px;
+  }
+  .token-table th {
+    background: #F0EDE8;
+    font-weight: 600;
+    color: #6B655C;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .token-table code {
+    background: #F0EDE8;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+  .layer-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .layer-core { background: #EDF3F4; color: #4F97A3; }
+  .layer-semantic { background: #F5F0E8; color: #A07830; }
+  .layer-component { background: #F5EDEC; color: #964F4C; }
+
+  .swatch {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    vertical-align: middle;
+    margin-right: 6px;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+
+  .changes-list {
+    list-style: none;
+    margin-bottom: 24px;
+  }
+  .changes-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #F0EDE8;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .changes-list li::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #964F4C;
+    flex-shrink: 0;
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .summary-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .summary-card .num {
+    font-size: 32px;
+    font-weight: 700;
+    color: #964F4C;
+  }
+  .summary-card .desc {
+    font-size: 13px;
+    color: #8C8578;
+    margin-top: 4px;
+  }
+
+  @media (max-width: 768px) {
+    .comparison { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<h1>ColorFit Token Refactoring Report</h1>
+<p class="subtitle">Design Ontology Harness 기반 3-Layer 토큰 구조 적용 | 2026-04-12</p>
+
+<!-- Summary -->
+<div class="section">
+  <h2>Summary</h2>
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="num">3</div>
+      <div class="desc">Token Layers<br>Core / Semantic / Component</div>
+    </div>
+    <div class="summary-card">
+      <div class="num">44</div>
+      <div class="desc">Core 토큰<br>색상 스케일 + 스페이싱 + 반경 + 모션 + 엘리베이션</div>
+    </div>
+    <div class="summary-card">
+      <div class="num">22</div>
+      <div class="desc">Semantic 토큰<br>surface / text / border / focus / feedback</div>
+    </div>
+    <div class="summary-card">
+      <div class="num">0</div>
+      <div class="desc">Visual Regression<br>색상값 동일, 시각적 변화 없음</div>
+    </div>
+  </div>
+</div>
+
+<!-- Changes -->
+<div class="section">
+  <h2>What Changed</h2>
+  <ul class="changes-list">
+    <li>Flat 토큰 나열 → Core(원재료) / Semantic(역할) / Component(shadcn) 3계층 구조</li>
+    <li>Color scale 도입: neutral 12단계, accent 7단계, feedback 4종</li>
+    <li>Spacing scale 확장: 12px, 96px 추가 (하네스 권장 스케일 적용)</li>
+    <li>Radius에 pill(9999px) 추가, none(0px) 추가</li>
+    <li>Motion 토큰 신규: 6단계 duration + 4종 easing curve</li>
+    <li>Elevation 토큰 신규: flat / raised / overlay / modal 4단계</li>
+    <li>shadcn 토큰이 semantic 토큰을 참조 → 한 곳만 바꾸면 전체 전파</li>
+    <li>backward compat alias 유지 → 기존 코드 깨지지 않음</li>
+    <li>Dark mode: core 레이어만 오버라이드 → semantic/component 자동 적용</li>
+  </ul>
+</div>
+
+<!-- Token Structure -->
+<div class="section">
+  <h2>Token Architecture</h2>
+  <table class="token-table">
+    <thead>
+      <tr>
+        <th>Layer</th>
+        <th>Example Token</th>
+        <th>Value</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="layer-badge layer-core">Core</span></td>
+        <td><code>--core-neutral-50</code></td>
+        <td><span class="swatch" style="background:#F8F6F3"></span>#F8F6F3</td>
+        <td>브랜드 무관 원재료</td>
+      </tr>
+      <tr>
+        <td><span class="layer-badge layer-core">Core</span></td>
+        <td><code>--core-accent-500</code></td>
+        <td><span class="swatch" style="background:#964F4C"></span>#964F4C (Marsala)</td>
+        <td>브랜드 액센트 원색</td>
+      </tr>
+      <tr>
+        <td><span class="layer-badge layer-core">Core</span></td>
+        <td><code>--space-4</code></td>
+        <td>12px</td>
+        <td>spacing scale (신규)</td>
+      </tr>
+      <tr>
+        <td><span class="layer-badge layer-core">Core</span></td>
+        <td><code>--motion-normal</code></td>
+        <td>120ms</td>
+        <td>기본 전환 duration (신규)</td>
+      </tr>
+      <tr>
+        <td><span class="layer-badge layer-core">Core</span></td>
+        <td><code>--shadow-raised</code></td>
+        <td>0 1px 3px rgba(0,0,0,0.04)</td>
+        <td>카드 elevation (신규)</td>
+      </tr>
+      <tr>
+        <td><span class="layer-badge layer-semantic">Semantic</span></td>
+        <td><code>--surface-primary</code></td>
+        <td>var(--core-neutral-50)</td>
+        <td>주요 배경</td>
+      </tr>
+      <tr>
+        <td><span class="layer-badge layer-semantic">Semantic</span></td>
+        <td><code>--text-primary</code></td>
+        <td>var(--core-neutral-900)</td>
+        <td>본문 텍스트</td>
+      </tr>
+      <tr>
+        <td><span class="layer-badge layer-semantic">Semantic</span></td>
+        <td><code>--feedback-error-bg</code></td>
+        <td>var(--core-danger-100)</td>
+        <td>에러 배경</td>
+      </tr>
+      <tr>
+        <td><span class="layer-badge layer-component">Component</span></td>
+        <td><code>--primary</code> (shadcn)</td>
+        <td>var(--core-accent-500)</td>
+        <td>버튼 primary 배경</td>
+      </tr>
+      <tr>
+        <td><span class="layer-badge layer-component">Component</span></td>
+        <td><code>--background</code> (shadcn)</td>
+        <td>var(--surface-primary)</td>
+        <td>페이지 배경</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Screenshots -->
+<div class="section">
+  <h2>Visual Comparison</h2>
+  <p style="font-size:14px;color:#8C8578;margin-bottom:24px">
+    토큰 구조만 변경하고 실제 색상값은 동일하므로 시각적 차이가 없어야 합니다.
+  </p>
+
+  <h3 style="font-size:16px;margin-bottom:16px">Login</h3>
+  <div class="comparison">
+    <div class="comparison-item before">
+      <div class="label">Before</div>
+      <img src="screenshots/as-is/01-login.png" alt="Login Before">
+    </div>
+    <div class="comparison-item after">
+      <div class="label">After</div>
+      <img src="screenshots/to-be/01-login.png" alt="Login After">
+    </div>
+  </div>
+
+  <h3 style="font-size:16px;margin-bottom:16px">Onboarding Step 1</h3>
+  <div class="comparison">
+    <div class="comparison-item before">
+      <div class="label">Before</div>
+      <img src="screenshots/as-is/02-onboarding-step1.png" alt="Onboarding Step1 Before">
+    </div>
+    <div class="comparison-item after">
+      <div class="label">After</div>
+      <img src="screenshots/to-be/02-onboarding-step1.png" alt="Onboarding Step1 After">
+    </div>
+  </div>
+
+  <h3 style="font-size:16px;margin-bottom:16px">Onboarding Step 2</h3>
+  <div class="comparison">
+    <div class="comparison-item before">
+      <div class="label">Before</div>
+      <img src="screenshots/as-is/03-onboarding-step2.png" alt="Onboarding Step2 Before">
+    </div>
+    <div class="comparison-item after">
+      <div class="label">After</div>
+      <img src="screenshots/to-be/03-onboarding-step2.png" alt="Onboarding Step2 After">
+    </div>
+  </div>
+
+  <h3 style="font-size:16px;margin-bottom:16px">Feed</h3>
+  <div class="comparison">
+    <div class="comparison-item before">
+      <div class="label">Before</div>
+      <img src="screenshots/as-is/04-feed.png" alt="Feed Before">
+    </div>
+    <div class="comparison-item after">
+      <div class="label">After</div>
+      <img src="screenshots/to-be/04-feed.png" alt="Feed After">
+    </div>
+  </div>
+
+  <h3 style="font-size:16px;margin-bottom:16px">Profile</h3>
+  <div class="comparison">
+    <div class="comparison-item before">
+      <div class="label">Before</div>
+      <img src="screenshots/as-is/05-profile.png" alt="Profile Before">
+    </div>
+    <div class="comparison-item after">
+      <div class="label">After</div>
+      <img src="screenshots/to-be/05-profile.png" alt="Profile After">
+    </div>
+  </div>
+
+  <h3 style="font-size:16px;margin-bottom:16px">Closet</h3>
+  <div class="comparison">
+    <div class="comparison-item before">
+      <div class="label">Before</div>
+      <img src="screenshots/as-is/06-closet.png" alt="Closet Before">
+    </div>
+    <div class="comparison-item after">
+      <div class="label">After</div>
+      <img src="screenshots/to-be/06-closet.png" alt="Closet After">
+    </div>
+  </div>
+
+  <h3 style="font-size:16px;margin-bottom:16px">Saved</h3>
+  <div class="comparison">
+    <div class="comparison-item before">
+      <div class="label">Before</div>
+      <img src="screenshots/as-is/07-saved.png" alt="Saved Before">
+    </div>
+    <div class="comparison-item after">
+      <div class="label">After</div>
+      <img src="screenshots/to-be/07-saved.png" alt="Saved After">
+    </div>
+  </div>
+
+  <h3 style="font-size:16px;margin-bottom:16px">Outfit Detail</h3>
+  <div class="comparison">
+    <div class="comparison-item before">
+      <div class="label">Before</div>
+      <img src="screenshots/as-is/09-outfit-detail.png" alt="Outfit Detail Before">
+    </div>
+    <div class="comparison-item after">
+      <div class="label">After</div>
+      <img src="screenshots/to-be/09-outfit-detail.png" alt="Outfit Detail After">
+    </div>
+  </div>
+
+  <h3 style="font-size:16px;margin-bottom:16px">Premium</h3>
+  <div class="comparison">
+    <div class="comparison-item before">
+      <div class="label">Before</div>
+      <img src="screenshots/as-is/08-premium.png" alt="Premium Before">
+    </div>
+    <div class="comparison-item after">
+      <div class="label">After</div>
+      <img src="screenshots/to-be/08-premium.png" alt="Premium After">
+    </div>
+  </div>
+</div>
+
+<!-- Next Steps -->
+<div class="section">
+  <h2>Next Steps</h2>
+  <ul class="changes-list">
+    <li>기존 코드에서 backward compat alias를 점진적으로 semantic 토큰으로 마이그레이션</li>
+    <li>motion/elevation 토큰을 실제 컴포넌트에 적용 (현재 정의만 완료)</li>
+    <li>component_inventory.json 기반으로 누락 컴포넌트 식별 및 구현</li>
+    <li>DESIGN.md를 하네스 산출물과 동기화</li>
+  </ul>
+</div>
+
+</body>
+</html>

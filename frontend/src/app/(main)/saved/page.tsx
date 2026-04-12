@@ -587,7 +587,7 @@ export default function SavedPage() {
       className="min-h-screen"
       style={{
         backgroundColor: "var(--color-bg-primary)",
-        paddingBottom: "calc(80px + env(safe-area-inset-bottom, 0px))",
+        paddingBottom: "calc(72px + env(safe-area-inset-bottom, 0px))",
       }}
     >
       {/* 헤더 */}
@@ -733,7 +733,8 @@ export default function SavedPage() {
       <AnimatePresence>
         {compareMode && compareSelected.length === 2 && (
           <motion.div
-            className="fixed bottom-[80px] left-0 right-0 z-20 px-[20px]"
+            className="fixed left-0 right-0 z-20 px-[20px]"
+            style={{ bottom: "calc(72px + env(safe-area-inset-bottom, 0px))" }}
             initial={prefersReducedMotion ? false : { y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 20, opacity: 0 }}

@@ -24,7 +24,7 @@ AI 퍼스널컬러 기반 패션 의사결정 엔진. 진단 결과를 실제 �
 
 ## 디자인 시스템
 DESIGN.md를 반드시 읽고 UI 구현할 것.
-- 서체: Nanum Myeongjo (헤드라인) + Pretendard Variable (본문)
+- 서체: Lora + Noto Serif KR (헤드라인) + Pretendard Variable (본문)
 - 액센트: Marsala #964F4C
 - 배경: Warm Off-White #F8F6F3
 - 모든 시맨틱 컬러는 웜 톤 (표준 초록/빨강/파랑 아님)

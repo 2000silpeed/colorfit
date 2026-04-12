@@ -1,0 +1,849 @@
+{
+  "entity_types": [
+    "Brand",
+    "Principle",
+    "TokenCategory",
+    "Token",
+    "ComponentFamily",
+    "Component",
+    "ProductPrimitive",
+    "SourceReference",
+    "AccessibilityRule"
+  ],
+  "relation_types": [
+    {
+      "id": "expresses",
+      "from": "Brand",
+      "to": "Principle"
+    },
+    {
+      "id": "constrains",
+      "from": "Principle",
+      "to": "TokenCategory"
+    },
+    {
+      "id": "defines",
+      "from": "TokenCategory",
+      "to": "Token"
+    },
+    {
+      "id": "governs",
+      "from": "Principle",
+      "to": "ComponentFamily"
+    },
+    {
+      "id": "composed_of",
+      "from": "ComponentFamily",
+      "to": "Component"
+    },
+    {
+      "id": "supports",
+      "from": "Component",
+      "to": "ProductPrimitive"
+    },
+    {
+      "id": "applies_to",
+      "from": "AccessibilityRule",
+      "to": "ComponentFamily"
+    },
+    {
+      "id": "inspired_by",
+      "from": "Brand",
+      "to": "SourceReference"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "brand:colorfit",
+      "type": "Brand",
+      "label": "ColorFit"
+    },
+    {
+      "id": "principle:editorial",
+      "type": "Principle",
+      "label": "Editorial Hierarchy"
+    },
+    {
+      "id": "principle:precise",
+      "type": "Principle",
+      "label": "Precision Over Ornament"
+    },
+    {
+      "id": "principle:trustworthy",
+      "type": "Principle",
+      "label": "Trust Through Consistency"
+    },
+    {
+      "id": "principle:warm",
+      "type": "Principle",
+      "label": "Warm"
+    },
+    {
+      "id": "token-category:color",
+      "type": "TokenCategory",
+      "label": "color"
+    },
+    {
+      "id": "token-category:typography",
+      "type": "TokenCategory",
+      "label": "typography"
+    },
+    {
+      "id": "token-category:spacing",
+      "type": "TokenCategory",
+      "label": "spacing"
+    },
+    {
+      "id": "token-category:motion",
+      "type": "TokenCategory",
+      "label": "motion"
+    },
+    {
+      "id": "component-family:button",
+      "type": "ComponentFamily",
+      "label": "button"
+    },
+    {
+      "id": "component:primary-button",
+      "type": "Component",
+      "label": "primary-button"
+    },
+    {
+      "id": "component:secondary-button",
+      "type": "Component",
+      "label": "secondary-button"
+    },
+    {
+      "id": "component:ghost-button",
+      "type": "Component",
+      "label": "ghost-button"
+    },
+    {
+      "id": "component:icon-button",
+      "type": "Component",
+      "label": "icon-button"
+    },
+    {
+      "id": "component:cta-button",
+      "type": "Component",
+      "label": "cta-button"
+    },
+    {
+      "id": "component-family:feedback",
+      "type": "ComponentFamily",
+      "label": "feedback"
+    },
+    {
+      "id": "component:reason-chip",
+      "type": "Component",
+      "label": "reason-chip"
+    },
+    {
+      "id": "component:top-pick-badge",
+      "type": "Component",
+      "label": "top-pick-badge"
+    },
+    {
+      "id": "component:price-highlight-badge",
+      "type": "Component",
+      "label": "price-highlight-badge"
+    },
+    {
+      "id": "component:inline-alert",
+      "type": "Component",
+      "label": "inline-alert"
+    },
+    {
+      "id": "component:empty-state",
+      "type": "Component",
+      "label": "empty-state"
+    },
+    {
+      "id": "component:toast",
+      "type": "Component",
+      "label": "toast"
+    },
+    {
+      "id": "component-family:input",
+      "type": "ComponentFamily",
+      "label": "input"
+    },
+    {
+      "id": "component:tone-selector",
+      "type": "Component",
+      "label": "tone-selector"
+    },
+    {
+      "id": "component:mood-tag-selector",
+      "type": "Component",
+      "label": "mood-tag-selector"
+    },
+    {
+      "id": "component:budget-range-slider",
+      "type": "Component",
+      "label": "budget-range-slider"
+    },
+    {
+      "id": "component:upload-dropzone",
+      "type": "Component",
+      "label": "upload-dropzone"
+    },
+    {
+      "id": "component:multi-item-selector",
+      "type": "Component",
+      "label": "multi-item-selector"
+    },
+    {
+      "id": "component:text-field",
+      "type": "Component",
+      "label": "text-field"
+    },
+    {
+      "id": "component:search-field",
+      "type": "Component",
+      "label": "search-field"
+    },
+    {
+      "id": "component:segmented-control",
+      "type": "Component",
+      "label": "segmented-control"
+    },
+    {
+      "id": "component-family:navigation",
+      "type": "ComponentFamily",
+      "label": "navigation"
+    },
+    {
+      "id": "component:mobile-topbar",
+      "type": "Component",
+      "label": "mobile-topbar"
+    },
+    {
+      "id": "component:mobile-tab-bar",
+      "type": "Component",
+      "label": "mobile-tab-bar"
+    },
+    {
+      "id": "component:back-button",
+      "type": "Component",
+      "label": "back-button"
+    },
+    {
+      "id": "component:section-tabs",
+      "type": "Component",
+      "label": "section-tabs"
+    },
+    {
+      "id": "component-family:data-display",
+      "type": "ComponentFamily",
+      "label": "data-display"
+    },
+    {
+      "id": "component:score-bar-chart",
+      "type": "Component",
+      "label": "score-bar-chart"
+    },
+    {
+      "id": "component:comparison-overlay-chart",
+      "type": "Component",
+      "label": "comparison-overlay-chart"
+    },
+    {
+      "id": "component:price-compare-table",
+      "type": "Component",
+      "label": "price-compare-table"
+    },
+    {
+      "id": "component:closet-grid",
+      "type": "Component",
+      "label": "closet-grid"
+    },
+    {
+      "id": "component:item-score-badge",
+      "type": "Component",
+      "label": "item-score-badge"
+    },
+    {
+      "id": "component:analysis-summary-card",
+      "type": "Component",
+      "label": "analysis-summary-card"
+    },
+    {
+      "id": "component-family:foundation",
+      "type": "ComponentFamily",
+      "label": "foundation"
+    },
+    {
+      "id": "component:step-progress",
+      "type": "Component",
+      "label": "step-progress"
+    },
+    {
+      "id": "component:preference-card",
+      "type": "Component",
+      "label": "preference-card"
+    },
+    {
+      "id": "component:outfit-feed-card",
+      "type": "Component",
+      "label": "outfit-feed-card"
+    },
+    {
+      "id": "component:tpo-filter-tab",
+      "type": "Component",
+      "label": "tpo-filter-tab"
+    },
+    {
+      "id": "component:save-toggle",
+      "type": "Component",
+      "label": "save-toggle"
+    },
+    {
+      "id": "component:recommendation-reason-list",
+      "type": "Component",
+      "label": "recommendation-reason-list"
+    },
+    {
+      "id": "component:merchant-row",
+      "type": "Component",
+      "label": "merchant-row"
+    },
+    {
+      "id": "component:similar-item-card",
+      "type": "Component",
+      "label": "similar-item-card"
+    },
+    {
+      "id": "component:premium-gate-card",
+      "type": "Component",
+      "label": "premium-gate-card"
+    },
+    {
+      "id": "component-family:overlay",
+      "type": "ComponentFamily",
+      "label": "overlay"
+    },
+    {
+      "id": "component:outfit-detail-sheet",
+      "type": "Component",
+      "label": "outfit-detail-sheet"
+    },
+    {
+      "id": "component:try-on-preview",
+      "type": "Component",
+      "label": "try-on-preview"
+    },
+    {
+      "id": "component:generation-state-panel",
+      "type": "Component",
+      "label": "generation-state-panel"
+    },
+    {
+      "id": "component:bottom-sheet",
+      "type": "Component",
+      "label": "bottom-sheet"
+    },
+    {
+      "id": "component:modal-dialog",
+      "type": "Component",
+      "label": "modal-dialog"
+    },
+    {
+      "id": "primitive:personal-color-onboarding",
+      "type": "ProductPrimitive",
+      "label": "personal color onboarding"
+    },
+    {
+      "id": "primitive:recommendation-feed",
+      "type": "ProductPrimitive",
+      "label": "recommendation feed"
+    },
+    {
+      "id": "primitive:outfit-detail-and-comparison",
+      "type": "ProductPrimitive",
+      "label": "outfit detail and comparison"
+    },
+    {
+      "id": "primitive:shopping-price-comparison",
+      "type": "ProductPrimitive",
+      "label": "shopping price comparison"
+    },
+    {
+      "id": "primitive:closet-analysis",
+      "type": "ProductPrimitive",
+      "label": "closet analysis"
+    },
+    {
+      "id": "primitive:ai-try-on",
+      "type": "ProductPrimitive",
+      "label": "ai try-on"
+    },
+    {
+      "id": "source:primer",
+      "type": "SourceReference",
+      "label": "Primer"
+    },
+    {
+      "id": "source:carbon-design-system",
+      "type": "SourceReference",
+      "label": "Carbon Design System"
+    }
+  ],
+  "edges": [
+    {
+      "type": "expresses",
+      "from": "brand:colorfit",
+      "to": "principle:editorial"
+    },
+    {
+      "type": "expresses",
+      "from": "brand:colorfit",
+      "to": "principle:precise"
+    },
+    {
+      "type": "expresses",
+      "from": "brand:colorfit",
+      "to": "principle:trustworthy"
+    },
+    {
+      "type": "expresses",
+      "from": "brand:colorfit",
+      "to": "principle:warm"
+    },
+    {
+      "type": "constrains",
+      "from": "principle:editorial",
+      "to": "token-category:color"
+    },
+    {
+      "type": "constrains",
+      "from": "principle:precise",
+      "to": "token-category:color"
+    },
+    {
+      "type": "constrains",
+      "from": "principle:trustworthy",
+      "to": "token-category:color"
+    },
+    {
+      "type": "constrains",
+      "from": "principle:warm",
+      "to": "token-category:color"
+    },
+    {
+      "type": "constrains",
+      "from": "principle:editorial",
+      "to": "token-category:typography"
+    },
+    {
+      "type": "constrains",
+      "from": "principle:precise",
+      "to": "token-category:typography"
+    },
+    {
+      "type": "constrains",
+      "from": "principle:trustworthy",
+      "to": "token-category:typography"
+    },
+    {
+      "type": "constrains",
+      "from": "principle:warm",
+      "to": "token-category:typography"
+    },
+    {
+      "type": "constrains",
+      "from": "principle:editorial",
+      "to": "token-category:spacing"
+    },
+    {
+      "type": "constrains",
+      "from": "principle:precise",
+      "to": "token-category:spacing"
+    },
+    {
+      "type": "constrains",
+      "from": "principle:trustworthy",
+      "to": "token-category:spacing"
+    },
+    {
+      "type": "constrains",
+      "from": "principle:warm",
+      "to": "token-category:spacing"
+    },
+    {
+      "type": "constrains",
+      "from": "principle:editorial",
+      "to": "token-category:motion"
+    },
+    {
+      "type": "constrains",
+      "from": "principle:precise",
+      "to": "token-category:motion"
+    },
+    {
+      "type": "constrains",
+      "from": "principle:trustworthy",
+      "to": "token-category:motion"
+    },
+    {
+      "type": "constrains",
+      "from": "principle:warm",
+      "to": "token-category:motion"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:button",
+      "to": "component:primary-button"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:button",
+      "to": "component:secondary-button"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:button",
+      "to": "component:ghost-button"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:button",
+      "to": "component:icon-button"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:button",
+      "to": "component:cta-button"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:feedback",
+      "to": "component:reason-chip"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:feedback",
+      "to": "component:top-pick-badge"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:feedback",
+      "to": "component:price-highlight-badge"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:feedback",
+      "to": "component:inline-alert"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:feedback",
+      "to": "component:empty-state"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:feedback",
+      "to": "component:toast"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:input",
+      "to": "component:tone-selector"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:input",
+      "to": "component:mood-tag-selector"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:input",
+      "to": "component:budget-range-slider"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:input",
+      "to": "component:upload-dropzone"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:input",
+      "to": "component:multi-item-selector"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:input",
+      "to": "component:text-field"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:input",
+      "to": "component:search-field"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:input",
+      "to": "component:segmented-control"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:navigation",
+      "to": "component:mobile-topbar"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:navigation",
+      "to": "component:mobile-tab-bar"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:navigation",
+      "to": "component:back-button"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:navigation",
+      "to": "component:section-tabs"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:data-display",
+      "to": "component:score-bar-chart"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:data-display",
+      "to": "component:comparison-overlay-chart"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:data-display",
+      "to": "component:price-compare-table"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:data-display",
+      "to": "component:closet-grid"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:data-display",
+      "to": "component:item-score-badge"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:data-display",
+      "to": "component:analysis-summary-card"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:foundation",
+      "to": "component:step-progress"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:foundation",
+      "to": "component:preference-card"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:foundation",
+      "to": "component:outfit-feed-card"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:foundation",
+      "to": "component:tpo-filter-tab"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:foundation",
+      "to": "component:save-toggle"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:foundation",
+      "to": "component:recommendation-reason-list"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:foundation",
+      "to": "component:merchant-row"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:foundation",
+      "to": "component:similar-item-card"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:foundation",
+      "to": "component:premium-gate-card"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:overlay",
+      "to": "component:outfit-detail-sheet"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:overlay",
+      "to": "component:try-on-preview"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:overlay",
+      "to": "component:generation-state-panel"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:overlay",
+      "to": "component:bottom-sheet"
+    },
+    {
+      "type": "composed_of",
+      "from": "component-family:overlay",
+      "to": "component:modal-dialog"
+    },
+    {
+      "type": "supports",
+      "from": "component:step-progress",
+      "to": "primitive:personal-color-onboarding"
+    },
+    {
+      "type": "supports",
+      "from": "component:tone-selector",
+      "to": "primitive:personal-color-onboarding"
+    },
+    {
+      "type": "supports",
+      "from": "component:mood-tag-selector",
+      "to": "primitive:personal-color-onboarding"
+    },
+    {
+      "type": "supports",
+      "from": "component:budget-range-slider",
+      "to": "primitive:personal-color-onboarding"
+    },
+    {
+      "type": "supports",
+      "from": "component:preference-card",
+      "to": "primitive:personal-color-onboarding"
+    },
+    {
+      "type": "supports",
+      "from": "component:outfit-feed-card",
+      "to": "primitive:recommendation-feed"
+    },
+    {
+      "type": "supports",
+      "from": "component:score-bar-chart",
+      "to": "primitive:recommendation-feed"
+    },
+    {
+      "type": "supports",
+      "from": "component:reason-chip",
+      "to": "primitive:recommendation-feed"
+    },
+    {
+      "type": "supports",
+      "from": "component:tpo-filter-tab",
+      "to": "primitive:recommendation-feed"
+    },
+    {
+      "type": "supports",
+      "from": "component:save-toggle",
+      "to": "primitive:recommendation-feed"
+    },
+    {
+      "type": "supports",
+      "from": "component:outfit-detail-sheet",
+      "to": "primitive:outfit-detail-and-comparison"
+    },
+    {
+      "type": "supports",
+      "from": "component:comparison-overlay-chart",
+      "to": "primitive:outfit-detail-and-comparison"
+    },
+    {
+      "type": "supports",
+      "from": "component:top-pick-badge",
+      "to": "primitive:outfit-detail-and-comparison"
+    },
+    {
+      "type": "supports",
+      "from": "component:recommendation-reason-list",
+      "to": "primitive:outfit-detail-and-comparison"
+    },
+    {
+      "type": "supports",
+      "from": "component:price-compare-table",
+      "to": "primitive:shopping-price-comparison"
+    },
+    {
+      "type": "supports",
+      "from": "component:merchant-row",
+      "to": "primitive:shopping-price-comparison"
+    },
+    {
+      "type": "supports",
+      "from": "component:price-highlight-badge",
+      "to": "primitive:shopping-price-comparison"
+    },
+    {
+      "type": "supports",
+      "from": "component:similar-item-card",
+      "to": "primitive:shopping-price-comparison"
+    },
+    {
+      "type": "supports",
+      "from": "component:closet-grid",
+      "to": "primitive:closet-analysis"
+    },
+    {
+      "type": "supports",
+      "from": "component:item-score-badge",
+      "to": "primitive:closet-analysis"
+    },
+    {
+      "type": "supports",
+      "from": "component:upload-dropzone",
+      "to": "primitive:closet-analysis"
+    },
+    {
+      "type": "supports",
+      "from": "component:analysis-summary-card",
+      "to": "primitive:closet-analysis"
+    },
+    {
+      "type": "supports",
+      "from": "component:try-on-preview",
+      "to": "primitive:ai-try-on"
+    },
+    {
+      "type": "supports",
+      "from": "component:generation-state-panel",
+      "to": "primitive:ai-try-on"
+    },
+    {
+      "type": "supports",
+      "from": "component:premium-gate-card",
+      "to": "primitive:ai-try-on"
+    },
+    {
+      "type": "supports",
+      "from": "component:multi-item-selector",
+      "to": "primitive:ai-try-on"
+    },
+    {
+      "type": "inspired_by",
+      "from": "brand:colorfit",
+      "to": "source:primer"
+    },
+    {
+      "type": "inspired_by",
+      "from": "brand:colorfit",
+      "to": "source:carbon-design-system"
+    }
+  ]
+}
