@@ -324,13 +324,16 @@ export default function OutfitDetailPage() {
     return () => { cancelled = true; setClosetOutfit(null); };
   }, [closetItemId, outfitId]);
 
-  /* 카탈로그(구매 필요) 아이템 ID Set */
-  const catalogItemIds = closetOutfit
+  /* 옷장 모드: closetOutfit의 catalog 아이템 ID → 구매 필요 아이템 식별 */
+  const closetItemCategories = closetOutfit
     ? new Set(
         closetOutfit.items
-          .filter((i) => i.source === "catalog")
-          .map((i) => i.id),
+          .filter((i) => i.source === "closet")
+          .map((i) => i.category),
       )
+    : null;
+  const closetItemImage = closetOutfit
+    ? closetOutfit.items.find((i) => i.source === "closet")?.image_url ?? null
     : null;
 
   const isClosetMode = closetItemId != null && closetOutfit != null;
@@ -739,39 +742,16 @@ export default function OutfitDetailPage() {
         {/* ── 구분선 ── */}
         <Separator className="mt-[28px]" />
 
-        {/* ── 추천 이유 카드 ── */}
-        {outfit.reasons && outfit.reasons.length > 0 && (
+        {/* ── 에디터 코멘트 ── */}
+        {(outfit.editor_comment || (outfit.reasons && outfit.reasons.length > 0)) && (
           <section className="mt-[28px]">
             <h2 className="font-display text-[18px] text-text-primary mb-[12px]">
-              이 코디가 어울리는 이유
+              에디터 코멘트
             </h2>
-            <div className="bg-bg-secondary rounded-[var(--radius-lg)] p-[20px] space-y-[16px]">
-              {outfit.reasons.map((reason, i) => (
-                <div key={i} className="flex gap-[10px]">
-                  <span
-                    className="shrink-0 w-[20px] h-[20px] rounded-full text-[11px] font-body flex items-center justify-center font-medium"
-                    style={{
-                      backgroundColor: `${SCORE_AXES[i]?.color ?? "var(--color-accent)"}15`,
-                      color: SCORE_AXES[i]?.color ?? "var(--color-accent)",
-                    }}
-                  >
-                    {i + 1}
-                  </span>
-                  <div className="flex-1">
-                    {SCORE_AXES[i] && (
-                      <span
-                        className="font-body text-[11px] font-medium leading-[1]"
-                        style={{ color: SCORE_AXES[i].color }}
-                      >
-                        {SCORE_AXES[i].fullLabel}
-                      </span>
-                    )}
-                    <p className="font-body text-[14px] text-text-primary leading-[1.6] mt-[2px]">
-                      {reason}
-                    </p>
-                  </div>
-                </div>
-              ))}
+            <div className="bg-bg-secondary rounded-[var(--radius-lg)] p-[20px]">
+              <p className="font-body text-[14px] text-text-primary leading-[1.7]">
+                {outfit.editor_comment || outfit.reasons?.slice(0, 3).join(" ")}
+              </p>
             </div>
           </section>
         )}
@@ -788,8 +768,15 @@ export default function OutfitDetailPage() {
             <div
               className="flex gap-[12px] overflow-x-auto pb-[8px] scrollbar-none"
             >
-              {sortedItems.map((item) => {
-                const isOwned = isClosetMode && catalogItemIds != null && !catalogItemIds.has(item.id);
+              {(() => {
+                const usedGroups = new Set<string>();
+                return sortedItems.map((item) => {
+                const itemGroup = CATEGORY_GROUP[item.category ?? ""] ?? "";
+                const isOwned = isClosetMode && closetItemCategories != null
+                  && itemGroup !== "" && !usedGroups.has(itemGroup)
+                  && closetItemCategories.has(item.category ?? "");
+                if (isOwned) usedGroups.add(itemGroup);
+                const displayImage = isOwned && closetItemImage ? closetItemImage : item.image_url;
                 const linkEnabled = !isOwned && !!item.mall_url;
 
                 return (
@@ -807,13 +794,13 @@ export default function OutfitDetailPage() {
                           isOwned ? "bg-[#E8E5E0]" : "bg-bg-secondary"
                         }`}
                       >
-                        {item.image_url ? (
+                        {(displayImage ?? item.image_url) ? (
                           <Image
-                            src={item.image_url}
-                            alt={item.name ?? "아이템"}
+                            src={displayImage ?? item.image_url!}
+                            alt={isOwned ? "내 옷" : (item.name ?? "아이템")}
                             width={80}
                             height={80}
-                            className={`object-cover w-full h-full ${isOwned ? "opacity-80" : ""}`}
+                            className="object-cover w-full h-full"
                             loading="lazy"
                           />
                         ) : (
@@ -827,8 +814,8 @@ export default function OutfitDetailPage() {
                         )}
                       </div>
                       {isOwned && (
-                        <Badge className="absolute top-[4px] left-[4px] bg-[#6B5876]/90 text-white text-[9px] font-body font-medium px-[6px] py-[2px] rounded-full h-auto">
-                          보유 중
+                        <Badge className="absolute top-[4px] left-[4px] bg-[var(--color-accent)]/90 text-white text-[9px] font-body font-medium px-[6px] py-[2px] rounded-full h-auto border-none">
+                          내 옷
                         </Badge>
                       )}
                       {item.color_name && (
@@ -855,12 +842,13 @@ export default function OutfitDetailPage() {
                             ? "text-accent"
                             : "text-text-primary"
                       }`}>
-                        {isOwned ? "보유" : `₩${formatPrice(item.price)}`}
+                        {isOwned ? "내 옷" : `₩${formatPrice(item.price)}`}
                       </p>
                     )}
                   </a>
                 );
-              })}
+              });
+              })()}
             </div>
           </section>
         )}

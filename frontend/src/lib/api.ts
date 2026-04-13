@@ -115,6 +115,7 @@ export interface OutfitDetailResponse {
   scores: ScoresResponse | null;
   reasons: string[] | null;
   score_explanations: ScoreExplanations | null;
+  editor_comment: string | null;
   items: ProductBrief[];
 }
 
@@ -811,6 +812,13 @@ export async function savePreferredBrands(userId: string, brands: string[]): Pro
     body: JSON.stringify({ brands }),
   });
   if (!res.ok) throw new Error(`Save brands API error: ${res.status}`);
+}
+
+export async function deleteClosetItem(userId: string, itemId: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/api/closet/${itemId}?user_id=${userId}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error(`Delete closet item error: ${res.status}`);
 }
 
 /* ── 코디 완성 (옷장 매칭) ── */

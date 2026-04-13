@@ -14,7 +14,7 @@ import time
 from datetime import datetime
 from types import SimpleNamespace
 
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.outfit import Outfit
@@ -26,6 +26,7 @@ from app.schemas.outfit import (
     OutfitFeedItem,
     ScoresResponse,
 )
+
 from app.services.feed_builder import (
     apply_hard_filters,
     calculate_soft_score,
@@ -36,6 +37,7 @@ from app.services.feed_builder import (
 )
 from app.services.reason_generator import generate_reasons
 from app.services.scoring import TPO_SYNONYMS, calculate_of
+from app.services.preference_tracker import compute_personalization_bonus, _parse_json_field
 from app.utils import ensure_list, ensure_dict
 
 PAGE_SIZE = 20
@@ -43,6 +45,9 @@ MAX_OUTFIT_LOAD = 2000
 PRODUCT_BATCH_SIZE = 500
 PRODUCT_WARMUP_BATCH_SIZE = 5000
 FEED_CACHE_TTL_SEC = 300.0
+
+EXCLUDED_CATEGORIES: set[str] = {"점프수트", "롬퍼"}
+EXCLUDED_NAME_KEYWORDS: list[str] = ["페이크삭스", "덧신", "양말", "삭스"]
 
 _feed_cache_lock = asyncio.Lock()
 _feed_cache: dict = {
@@ -76,6 +81,7 @@ def category_to_group(category: str | None) -> str:
 def _build_item_dict(p: Product) -> dict:
     return {
         "id": p.id,
+        "name": p.name,
         "brand": p.brand,
         "tone_id": p.tone_id,
         "category": p.category,
@@ -342,10 +348,22 @@ def _score_outfit(
     tpo: str | None,
     user_preferred: set[str] | None,
     verified_only: bool,
+    weight_overrides: dict[str, float] | None = None,
 ) -> dict | None:
     """단일 outfit에 Hard Filter + Soft Score 적용. 탈락 시 None."""
     if any(not it.get("is_active", True) for it in items):
         return None
+
+    # 점프수트/롬퍼가 메인 아이템인 코디 제외
+    for it in items:
+        if it.get("group") in ("top", "onepiece") and it.get("category") in EXCLUDED_CATEGORIES:
+            return None
+
+    # 양말/삭스류 상품이 포함된 코디 제외
+    for it in items:
+        item_name = (it.get("name") or "").lower()
+        if any(kw in item_name for kw in EXCLUDED_NAME_KEYWORDS):
+            return None
 
     outfit_dict = {
         "gender": o.gender,
@@ -366,7 +384,7 @@ def _score_outfit(
         runtime_of = calculate_of(ensure_list(o.tags), user_tpo_for_of)
         scores_dict = {**scores_dict, "of": runtime_of}
 
-    soft_score = calculate_soft_score(scores_dict)
+    soft_score = calculate_soft_score(scores_dict, weight_overrides=weight_overrides)
     _GROUP_PRIORITY = {"top": 0, "onepiece": 1, "outer": 2, "bottom": 3, "shoes": 4, "bag": 5, "acc": 6}
     sorted_items = sorted(items, key=lambda it: _GROUP_PRIORITY.get(it.get("group", ""), 99))
     image_url = sorted_items[0]["image_url"] if sorted_items else None
@@ -470,6 +488,28 @@ async def get_feed(
     if preferred_brands:
         user_preferred = {b.strip().lower() for b in preferred_brands.split(",") if b.strip()}
 
+    # 0. 사용자 취향 학습 데이터 로드
+    weight_overrides: dict[str, float] | None = None
+    tone_prefs: dict[str, float] = {}
+    category_prefs: dict[str, float] = {}
+    brand_prefs: dict[str, float] = {}
+    if user_id:
+        pref_row = (
+            await db.execute(
+                text(
+                    "SELECT tone_preferences, category_preferences, "
+                    "brand_preferences, weight_overrides, feedback_count "
+                    "FROM user_preferences WHERE user_id = :uid"
+                ),
+                {"uid": user_id},
+            )
+        ).mappings().first()
+        if pref_row and (pref_row["feedback_count"] or 0) > 0:
+            tone_prefs = _parse_json_field(pref_row["tone_preferences"])
+            category_prefs = _parse_json_field(pref_row["category_preferences"])
+            brand_prefs = _parse_json_field(pref_row["brand_preferences"])
+            weight_overrides = _parse_json_field(pref_row["weight_overrides"]) or None
+
     # 1. 전체 outfits + item_map 캐시 로드 (TTL 300s)
     all_outfits, item_map = await _load_feed_cache(db)
 
@@ -485,12 +525,25 @@ async def get_feed(
     scored: list[dict] = []
     for o in outfits:
         items = item_map.get(o.id, [])
-        entry = _score_outfit(o, items, user_profile, tpo, user_preferred, verified_only)
+        entry = _score_outfit(o, items, user_profile, tpo, user_preferred, verified_only, weight_overrides)
         if entry:
             scored.append(entry)
 
-    # 5. Rerank
-    reranked = rerank(scored, disliked_ids=disliked_ids)
+    # 5. Rerank (개인화 보정 포함)
+    personalization: dict[str, float] = {}
+    has_prefs = bool(tone_prefs or category_prefs or brand_prefs)
+    if has_prefs:
+        for entry in scored:
+            oid = entry["id"]
+            outfit_items = item_map.get(oid, [])
+            bonus = compute_personalization_bonus(
+                {"id": oid}, outfit_items,
+                tone_prefs, category_prefs, brand_prefs,
+            )
+            if bonus != 0.0:
+                personalization[oid] = bonus
+
+    reranked = rerank(scored, disliked_ids=disliked_ids, personalization=personalization)
     total = len(reranked)
 
     # 6. 페이지네이션

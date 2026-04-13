@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
-import { fetchCloset, type ClosetItemData, type ClosetStats } from "@/lib/api";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { fetchCloset, deleteClosetItem, type ClosetItemData, type ClosetStats } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -120,11 +120,13 @@ function ClosetItemCard({
   index,
   onClick,
   onOutfit,
+  onDelete,
 }: {
   item: ClosetItemData;
   index: number;
   onClick: () => void;
   onOutfit: () => void;
+  onDelete: () => void;
 }) {
   const prefersReducedMotion = useReducedMotion();
   const badge = scoreBadgeStyle(item.overall_score);
@@ -140,10 +142,12 @@ function ClosetItemCard({
           : { type: "spring", stiffness: 300, damping: 30, delay: index * 0.05 }
       }
     >
-      <button
-        type="button"
+      <div
+        role="button"
+        tabIndex={0}
         onClick={onClick}
-        className="w-full text-left"
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onClick(); }}
+        className="w-full text-left cursor-pointer"
         aria-label={`${CATEGORY_LABEL[item.category ?? ""] ?? "\uB0B4 \uC637"} ${item.overall_score != null ? `${Math.round(item.overall_score)}\uC810` : ""}`}
       >
         <div
@@ -164,6 +168,16 @@ function ClosetItemCard({
               No Image
             </div>
           )}
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onDelete(); }}
+            className="absolute top-[4px] left-[4px] w-[22px] h-[22px] rounded-full bg-black/40 flex items-center justify-center z-10 hover:bg-black/60"
+            aria-label="삭제"
+          >
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M2 2l6 6M8 2l-6 6" />
+            </svg>
+          </button>
           {item.overall_score != null && (
             <Badge
               className="absolute top-[6px] right-[6px] text-[11px] font-body font-medium rounded-full px-[8px] py-[2px] border-none"
@@ -178,7 +192,7 @@ function ClosetItemCard({
             {CATEGORY_LABEL[item.category] ?? item.category}
           </p>
         )}
-      </button>
+      </div>
       <Button
         variant="outline"
         onClick={onOutfit}
@@ -254,6 +268,21 @@ export default function ClosetPage() {
     },
     [router],
   );
+
+  const [deleteTarget, setDeleteTarget] = useState<ClosetItemData | null>(null);
+
+  const handleDelete = useCallback(async () => {
+    if (!deleteTarget) return;
+    const userId = localStorage.getItem("colorfit_user_id");
+    if (!userId) return;
+    try {
+      await deleteClosetItem(userId, deleteTarget.id);
+      setItems((prev) => prev.filter((i) => i.id !== deleteTarget.id));
+    } catch {
+      // 실패 시 무시
+    }
+    setDeleteTarget(null);
+  }, [deleteTarget]);
 
   const handleRetry = useCallback(() => {
     setState("loading");
@@ -390,10 +419,54 @@ export default function ClosetPage() {
               index={idx}
               onClick={() => handleItemClick(item)}
               onOutfit={() => handleOutfitClick(item)}
+              onDelete={() => setDeleteTarget(item)}
             />
           ))}
         </div>
       </div>
+
+      {/* 삭제 확인 다이얼로그 */}
+      <AnimatePresence>
+        {deleteTarget && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setDeleteTarget(null)}
+          >
+            <motion.div
+              className="bg-bg-primary rounded-[var(--radius-lg)] p-[24px] mx-[20px] max-w-[320px] w-full"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <p className="font-display text-[16px] text-text-primary text-center mb-[8px]">
+                이 옷을 삭제할까요?
+              </p>
+              <p className="font-body text-[13px] text-text-tertiary text-center mb-[20px]">
+                삭제하면 되돌릴 수 없어요
+              </p>
+              <div className="flex gap-[8px]">
+                <Button
+                  variant="outline"
+                  onClick={() => setDeleteTarget(null)}
+                  className="flex-1 min-h-[44px] rounded-full font-body text-[14px] border-border text-text-secondary"
+                >
+                  취소
+                </Button>
+                <Button
+                  onClick={handleDelete}
+                  className="flex-1 min-h-[44px] rounded-full font-body text-[14px] bg-error text-white hover:bg-error/90"
+                >
+                  삭제
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* FAB: Add button */}
       <Button

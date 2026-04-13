@@ -637,31 +637,32 @@ async def _load_closet_items(
     user_id: str,
 ) -> list[dict]:
     """closet_items 테이블에서 아이템 정보를 로드한다."""
-    from sqlalchemy import text as sa_text
+    from app.models.closet_item import ClosetItem
 
     if not closet_item_ids:
         return []
 
-    placeholders = ", ".join(f":cid{i}" for i in range(len(closet_item_ids)))
-    params: dict = {"uid": user_id}
-    for i, cid in enumerate(closet_item_ids):
-        params[f"cid{i}"] = cid
+    try:
+        uuid_ids = [uuid.UUID(cid) for cid in closet_item_ids]
+        user_uuid = uuid.UUID(user_id)
+    except ValueError:
+        return []
 
-    rows = (await db.execute(
-        sa_text(
-            "SELECT id, category, dominant_color_hex, matched_tone_id, image_url "
-            f"FROM closet_items WHERE id IN ({placeholders}) AND user_id = :uid"
-        ),
-        params,
-    )).mappings().all()
+    result = await db.execute(
+        select(ClosetItem).where(
+            ClosetItem.id.in_(uuid_ids),
+            ClosetItem.user_id == user_uuid,
+        )
+    )
+    rows = result.scalars().all()
 
     return [
         {
-            "id": row["id"],
-            "category": row["category"],
-            "dominant_color_hex": row["dominant_color_hex"],
-            "matched_tone_id": row["matched_tone_id"],
-            "image_url": row["image_url"],
+            "id": row.id,
+            "category": row.category,
+            "dominant_color_hex": row.dominant_color_hex,
+            "matched_tone_id": row.matched_tone_id,
+            "image_url": row.image_url,
         }
         for row in rows
     ]
@@ -720,8 +721,25 @@ async def match_outfits_for_closet_item(
     raw_category = my_item.get("category") or ""
     my_group = category_to_group(raw_category) or raw_category
 
-    if not my_group or not my_item.get("dominant_color_hex"):
+    if not my_group:
         return {"outfits": [], "total_count": 0, "strategy_used": "db_match"}
+
+    # 색상 정보 없으면 전략 A 건너뛰고 전략 B 직행
+    if not my_item.get("dominant_color_hex"):
+        dynamic_results = await _generate_dynamic_combos(
+            db,
+            my_items=[my_item],
+            user_tone_id=user_tone_id,
+            gender=gender,
+            age_group=age_group,
+            budget_max=budget_max,
+            limit=limit,
+        )
+        return {
+            "outfits": dynamic_results,
+            "total_count": len(dynamic_results),
+            "strategy_used": "dynamic_combo",
+        }
 
     outfits, item_map = await _load_feed_cache(db)
 

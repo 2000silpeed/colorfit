@@ -153,6 +153,27 @@ async def add_closet_item(
     return ClosetItemAddResponse(id=str(item.id), message="옷장에 추가되었습니다")
 
 
+@router.delete("/{item_id}")
+async def delete_closet_item(
+    item_id: uuid.UUID,
+    user_id: Annotated[uuid.UUID, Query()],
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    """옷장 아이템 삭제."""
+    stmt = select(ClosetItem).where(
+        ClosetItem.id == item_id,
+        ClosetItem.user_id == user_id,
+    )
+    result = await db.execute(stmt)
+    item = result.scalar_one_or_none()
+    if not item:
+        raise HTTPException(status_code=404, detail="아이템을 찾을 수 없습니다")
+
+    await db.delete(item)
+    await db.commit()
+    return {"message": "삭제되었습니다"}
+
+
 @router.post("/analyze", response_model=ClosetAnalyzeResponse)
 async def analyze_item(
     req: ClosetAnalyzeRequest,

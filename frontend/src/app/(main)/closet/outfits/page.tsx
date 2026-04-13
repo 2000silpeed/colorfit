@@ -167,19 +167,19 @@ function ClosetOutfitCard({ outfit, isSaved, index, onTap, onSaveToggle }: Outfi
       </div>
 
       {/* 스코어 + 저장 버튼 */}
-      <div className="flex items-center justify-between mt-[12px]">
-        <div className="flex items-center gap-[8px]">
-          <span className="text-[18px] font-display font-bold text-[var(--color-text-primary)]">
+      <div className="flex items-start justify-between mt-[12px] gap-[8px]">
+        <div className="flex items-baseline gap-[8px] min-w-0">
+          <span className="shrink-0 text-[18px] font-display font-bold text-[var(--color-text-primary)] whitespace-nowrap">
             {totalScore}점
           </span>
-          <div className="flex gap-[4px]">
+          <div className="flex flex-wrap gap-[4px]">
             {SCORE_AXIS.map((axis) => {
               const val = outfit.scores[axis.key];
               if (val == null) return null;
               return (
                 <Badge
                   key={axis.key}
-                  className="text-[11px] font-body px-[6px] py-[2px] rounded-full border-none h-auto"
+                  className="text-[11px] font-body px-[6px] py-[2px] rounded-full border-none h-auto whitespace-nowrap"
                   style={{ backgroundColor: `${axis.color}18`, color: axis.color }}
                 >
                   {axis.label} {Math.round(val)}
@@ -194,7 +194,7 @@ function ClosetOutfitCard({ outfit, isSaved, index, onTap, onSaveToggle }: Outfi
           onClick={handleSave}
           aria-label={saved ? "저장 취소" : "저장"}
           aria-pressed={saved}
-          className="w-[36px] h-[36px]"
+          className="shrink-0 w-[36px] h-[36px]"
         >
           <motion.svg
             width="20"
