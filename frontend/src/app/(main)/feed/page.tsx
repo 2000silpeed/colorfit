@@ -300,7 +300,7 @@ export default function FeedPage() {
         <div className="flex items-center justify-between px-[20px] h-[48px] max-w-[430px] mx-auto">
           <span
             className="text-[20px] font-bold tracking-[-0.02em]"
-            style={{ fontFamily: "var(--font-display)", color: "var(--color-text-primary)" }}
+            style={{ fontFamily: "var(--font-display)", color: "var(--color-accent)" }}
           >
             ColorFit
           </span>

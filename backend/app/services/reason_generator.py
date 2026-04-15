@@ -9,7 +9,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 from pathlib import Path
+
+import google.generativeai as genai
+
+from app.config import settings
+
+logger = logging.getLogger(__name__)
 
 PALETTES_DIR = Path(__file__).resolve().parent.parent.parent / "data" / "palettes"
 
@@ -370,3 +377,66 @@ def generate_score_explanations(
         result[axis] = text
 
     return result
+
+
+EDITOR_COMMENT_PROMPT = """\
+당신은 패션 매거진의 스타일 에디터입니다.
+아래 코디 정보를 바탕으로, 이 조합을 왜 선택해야 하는지 4~5문장의 종합 코멘트를 작성하세요.
+
+규칙:
+- 축 이름(퍼스널컬러, TPO, 색상조화 등)을 직접 언급하지 마세요
+- 점수나 숫자를 언급하지 마세요
+- 에디터가 독자에게 자연스럽게 추천하는 톤으로 작성하세요
+- "~해요" 체로 끝내세요
+- 4~5문장, 150자 이상 250자 이하로 작성하세요
+
+코디 정보:
+- 퍼스널컬러 톤: {tone_name}
+- TPO: {tpo}
+- 시즌: {season}
+- 아이템 구성: {items}
+- 강점 요약: {strengths}
+"""
+
+
+async def generate_editor_comment(
+    reasons: list[str],
+    scores: dict[str, float],
+    items: list[dict],
+    user_tone_id: str | None = None,
+    outfit_tpo: str | None = None,
+    outfit_season: str | None = None,
+) -> str | None:
+    """Gemini를 사용해 종합 에디터 코멘트를 생성한다. 실패 시 None 반환."""
+    if not settings.gemini_api_key:
+        return None
+
+    tone_names = _load_tone_names()
+    tone_name = tone_names.get(user_tone_id, "퍼스널컬러") if user_tone_id else "퍼스널컬러"
+    tpo_name = TPO_NAMES_KO.get(outfit_tpo, outfit_tpo) if outfit_tpo else "데일리"
+
+    item_names = [it.get("name", "") for it in items if it.get("name")]
+    items_str = ", ".join(item_names[:5]) if item_names else "코디 아이템"
+
+    top_reasons = reasons[:3] if reasons else []
+    strengths = " / ".join(top_reasons) if top_reasons else "균형 잡힌 코디"
+
+    prompt = EDITOR_COMMENT_PROMPT.format(
+        tone_name=tone_name,
+        tpo=tpo_name,
+        season=outfit_season or "사계절",
+        items=items_str,
+        strengths=strengths,
+    )
+
+    try:
+        genai.configure(api_key=settings.gemini_api_key)
+        model = genai.GenerativeModel("gemini-2.0-flash")
+        response = await model.generate_content_async(prompt)
+        text = response.text.strip()
+        if len(text) < 50:
+            return None
+        return text
+    except Exception:
+        logger.warning("에디터 코멘트 생성 실패", exc_info=True)
+        return None

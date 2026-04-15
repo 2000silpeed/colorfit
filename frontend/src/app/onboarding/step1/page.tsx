@@ -14,8 +14,8 @@ type AgeGroup = "20s" | "30s" | "40plus";
 const MotionCard = motion.create(Card);
 
 const GENDER_CARDS: { value: Gender; label: string; image: string }[] = [
-  { value: "female", label: "여성", image: "/gender-female.png" },
-  { value: "male", label: "남성", image: "/gender-male.png" },
+  { value: "female", label: "여성", image: "/gender-female.png?v=3" },
+  { value: "male", label: "남성", image: "/gender-male.png?v=3" },
 ];
 
 const AGE_CARDS: { value: AgeGroup; label: string; sub: string }[] = [
@@ -72,7 +72,7 @@ export default function Step1Page() {
               맞춤 코디를 위해 필요해요
             </p>
 
-            <div className="flex gap-[var(--space-md)] mt-[var(--space-2xl)] w-full max-w-[400px] justify-center">
+            <div className="flex gap-[16px] mt-[48px] w-full max-w-[500px] justify-center px-[10px]">
               {GENDER_CARDS.map((card, i) => (
                 <MotionCard
                   key={card.value}
@@ -92,7 +92,7 @@ export default function Step1Page() {
                       ? { duration: 0 }
                       : { duration: 0.4, delay: i * 0.15, ease: "easeOut" }
                   }
-                  className="relative group w-[45%] aspect-[3/4] rounded-[var(--radius-xl)] flex flex-col items-center justify-center cursor-pointer border-2 border-white/40 bg-white/70 overflow-hidden shadow-md ring-0 p-0"
+                  className="relative group w-1/2 aspect-[3/4] rounded-[24px] flex flex-col items-center justify-center cursor-pointer border-2 border-white/40 bg-white/70 overflow-hidden shadow-lg ring-0 p-0"
                   aria-label={`${card.label} 선택`}
                 >
                   <Image

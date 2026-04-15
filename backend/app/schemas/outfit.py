@@ -134,4 +134,5 @@ class OutfitDetailResponse(BaseModel):
     scores: ScoresResponse | None = None
     reasons: list[str] | None = None
     score_explanations: ScoreExplanations | None = None
+    editor_comment: str | None = None
     items: list[ProductBrief] = []

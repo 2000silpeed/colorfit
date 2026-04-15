@@ -4,7 +4,7 @@ import { Suspense, useState, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+
 
 type SeasonId = "spring_warm" | "summer_cool" | "autumn_warm" | "winter_cool";
 
@@ -357,80 +357,79 @@ function Step2Content() {
               role="dialog"
               aria-modal="true"
               aria-label="퍼스널컬러 간이 진단"
-              className="fixed bottom-0 left-0 right-0 z-50 rounded-t-[calc(var(--radius-lg)*1.5)] border-t border-white/50 bg-white/80 backdrop-blur-2xl shadow-[0_-8px_30px_rgb(0,0,0,0.08)] px-[var(--space-lg)] pt-[var(--space-lg)] pb-[var(--space-2xl)]"
+              className="fixed bottom-0 left-0 right-0 z-50 max-w-[430px] mx-auto max-h-[85dvh] overflow-y-auto rounded-t-[calc(var(--radius-lg)*1.5)] border-t border-white/50 bg-white/80 backdrop-blur-2xl shadow-[0_-8px_30px_rgb(0,0,0,0.08)] px-[var(--space-lg)] pt-[var(--space-lg)] pb-[var(--space-2xl)]"
             >
               <div className="w-10 h-1 rounded-full bg-[var(--color-border)] mx-auto mb-[var(--space-lg)]" />
 
               {diagnosisStep === 0 ? (
-                <div>
+                <div className="overflow-hidden">
                   <h2 className="font-display text-[20px] font-bold text-text-primary text-center leading-[1.3]">
                     피부톤에 가장 가까운 이미지를 골라주세요
                   </h2>
                   <p className="mt-[var(--space-sm)] font-body text-[13px] text-text-secondary text-center">
                     1 / 2
                   </p>
-                  <div className="grid grid-cols-2 gap-[var(--space-md)] mt-[var(--space-lg)]">
+                  <div className="grid grid-cols-2 gap-[8px] mt-[var(--space-lg)]">
                     {Q1_OPTIONS.map((opt) => (
-                      <Card
+                      <button
                         key={opt.id}
-                        className="cursor-pointer border-2 border-white/40 bg-white/60 backdrop-blur-md shadow-sm ring-0 transition-all duration-300 ease-out hover:border-[var(--color-accent)] hover:bg-white/90 p-0"
+                        type="button"
+                        className="flex flex-col items-center justify-center p-[12px] rounded-[12px] border-2 border-[#E5E1DA] bg-white/80 backdrop-blur-md cursor-pointer transition-all hover:border-[#964F4C] hover:bg-white min-w-0"
                         onClick={() => handleDiagnosisQ1(opt.id)}
-                        role="button"
                         aria-label={`${opt.label} 선택`}
                       >
-                        <CardContent className="flex flex-col items-center gap-[var(--space-sm)] p-[var(--space-md)]">
-                          <div
-                            className="size-12 rounded-full shadow-[0_0_0_1px_var(--color-border)]"
-                            style={{ backgroundColor: opt.color }}
-                          />
-                          <span className="font-body text-[14px] font-medium text-text-primary">
-                            {opt.label}
-                          </span>
-                        </CardContent>
-                      </Card>
+                        <div
+                          className="w-[44px] sm:w-[48px] h-[44px] sm:h-[48px] rounded-full shrink-0 mb-[8px]"
+                          style={{
+                            backgroundColor: opt.color,
+                            boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.05)",
+                          }}
+                        />
+                        <span className="font-body text-[13px] sm:text-[14px] font-medium text-[#222222] truncate w-full text-center">
+                          {opt.label}
+                        </span>
+                      </button>
                     ))}
                   </div>
                 </div>
               ) : (
-                <div>
+                <div className="overflow-hidden">
                   <h2 className="font-display text-[20px] font-bold text-text-primary text-center leading-[1.3]">
                     평소 자주 입는 상의 색 계열은?
                   </h2>
                   <p className="mt-[var(--space-sm)] font-body text-[13px] text-text-secondary text-center">
                     2 / 2
                   </p>
-                  <div className="grid grid-cols-2 gap-[var(--space-md)] mt-[var(--space-lg)]">
+                  <div className="grid grid-cols-2 gap-[8px] mt-[var(--space-lg)]">
                     {([
                       { label: "베이직", choice: "basic" as Q2Choice, colors: ["#222222", "#FFFFFF", "#808080"] },
                       { label: "어스톤", choice: "earth" as Q2Choice, colors: ["#8B5A2B", "#A0856C", "#C4A265"] },
                       { label: "파스텔", choice: "pastel" as Q2Choice, colors: ["#FFB6C1", "#B0C4DE", "#98FB98"] },
                       { label: "비비드", choice: "vivid" as Q2Choice, colors: ["#FF0000", "#0000FF", "#FFD700"] },
                     ]).map((opt) => (
-                      <Card
+                      <button
                         key={opt.label}
-                        className="cursor-pointer border-2 border-white/40 bg-white/60 backdrop-blur-md shadow-sm ring-0 transition-all duration-300 ease-out hover:border-[var(--color-accent)] hover:bg-white/90 p-0"
+                        type="button"
+                        className="flex flex-col items-center justify-center p-[12px] rounded-[12px] border-2 border-[#E5E1DA] bg-white/80 backdrop-blur-md cursor-pointer transition-all hover:border-[#964F4C] hover:bg-white min-w-0"
                         onClick={() => handleDiagnosisQ2(opt.choice)}
-                        role="button"
                         aria-label={`${opt.label} 선택`}
                       >
-                        <CardContent className="flex flex-col items-center gap-[var(--space-sm)] p-[var(--space-md)]">
-                          <div className="flex gap-[var(--space-xs)]">
-                            {opt.colors.map((c) => (
-                              <div
-                                key={c}
-                                className="size-6 rounded-full"
-                                style={{
-                                  backgroundColor: c,
-                                  boxShadow: needsLightText(c) ? "none" : "inset 0 0 0 1px var(--color-border)",
-                                }}
-                              />
-                            ))}
-                          </div>
-                          <span className="font-body text-[14px] font-medium text-text-primary">
-                            {opt.label}
-                          </span>
-                        </CardContent>
-                      </Card>
+                        <div className="flex flex-wrap justify-center gap-[4px] mb-[8px] w-full">
+                          {opt.colors.map((c) => (
+                            <div
+                              key={c}
+                              className="w-[20px] sm:w-[24px] h-[20px] sm:h-[24px] rounded-full shrink-0"
+                              style={{
+                                backgroundColor: c,
+                                boxShadow: needsLightText(c) ? "none" : "inset 0 0 0 1px rgba(0,0,0,0.1)",
+                              }}
+                            />
+                          ))}
+                        </div>
+                        <span className="font-body text-[13px] sm:text-[14px] font-medium text-[#222222] truncate w-full text-center">
+                          {opt.label}
+                        </span>
+                      </button>
                     ))}
                   </div>
                 </div>

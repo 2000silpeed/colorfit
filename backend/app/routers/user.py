@@ -47,7 +47,6 @@ async def delete_user(
     try:
         for model in (
             ClosetItem,
-            Reaction,
             StyleSeed,
             Subscription,
             TryonCache,
@@ -55,6 +54,7 @@ async def delete_user(
             UserPreference,
         ):
             await db.execute(delete(model).where(model.user_id == user_uuid))
+        await db.execute(delete(Reaction).where(Reaction.user_id == str(user_uuid)))
         await db.execute(delete(User).where(User.id == user_uuid))
         await db.commit()
     except Exception:

@@ -80,15 +80,9 @@ function LoginContent() {
         animate={{ opacity: 1, y: 0 }}
         transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
       >
-        <div className="w-[200px] h-[75px] relative mix-blend-multiply opacity-95">
-          <Image
-            src="/colorfit-logo.png"
-            alt="ColorFit Logo"
-            fill
-            className="object-contain"
-            priority
-          />
-        </div>
+        <h1 className="font-display text-[48px] font-bold tracking-[-0.02em] text-accent">
+          ColorFit
+        </h1>
         <p className="mt-[20px] font-body text-[15px] font-medium tracking-[0.02em] text-center leading-[1.6] text-text-primary/90 drop-shadow-sm">
           내 색을 아는 순간,<br />선택이 쉬워진다
         </p>

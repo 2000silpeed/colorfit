@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { motion } from "framer-motion";
 
 import { migrateLegacyTones } from "@/lib/toneMigration";
@@ -35,21 +34,15 @@ export default function Home() {
   if (showSplash) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F8F6F3]">
-        <motion.div
+        <motion.h1
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="relative w-[260px] h-[90px] mix-blend-multiply opacity-95"
+          className="font-display text-[48px] font-bold tracking-[-0.02em] text-accent"
         >
-          <Image
-            src="/colorfit-logo.png"
-            alt="ColorFit Splash Logo"
-            fill
-            className="object-contain"
-            priority
-          />
-        </motion.div>
+          ColorFit
+        </motion.h1>
       </div>
     );
   }

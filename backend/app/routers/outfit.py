@@ -14,7 +14,7 @@ from app.models.outfit import Outfit
 from app.models.product import Product
 from app.schemas.outfit import OutfitDetailResponse, ProductBrief, ScoresResponse, ScoreExplanations
 from app.services.feed_builder import _load_brand_whitelist
-from app.services.reason_generator import generate_reasons, generate_score_explanations
+from app.services.reason_generator import generate_reasons, generate_score_explanations, generate_editor_comment
 from app.utils import ensure_list, ensure_dict
 
 router = APIRouter(prefix="/api", tags=["outfit"])
@@ -102,6 +102,16 @@ async def get_outfit(
         sf=explanations_dict.get("sf", ""),
     ) if explanations_dict else None
 
+    item_dicts = [{"name": it.name, "category": it.category, "brand": it.brand} for it in items]
+    editor_comment = await generate_editor_comment(
+        reasons=reasons,
+        scores=scores,
+        items=item_dicts,
+        user_tone_id=tone_id,
+        outfit_tpo=outfit.designed_tpo,
+        outfit_season=outfit.designed_season,
+    )
+
     return OutfitDetailResponse(
         id=outfit.id,
         gender=outfit.gender,
@@ -115,5 +125,6 @@ async def get_outfit(
         scores=scores_resp,
         reasons=reasons,
         score_explanations=score_explanations,
+        editor_comment=editor_comment,
         items=items,
     )
