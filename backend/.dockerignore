@@ -5,4 +5,8 @@ __pycache__/
 .env
 .git/
 tests/
-data/
+data/raw/
+data/normalized/
+data/tryon_test/
+data/generated_outfits.json
+data/removed_outfits.json
