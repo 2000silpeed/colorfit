@@ -1,5 +1,6 @@
 """사용자 계정 관리 API.
 
+GET /api/user/{user_id} — 사용자 프로필 조회.
 DELETE /api/user/{user_id} — 계정 삭제 (회원 탈퇴).
 """
 
@@ -25,6 +26,38 @@ from app.models.user_preference import UserPreference
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/user", tags=["user"])
+
+
+@router.get("/{user_id}")
+async def get_user(
+    user_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    """사용자 프로필 조회."""
+    try:
+        user_uuid = uuid.UUID(user_id)
+    except ValueError:
+        raise HTTPException(status_code=422, detail="유효하지 않은 user_id 형식입니다")
+
+    result = await db.execute(select(User).where(User.id == user_uuid))
+    user = result.scalar_one_or_none()
+    if user is None:
+        raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다")
+
+    return {
+        "id": str(user.id),
+        "email": user.email,
+        "provider": user.provider,
+        "gender": user.gender,
+        "tone_id": user.tone_id,
+        "tpo_primary": user.tpo_primary,
+        "tpo_list": user.tpo_list or [],
+        "style_moods": user.style_moods or [],
+        "budget_min": user.budget_min,
+        "budget_max": user.budget_max,
+        "age_group": user.age_group,
+        "is_premium": user.is_premium,
+    }
 
 
 @router.delete("/{user_id}")

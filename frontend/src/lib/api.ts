@@ -430,6 +430,27 @@ export async function addClosetItem(
   return res.json();
 }
 
+export interface UserProfile {
+  id: string;
+  email: string | null;
+  provider: string | null;
+  gender: string | null;
+  tone_id: string | null;
+  tpo_primary: string | null;
+  tpo_list: string[];
+  style_moods: string[];
+  budget_min: number | null;
+  budget_max: number | null;
+  age_group: string | null;
+  is_premium: boolean;
+}
+
+export async function getUser(userId: string): Promise<UserProfile> {
+  const res = await fetch(`${API_BASE}/api/user/${userId}`);
+  if (!res.ok) throw new Error(`Get user error: ${res.status}`);
+  return res.json();
+}
+
 export async function deleteUser(userId: string): Promise<void> {
   const res = await fetch(`${API_BASE}/api/user/${userId}`, {
     method: "DELETE",

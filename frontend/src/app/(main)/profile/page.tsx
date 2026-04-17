@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { deleteUser, fetchToneDetail, type ToneDetailResponse } from "@/lib/api";
+import { deleteUser, getUser, fetchToneDetail, type ToneDetailResponse, type UserProfile } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
@@ -94,6 +94,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const shouldReduceMotion = useReducedMotion();
   const [tone, setTone] = useState<ToneDetailResponse | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -133,13 +134,13 @@ export default function ProfilePage() {
     }
   }, [deleting, router]);
 
-  const toneId = typeof window !== "undefined"
-    ? localStorage.getItem("colorfit_tone_id") ?? localStorage.getItem("colorfit_tone") ?? "summer_cool_soft"
-    : "summer_cool_soft";
-  const gender = typeof window !== "undefined"
-    ? localStorage.getItem("colorfit_gender") ?? "female"
-    : "female";
-  const tpoList: string[] = (() => {
+  const toneId = userProfile?.tone_id
+    ?? (typeof window !== "undefined" ? localStorage.getItem("colorfit_tone_id") ?? localStorage.getItem("colorfit_tone") : null)
+    ?? "summer_cool_soft";
+  const gender = userProfile?.gender
+    ?? (typeof window !== "undefined" ? localStorage.getItem("colorfit_gender") : null)
+    ?? "female";
+  const tpoList: string[] = userProfile?.tpo_list ?? (() => {
     if (typeof window === "undefined") return [];
     try {
       return JSON.parse(localStorage.getItem("colorfit_tpo_list") ?? "[]");
@@ -147,19 +148,36 @@ export default function ProfilePage() {
       return [];
     }
   })();
-  const budgetMin = typeof window !== "undefined"
-    ? Number(localStorage.getItem("colorfit_budget_min") ?? "30000")
-    : 30000;
-  const budgetMax = typeof window !== "undefined"
-    ? Number(localStorage.getItem("colorfit_budget_max") ?? "100000")
-    : 100000;
+  const budgetMin = userProfile?.budget_min
+    ?? (typeof window !== "undefined" ? Number(localStorage.getItem("colorfit_budget_min") ?? "30000") : 30000);
+  const budgetMax = userProfile?.budget_max
+    ?? (typeof window !== "undefined" ? Number(localStorage.getItem("colorfit_budget_max") ?? "100000") : 100000);
 
   useEffect(() => {
-    fetchToneDetail(toneId)
-      .then(setTone)
-      .catch(() => setError("톤 정보를 불러올 수 없습니다"))
-      .finally(() => setLoading(false));
-  }, [toneId]);
+    const userId = typeof window !== "undefined" ? localStorage.getItem("colorfit_user_id") : null;
+
+    const loadProfile = async () => {
+      try {
+        if (userId) {
+          const profile = await getUser(userId);
+          setUserProfile(profile);
+          const t = profile.tone_id ?? "summer_cool_soft";
+          const toneData = await fetchToneDetail(t);
+          setTone(toneData);
+        } else {
+          const fallbackTone = localStorage.getItem("colorfit_tone_id") ?? "summer_cool_soft";
+          const toneData = await fetchToneDetail(fallbackTone);
+          setTone(toneData);
+        }
+      } catch {
+        setError("프로필 정보를 불러올 수 없습니다");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProfile();
+  }, []);
 
   if (loading) return <ProfileSkeleton />;
 
