@@ -231,7 +231,7 @@ export default function Step5Page() {
                   {/* 이미지 영역 */}
                   <div className="absolute inset-0">
                     <Image
-                      src={`/images/onboarding/${round.seedKey.replace('_seed', '')}_${option.id}.png?v=3`}
+                      src={`/images/onboarding/${round.seedKey.replace('_seed', '')}_${option.id}.png?v=4`}
                       alt={option.label}
                       fill
                       className="object-cover"
