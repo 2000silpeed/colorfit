@@ -651,11 +651,11 @@
     margin-bottom: 24px;
   }
   .vs-palette div { flex: 1; height: 38px; border-radius: 2px; }
-  .vs-card.comp .vs-palette div:nth-child(1) { background: #FFE4EC; }
-  .vs-card.comp .vs-palette div:nth-child(2) { background: #FFB8D0; }
-  .vs-card.comp .vs-palette div:nth-child(3) { background: #F29BBB; }
-  .vs-card.comp .vs-palette div:nth-child(4) { background: #E68AA6; }
-  .vs-card.comp .vs-palette div:nth-child(5) { background: #C897B0; }
+  .vs-card.comp .vs-palette div:nth-child(1) { background: #FFFFFF; border: 1px solid #E0E0E0; }
+  .vs-card.comp .vs-palette div:nth-child(2) { background: #F5F5F5; }
+  .vs-card.comp .vs-palette div:nth-child(3) { background: #E0E0E0; }
+  .vs-card.comp .vs-palette div:nth-child(4) { background: #333333; }
+  .vs-card.comp .vs-palette div:nth-child(5) { background: #111111; }
   .vs-card.us .vs-palette div:nth-child(1) { background: #964F4C; }
   .vs-card.us .vs-palette div:nth-child(2) { background: #D4A5A5; }
   .vs-card.us .vs-palette div:nth-child(3) { background: #DDB67D; }
@@ -672,7 +672,7 @@
   .vs-card.comp .vs-type {
     font-family: var(--sans);
     font-weight: 700;
-    color: #F29BBB;
+    color: #333333;
   }
   .vs-card.us .vs-type { color: #F0EDE8; }
   .vs-card .vs-desc {
@@ -693,6 +693,61 @@
     line-height: 1.55;
   }
   .vs-card.us .vs-feel { color: #B5AFA6; border-top-color: #2A2520; }
+
+  /* slide 09 override: top-align to fit evidence grid */
+  .slide.slide-evidence {
+    justify-content: flex-start;
+    padding-top: 48px;
+    padding-bottom: 40px;
+  }
+  .slide.slide-evidence h2 { font-size: 28px; }
+  .slide.slide-evidence .lead { font-size: 14px; margin-bottom: 8px; }
+  .slide.slide-evidence .design-layout { margin-top: 10px; gap: 28px; }
+  .slide.slide-evidence .vs-card { padding: 20px 24px; }
+  .slide.slide-evidence .vs-title { font-size: 18px; margin-bottom: 14px; }
+  .slide.slide-evidence .vs-type { font-size: 28px; }
+  .slide.slide-evidence .vs-palette { margin-bottom: 14px; }
+  .slide.slide-evidence .vs-palette div { height: 28px; }
+
+  /* competitor evidence grid */
+  .comp-evidence {
+    margin-top: 16px;
+    grid-column: 1 / -1;
+  }
+  .comp-evidence-label {
+    font-family: var(--sans);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    color: var(--tertiary);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .comp-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+  .comp-grid figure {
+    margin: 0;
+    text-align: center;
+  }
+  .comp-grid img {
+    width: 100%;
+    border-radius: 6px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    max-height: 22vh;
+    object-fit: cover;
+    object-position: top;
+  }
+  .comp-grid figcaption {
+    font-family: var(--sans);
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--secondary);
+    margin-top: 4px;
+    letter-spacing: 0.04em;
+  }
 
   /* ===================== 10 BUSINESS ===================== */
   .biz-layout {
@@ -1242,28 +1297,38 @@
 </section>
 
 <!-- ========== 09 DESIGN IDENTITY ========== -->
-<section class="slide" data-i="8">
+<section class="slide slide-evidence" data-i="8">
   <div class="eyebrow reveal">Design Identity</div>
-  <h2 class="reveal" style="--d:0.1s">모두가 <em style="color:#F29BBB">파스텔 뷰티</em>일 때,<br>우리는 <em>매거진</em>을 골랐습니다.</h2>
+  <h2 class="reveal" style="--d:0.1s">모두가 <em>상품을 나열</em>할 때,<br>우리는 <em>이유</em>를 말합니다.</h2>
   <p class="lead reveal" style="--d:0.2s">
-    Lora 세리프와 마르살라 와인톤 하나로,<br>경쟁 앱들과 첫눈에 구분됩니다.
+    세리프 서체와 마르살라 와인톤 하나로,<br>"쇼핑몰"이 아닌 "신뢰할 수 있는 조언"을 설계했습니다.
   </p>
   <div class="design-layout">
     <div class="vs-card comp reveal" style="--d:0.3s">
       <div class="vs-label">COMPETITORS</div>
-      <div class="vs-title">Pastel Beauty App</div>
+      <div class="vs-title">Shopping Grid</div>
       <div class="vs-palette"><div></div><div></div><div></div><div></div><div></div></div>
-      <div class="vs-type">Personal Color</div>
-      <div class="vs-desc">SANS · BRIGHT · CUTE</div>
-      <div class="vs-feel">진단 결과지 느낌. 쇼핑이 아닌 검사에 가깝습니다.</div>
+      <div class="vs-type">₩39,000</div>
+      <div class="vs-desc">SANS · GRID · PRICE TAG</div>
+      <div class="vs-feel">상품 나열 쇼핑몰. 뭘 사야 할지는 알려주지 않습니다.</div>
     </div>
     <div class="vs-card us reveal" style="--d:0.42s">
       <div class="vs-label">COLORFIT</div>
-      <div class="vs-title">Editorial Fashion</div>
+      <div class="vs-title">Editorial Advisor</div>
       <div class="vs-palette"><div></div><div></div><div></div><div></div><div></div></div>
-      <div class="vs-type">ColorFit</div>
+      <div class="vs-type">컬러 96</div>
       <div class="vs-desc">LORA SERIF · MARSALA · WARM NEUTRAL</div>
-      <div class="vs-feel">매거진 표지를 넘기는 감각. 성숙하면서 따뜻한 톤으로.</div>
+      <div class="vs-feel">"이 색감이면 피부가 맑아 보여요" — 가격이 아닌 이유를 먼저.</div>
+    </div>
+    <div class="comp-evidence reveal" style="--d:0.54s">
+      <div class="comp-evidence-label">EVIDENCE — 경쟁 쇼핑 앱 실제 캡처 (2026.04)</div>
+      <div class="comp-grid">
+        <figure><img src="assets/competitors/comp_musinsa.png" alt="무신사"><figcaption>무신사</figcaption></figure>
+        <figure><img src="assets/competitors/comp_zigzag.png" alt="지그재그"><figcaption>지그재그</figcaption></figure>
+        <figure><img src="assets/competitors/comp_brandi.png" alt="브랜디"><figcaption>브랜디</figcaption></figure>
+        <figure><img src="assets/competitors/comp_wconcept.png" alt="W컨셉"><figcaption>W컨셉</figcaption></figure>
+        <figure><img src="assets/competitors/comp_29cm.png" alt="29CM"><figcaption>29CM</figcaption></figure>
+      </div>
     </div>
   </div>
   <div class="slide-number"><b>09</b>identity</div>
