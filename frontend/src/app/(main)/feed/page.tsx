@@ -134,6 +134,7 @@ export default function FeedPage() {
   const [hasNext, setHasNext] = useState(false);
   const [status, setStatus] = useState<"loading" | "success" | "empty" | "error">("loading");
   const [loadingMore, setLoadingMore] = useState(false);
+  const [loadingSeconds, setLoadingSeconds] = useState(0);
 
   /* 헤더 스크롤 상태 */
   const [scrolled, setScrolled] = useState(false);
@@ -141,6 +142,13 @@ export default function FeedPage() {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const tpoScrollRef = useRef<HTMLDivElement>(null);
   const tpoDragState = useRef({ isDown: false, startX: 0, scrollLeft: 0 });
+
+  /* 로딩 시간 카운터 — cold start 안내용 */
+  useEffect(() => {
+    if (status !== "loading") { setLoadingSeconds(0); return; }
+    const timer = setInterval(() => setLoadingSeconds((s) => s + 1), 1000);
+    return () => clearInterval(timer);
+  }, [status]);
 
   /* 스크롤 감지 */
   useEffect(() => {
@@ -476,6 +484,20 @@ export default function FeedPage() {
         {/* Loading */}
         {status === "loading" && (
           <div>
+            {loadingSeconds >= 3 && (
+              <div className="text-center py-[16px] mb-[8px]">
+                <p className="font-body text-[13px] text-text-secondary animate-pulse">
+                  {loadingSeconds >= 10
+                    ? "서버가 깨어나는 중이에요. 곧 코디가 나타납니다..."
+                    : "코디를 불러오고 있어요..."}
+                </p>
+                {loadingSeconds >= 15 && (
+                  <p className="font-body text-[11px] text-text-tertiary mt-[4px]">
+                    첫 접속 시 최대 30초까지 걸릴 수 있어요
+                  </p>
+                )}
+              </div>
+            )}
             <SkeletonCard />
             <SkeletonCard />
             <SkeletonCard />

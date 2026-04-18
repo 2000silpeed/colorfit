@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -28,6 +28,12 @@ export default function Step1Page() {
   const router = useRouter();
   const prefersReducedMotion = useReducedMotion();
   const [selectedGender, setSelectedGender] = useState<Gender | null>(null);
+
+  // 백엔드 서버를 미리 깨워서 온보딩 완료 시 cold start 방지
+  useEffect(() => {
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    fetch(`${apiBase}/health`).catch(() => {});
+  }, []);
   const [selectedAge, setSelectedAge] = useState<AgeGroup | null>(null);
 
   const handleGenderSelect = (gender: Gender) => {

@@ -22,7 +22,7 @@ from app.schemas.tryon import (
     TryonGenerateResponse,
     TryonUsageResponse,
 )
-from app.services.usage_tracker import check_and_increment, check_tryon_limit
+from app.services.usage_tracker import check_and_increment, check_tryon_limit, increment_usage
 from app.services.virtual_tryon import extract_colors_from_product, generate_tryon_image
 
 logger = logging.getLogger(__name__)
@@ -36,8 +36,9 @@ async def generate(
     db: AsyncSession = Depends(get_db),
 ) -> TryonGenerateResponse:
     """착장 합성 이미지를 생성한다."""
-    limit_result = await check_and_increment(db, req.user_id)
-    if not limit_result["allowed"]:
+    # 먼저 제한 확인 (increment 없이)
+    limit_info = await check_tryon_limit(db, req.user_id)
+    if not limit_info["allowed"]:
         raise HTTPException(
             status_code=403,
             detail="무료 착장 생성 횟수를 모두 사용했어요. 프리미엄으로 업그레이드해주세요.",
@@ -61,13 +62,20 @@ async def generate(
             detail="이미지를 생성하지 못했어요. 다시 시도해주세요.",
         )
 
+    # 캐시 히트가 아닐 때만 사용량 차감
+    remaining = limit_info["remaining"]
+    if not result["cached"]:
+        await increment_usage(db, req.user_id)
+        if remaining is not None:
+            remaining = max(0, remaining - 1)
+
     await db.commit()
 
     return TryonGenerateResponse(
         image_url=result["image_url"],
         outfit_id=result["outfit_id"],
         cached=result["cached"],
-        remaining=limit_result["remaining"],
+        remaining=remaining,
     )
 
 
