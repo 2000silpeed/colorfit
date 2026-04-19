@@ -106,6 +106,31 @@ TONE_PROFILE: dict[str, dict[str, str]] = {
 TRYON_STORAGE = Path(__file__).resolve().parents[2] / "storage" / "tryon"
 TRYON_STORAGE.mkdir(parents=True, exist_ok=True)
 
+SUPABASE_STORAGE_BUCKET = "Tryon-images"
+
+
+async def _upload_to_supabase(filename: str, image_data: bytes) -> str | None:
+    """Supabase Storage에 이미지를 업로드하고 공개 URL을 반환한다."""
+    if not settings.supabase_url or not settings.supabase_anon_key:
+        return None
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            resp = await client.post(
+                f"{settings.supabase_url}/storage/v1/object/{SUPABASE_STORAGE_BUCKET}/{filename}",
+                headers={
+                    "Authorization": f"Bearer {settings.supabase_anon_key}",
+                    "apikey": settings.supabase_anon_key,
+                    "Content-Type": "image/png",
+                },
+                content=image_data,
+            )
+            if resp.status_code in (200, 201):
+                return f"{settings.supabase_url}/storage/v1/object/public/{SUPABASE_STORAGE_BUCKET}/{filename}"
+            logger.warning("Supabase Storage upload failed: %s %s", resp.status_code, resp.text[:200])
+    except Exception as exc:
+        logger.warning("Supabase Storage upload error: %s", exc)
+    return None
+
 
 # 성별 × 연령별 기본 모델 이미지 (전신, 신발 포함, 흰 배경)
 # 로컬: /static/models/ 경로로 서빙됨 (storage/models/)
@@ -450,12 +475,15 @@ async def generate_tryon_image(
     if not generated_image:
         raise RuntimeError("Gemini API에서 이미지를 생성하지 못했습니다")
 
-    # storage/tryon/*.png 저장 후 상대 URL 캐싱
+    # Supabase Storage에 업로드 (재배포 시 유실 방지)
     digest = hashlib.sha256(generated_image).hexdigest()[:16]
     filename = f"{digest}_{secrets.token_hex(4)}.png"
-    filepath = TRYON_STORAGE / filename
-    filepath.write_bytes(generated_image)
-    image_url = f"{settings.api_url.rstrip('/')}/static/tryon/{filename}" if getattr(settings, "api_url", "") else f"/static/tryon/{filename}"
+    image_url = await _upload_to_supabase(filename, generated_image)
+    if not image_url:
+        # fallback: 로컬 저장
+        filepath = TRYON_STORAGE / filename
+        filepath.write_bytes(generated_image)
+        image_url = f"{settings.api_url.rstrip('/')}/static/tryon/{filename}" if getattr(settings, "api_url", "") else f"/static/tryon/{filename}"
 
     await _save_cache(db, outfit_id, closet_item_id, user_id, image_url, profile_hash)
 
