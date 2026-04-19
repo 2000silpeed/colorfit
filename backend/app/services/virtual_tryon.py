@@ -413,6 +413,8 @@ async def generate_tryon_image(
         f"{items_text}\n"
         f"IMPORTANT: Every listed item must be clearly visible and correctly worn. "
         f"Preserve the exact color, fabric texture, and design details from each item image.\n"
+        f"CRITICAL: If any item image contains a human model, IGNORE that model completely. "
+        f"Only use the reference model photo provided below. Extract ONLY the clothing item from product images.\n"
         f"{_build_color_override_block(item_infos, color_overrides)}"
         f"{skin_block}"
         f"{lighting_block}"
@@ -422,16 +424,13 @@ async def generate_tryon_image(
         f"Clean, minimal, professional. No text overlays or watermarks."
     )
 
-    # 모델 이미지: 사용자 제공 URL → 기본 모델(로컬 파일) 순서
-    model_bytes: bytes | None = None
-    if model_image_url:
+    # 항상 기본 모델 이미지를 사용 (제품 이미지의 모델이 반영되는 것 방지)
+    model_bytes = _get_default_model_bytes(user_gender, user_age_group)
+    if not model_bytes and model_image_url:
         try:
             model_bytes = await _fetch_image_bytes(model_image_url)
         except Exception as exc:
             logger.warning("user model image fetch failed (%s)", exc)
-
-    if not model_bytes:
-        model_bytes = _get_default_model_bytes(user_gender, user_age_group)
 
     if model_bytes:
         content_parts.append(types.Part.from_text(text="[REFERENCE MODEL PHOTO — use this person's face and body]"))
@@ -450,6 +449,8 @@ async def generate_tryon_image(
             f"{items_text}\n"
             f"IMPORTANT: Every listed item must be clearly visible and correctly worn. "
             f"Preserve the exact color, fabric texture, and design details from each item image.\n"
+            f"CRITICAL: If any item image contains a human model, IGNORE that model completely. "
+            f"Only use the reference model photo above. Extract ONLY the clothing item from product images.\n"
             f"{_build_color_override_block(item_infos, color_overrides)}"
             f"{skin_block}"
             f"{lighting_block}"
