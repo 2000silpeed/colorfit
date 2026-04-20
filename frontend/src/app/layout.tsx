@@ -14,7 +14,7 @@ const lora = Lora({
 });
 
 const notoSerifKr = Noto_Serif_KR({
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
   subsets: ["latin"],
   variable: "--font-noto-serif-kr",
   display: "swap",
