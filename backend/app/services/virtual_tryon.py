@@ -472,10 +472,12 @@ async def generate_tryon_image(
             logger.warning("user model image fetch failed (%s)", exc)
 
     if model_bytes:
+        model_mime = "image/png" if model_bytes[:8] == b"\x89PNG\r\n\x1a\n" else "image/jpeg"
         content_parts.append(types.Part.from_text(text="[REFERENCE MODEL PHOTO — use this person's face and body]"))
         content_parts.append(
-            types.Part.from_bytes(data=model_bytes, mime_type="image/jpeg")
+            types.Part.from_bytes(data=model_bytes, mime_type=model_mime)
         )
+        logger.info("attached reference model image: %d bytes, mime=%s", len(model_bytes), model_mime)
         prompt_text = (
             f"[TASK] Generate a photorealistic fashion editorial full-body photo "
             f"using the reference model photo provided above.\n"
