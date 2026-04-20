@@ -80,7 +80,7 @@ function LoginContent() {
         animate={{ opacity: 1, y: 0 }}
         transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
       >
-        <h1 className="font-display text-[48px] font-bold tracking-[-0.02em] text-accent">
+        <h1 className="font-display text-[48px] font-semibold tracking-[-0.02em] text-accent">
           ColorFit
         </h1>
         <p className="mt-[20px] font-body text-[15px] font-medium tracking-[0.02em] text-center leading-[1.6] text-text-primary/90 drop-shadow-sm">

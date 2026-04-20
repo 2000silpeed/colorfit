@@ -15,7 +15,7 @@ export default function RouteError({ error, reset }: ErrorProps) {
 
   return (
     <div className="flex min-h-[80vh] flex-col items-center justify-center px-6 text-center">
-      <h1 className="mb-2 text-[22px] font-bold text-[var(--color-text-primary)]">
+      <h1 className="mb-2 font-display text-[22px] font-semibold text-[var(--color-text-primary)]">
         잠시 문제가 있었어요
       </h1>
       <p className="mb-6 text-sm text-[var(--color-text-secondary)]">

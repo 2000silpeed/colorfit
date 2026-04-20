@@ -39,7 +39,7 @@ export default function Home() {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="font-display text-[48px] font-bold tracking-[-0.02em] text-accent"
+          className="font-display text-[48px] font-semibold tracking-[-0.02em] text-accent"
         >
           ColorFit
         </motion.h1>
