@@ -388,10 +388,12 @@ async def generate_tryon_image(
     if early_model_bytes:
         early_mime = "image/png" if early_model_bytes[:8] == b"\x89PNG\r\n\x1a\n" else "image/jpeg"
         content_parts.append(types.Part.from_text(
-            text="★★★ MAIN SUBJECT REFERENCE ★★★\n"
+            text="★★★ MAIN SUBJECT REFERENCE — KOREAN EAST ASIAN MODEL ★★★\n"
                  "The following image shows the EXACT person who must appear in the final output. "
-                 "Use this person's face, ethnicity, hair, body, and proportions. "
-                 "Korean / East Asian model. Do NOT substitute with any model from the product images that follow."
+                 "Use this person's face, ethnicity (Korean East Asian), skin tone, hair, body, and proportions. "
+                 "ABSOLUTELY DO NOT change the ethnicity. "
+                 "Do NOT generate African, Caucasian, Latina, Middle Eastern, or any other ethnicity — only Korean East Asian. "
+                 "Do NOT substitute with any model from the product images that follow."
         ))
         content_parts.append(types.Part.from_bytes(data=early_model_bytes, mime_type=early_mime))
 
@@ -425,7 +427,6 @@ async def generate_tryon_image(
     )
 
     # nanobanana 구조화 프롬프트: Subject → Wardrobe → Skin/Lighting → Camera → Style
-    skin_block = ""
     if skin_desc:
         skin_block = (
             f"\n[SKIN TONE — CRITICAL]\n"
@@ -433,6 +434,14 @@ async def generate_tryon_image(
             f"Skin: {skin_desc}\n"
             f"The model's face and body skin tone MUST precisely match this description. "
             f"This is essential — the image demonstrates outfit-skin harmony.\n"
+        )
+    else:
+        # tone_id 없는 사용자도 한국인 톤 기본 강제 (Gemini 인종 표류 방지)
+        skin_block = (
+            "\n[SKIN TONE — CRITICAL]\n"
+            "Korean / East Asian skin tone: warm light beige, smooth and refined. "
+            "The model's face and body skin tone MUST be Korean East Asian. "
+            "NOT African, NOT Caucasian, NOT Latina, NOT Middle Eastern.\n"
         )
 
     lighting_block = (
