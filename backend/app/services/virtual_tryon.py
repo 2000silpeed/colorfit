@@ -147,7 +147,7 @@ _MODEL_IMAGE_KEYS: dict[str, str] = {
 }
 
 
-def _get_default_model_bytes(gender: str | None, age_group: str | None) -> bytes | None:
+async def _get_default_model_bytes(gender: str | None, age_group: str | None) -> bytes | None:
     """기본 모델 이미지를 반환한다. 로컬 → Supabase Storage 순서로 시도."""
     g = gender or "female"
     key = f"{g}_{age_group}" if age_group else g
@@ -164,11 +164,12 @@ def _get_default_model_bytes(gender: str | None, age_group: str | None) -> bytes
     if settings.supabase_url:
         try:
             url = f"{settings.supabase_url}/storage/v1/object/public/{SUPABASE_STORAGE_BUCKET}/{path}"
-            resp = httpx.get(url, timeout=15.0)
+            async with httpx.AsyncClient(timeout=15.0) as client:
+                resp = await client.get(url)
             if resp.status_code == 200:
-                # 로컬에도 캐시
                 filepath.parent.mkdir(parents=True, exist_ok=True)
                 filepath.write_bytes(resp.content)
+                logger.info("model image downloaded from Supabase: %s", path)
                 return resp.content
         except Exception as exc:
             logger.warning("model image download failed: %s", exc)
@@ -457,7 +458,7 @@ async def generate_tryon_image(
     )
 
     # 항상 기본 모델 이미지를 사용 (제품 이미지의 모델이 반영되는 것 방지)
-    model_bytes = _get_default_model_bytes(user_gender, user_age_group)
+    model_bytes = await _get_default_model_bytes(user_gender, user_age_group)
     if not model_bytes and model_image_url:
         try:
             model_bytes = await _fetch_image_bytes(model_image_url)
