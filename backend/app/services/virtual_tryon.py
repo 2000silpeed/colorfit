@@ -149,8 +149,9 @@ _MODEL_IMAGE_KEYS: dict[str, str] = {
 
 def _get_default_model_bytes(gender: str | None, age_group: str | None) -> bytes | None:
     """기본 모델 이미지를 반환한다. 로컬 → Supabase Storage 순서로 시도."""
-    key = f"{gender}_{age_group}" if gender and age_group else (gender or "")
-    path = _MODEL_IMAGE_KEYS.get(key) or _MODEL_IMAGE_KEYS.get(gender or "")
+    g = gender or "female"
+    key = f"{g}_{age_group}" if age_group else g
+    path = _MODEL_IMAGE_KEYS.get(key) or _MODEL_IMAGE_KEYS.get(g)
     if not path:
         return None
 
@@ -398,7 +399,7 @@ async def generate_tryon_image(
     tone_profile = TONE_PROFILE.get(user_tone_id or "", {})
     skin_desc = tone_profile.get("skin", "")
     lighting_desc = tone_profile.get("lighting", "5500K neutral daylight")
-    gender_text = "female" if user_gender == "female" else "male" if user_gender == "male" else None
+    gender_text = "female" if user_gender == "female" else "male" if user_gender == "male" else "female"
     age_text = {"20s": "early-to-mid 20s", "30s": "early-to-mid 30s", "40plus": "early 40s"}.get(
         user_age_group or "", None
     )
