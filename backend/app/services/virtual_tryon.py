@@ -166,11 +166,17 @@ async def _get_default_model_bytes(gender: str | None, age_group: str | None) ->
             url = f"{settings.supabase_url}/storage/v1/object/public/{SUPABASE_STORAGE_BUCKET}/{path}"
             async with httpx.AsyncClient(timeout=15.0) as client:
                 resp = await client.get(url)
-            if resp.status_code == 200:
+            if resp.status_code != 200:
+                logger.warning("model image download non-200: %s status=%s", path, resp.status_code)
+                return None
+            data = resp.content
+            try:
                 filepath.parent.mkdir(parents=True, exist_ok=True)
-                filepath.write_bytes(resp.content)
-                logger.info("model image downloaded from Supabase: %s", path)
-                return resp.content
+                filepath.write_bytes(data)
+            except Exception as cache_exc:
+                logger.warning("model image cache write failed (continuing): %s", cache_exc)
+            logger.info("model image downloaded from Supabase: %s (%d bytes)", path, len(data))
+            return data
         except Exception as exc:
             logger.warning("model image download failed: %s", exc)
 
