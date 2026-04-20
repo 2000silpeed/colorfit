@@ -158,17 +158,25 @@ export default function ProfilePage() {
 
     const loadProfile = async () => {
       try {
+        let profileTone: string | null = null;
+
         if (userId) {
-          const profile = await getUser(userId);
-          setUserProfile(profile);
-          const t = profile.tone_id ?? "summer_cool_soft";
-          const toneData = await fetchToneDetail(t);
-          setTone(toneData);
-        } else {
-          const fallbackTone = localStorage.getItem("colorfit_tone_id") ?? "summer_cool_soft";
-          const toneData = await fetchToneDetail(fallbackTone);
-          setTone(toneData);
+          try {
+            const profile = await getUser(userId);
+            setUserProfile(profile);
+            profileTone = profile.tone_id;
+          } catch {
+            // API 실패 시 localStorage fallback
+          }
         }
+
+        const toneForDetail = profileTone
+          ?? localStorage.getItem("colorfit_tone_id")
+          ?? localStorage.getItem("colorfit_tone")
+          ?? "summer_cool_soft";
+
+        const toneData = await fetchToneDetail(toneForDetail);
+        setTone(toneData);
       } catch {
         setError("프로필 정보를 불러올 수 없습니다");
       } finally {
@@ -219,7 +227,7 @@ export default function ProfilePage() {
           className="relative w-full h-[180px] flex flex-col items-center justify-center"
           style={{ background: gradient }}
         >
-          <h1 className="font-display text-[28px] text-white leading-[1.25] font-bold">
+          <h1 className="font-display text-[28px] text-white leading-[1.25] font-semibold">
             {tone.tone_name_ko}
           </h1>
           <p className="font-body text-[13px] text-white/80 mt-[8px]">
@@ -280,7 +288,7 @@ export default function ProfilePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.3, delay: 0.2 }}
       >
-        <h2 className="font-display text-[18px] text-text-primary mb-[16px] font-bold leading-[1.3]">
+        <h2 className="font-display text-[18px] text-text-primary mb-[16px] font-semibold leading-[1.3]">
           내 정보
         </h2>
 
@@ -357,7 +365,7 @@ export default function ProfilePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.3, delay: 0.4 }}
       >
-        <h2 className="font-display text-[18px] text-text-primary mb-[16px] font-bold leading-[1.3]">
+        <h2 className="font-display text-[18px] text-text-primary mb-[16px] font-semibold leading-[1.3]">
           설정
         </h2>
 
@@ -422,7 +430,7 @@ export default function ProfilePage() {
             >
               <h3
                 id="delete-dialog-title"
-                className="font-display text-[17px] text-text-primary mb-[8px] font-bold"
+                className="font-display text-[17px] text-text-primary mb-[8px] font-semibold"
               >
                 계정을 삭제할까요?
               </h3>
