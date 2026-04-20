@@ -346,17 +346,30 @@ async def generate_tryon_image(
                 color=closet_item.dominant_color_hex or "",
             ))
 
-    # 아이템 이미지 + JSON 라벨을 번갈아 배치
+    # 아이템 이미지 + JSON 라벨을 번갈아 배치 (신발을 마지막에 배치하여 강조)
+    SHOE_CATEGORIES = {"스니커즈", "로퍼", "힐", "부츠", "샌들", "슬리퍼", "구두", "운동화", "플랫"}
+    shoe_items: list[tuple[int, _ItemInfo]] = []
+    other_items: list[tuple[int, _ItemInfo]] = []
+    for i, info in enumerate(item_infos, 1):
+        if info.category in SHOE_CATEGORIES:
+            shoe_items.append((i, info))
+        else:
+            other_items.append((i, info))
+    ordered_items = other_items + shoe_items  # 신발을 마지막에 → Gemini가 더 잘 기억
+
     content_parts: list[types.Part] = []
     items_json: list[dict] = []
-    for i, info in enumerate(item_infos, 1):
+    for idx, info in ordered_items:
         img_bytes = await _fetch_image_bytes(info.image_url)
+        is_shoe = info.category in SHOE_CATEGORIES
         item_meta = {
-            "item": i,
+            "item": idx,
             "category": info.category,
             "name": info.name or None,
             "color": info.color or None,
         }
+        if is_shoe:
+            item_meta["priority"] = "HIGH — this exact shoe design must appear on the model's feet"
         items_json.append(item_meta)
         content_parts.append(types.Part.from_text(text=json.dumps(item_meta, ensure_ascii=False)))
         content_parts.append(
@@ -413,6 +426,8 @@ async def generate_tryon_image(
         f"{items_text}\n"
         f"IMPORTANT: Every listed item must be clearly visible and correctly worn. "
         f"Preserve the exact color, fabric texture, and design details from each item image.\n"
+        f"SHOES: Pay special attention to footwear. The shoe design, color, and style must EXACTLY match "
+        f"the shoe product image provided. Do NOT substitute with generic shoes.\n"
         f"CRITICAL: If any item image contains a human model, IGNORE that model completely. "
         f"Only use the reference model photo provided below. Extract ONLY the clothing item from product images.\n"
         f"{_build_color_override_block(item_infos, color_overrides)}"
@@ -449,6 +464,8 @@ async def generate_tryon_image(
             f"{items_text}\n"
             f"IMPORTANT: Every listed item must be clearly visible and correctly worn. "
             f"Preserve the exact color, fabric texture, and design details from each item image.\n"
+            f"SHOES: Pay special attention to footwear. The shoe design, color, and style must EXACTLY match "
+            f"the shoe product image provided. Do NOT substitute with generic shoes.\n"
             f"CRITICAL: If any item image contains a human model, IGNORE that model completely. "
             f"Only use the reference model photo above. Extract ONLY the clothing item from product images.\n"
             f"{_build_color_override_block(item_infos, color_overrides)}"
