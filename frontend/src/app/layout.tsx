@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Lora, Noto_Serif_KR, Geist } from "next/font/google";
+import { Lora, Geist } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "@/lib/utils";
@@ -10,13 +10,6 @@ const lora = Lora({
   weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
   variable: "--font-lora",
-  display: "swap",
-});
-
-const notoSerifKr = Noto_Serif_KR({
-  weight: ["400", "500", "600"],
-  subsets: ["latin"],
-  variable: "--font-noto-serif-kr",
   display: "swap",
 });
 
@@ -40,7 +33,7 @@ export default function RootLayout({
   return (
     <html
       lang="ko"
-      className={cn("h-full", "antialiased", lora.variable, notoSerifKr.variable, pretendard.variable, "font-sans", geist.variable)}
+      className={cn("h-full", "antialiased", lora.variable, pretendard.variable, "font-sans", geist.variable)}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col items-center bg-[#E8E4DF]">
