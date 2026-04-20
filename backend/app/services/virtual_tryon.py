@@ -427,21 +427,22 @@ async def generate_tryon_image(
     )
 
     # nanobanana 구조화 프롬프트: Subject → Wardrobe → Skin/Lighting → Camera → Style
+    # 인종은 항상 Korean East Asian으로 강제. 톤 설명은 undertone(언더톤)으로만 해석.
     if skin_desc:
         skin_block = (
             f"\n[SKIN TONE — CRITICAL]\n"
+            f"Ethnicity: Korean East Asian (NOT African, NOT Caucasian, NOT Latina, NOT Middle Eastern, NOT South Asian).\n"
             f"Personal color type: {user_tone_id}\n"
-            f"Skin: {skin_desc}\n"
-            f"The model's face and body skin tone MUST precisely match this description. "
-            f"This is essential — the image demonstrates outfit-skin harmony.\n"
+            f"Korean East Asian skin with this undertone profile: {skin_desc}\n"
+            f"IMPORTANT: 'tan', 'bronze', 'deep', 'honey' words above describe UNDERTONE only — "
+            f"the model is still a Korean East Asian person with their characteristic complexion. "
+            f"DO NOT change the ethnicity to match those words.\n"
         )
     else:
-        # tone_id 없는 사용자도 한국인 톤 기본 강제 (Gemini 인종 표류 방지)
         skin_block = (
             "\n[SKIN TONE — CRITICAL]\n"
-            "Korean / East Asian skin tone: warm light beige, smooth and refined. "
-            "The model's face and body skin tone MUST be Korean East Asian. "
-            "NOT African, NOT Caucasian, NOT Latina, NOT Middle Eastern.\n"
+            "Ethnicity: Korean East Asian. Skin: warm light beige, smooth and refined.\n"
+            "NOT African, NOT Caucasian, NOT Latina, NOT Middle Eastern, NOT South Asian.\n"
         )
 
     lighting_block = (
