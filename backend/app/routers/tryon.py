@@ -23,11 +23,40 @@ from app.schemas.tryon import (
     TryonUsageResponse,
 )
 from app.services.usage_tracker import check_and_increment, check_tryon_limit, increment_usage
-from app.services.virtual_tryon import extract_colors_from_product, generate_tryon_image
+from app.services.virtual_tryon import (
+    _get_default_model_bytes,
+    extract_colors_from_product,
+    generate_tryon_image,
+)
+from app.config import settings
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/tryon", tags=["tryon"])
+
+
+@router.get("/_debug")
+async def debug_model() -> dict:
+    """진단용: 모델 이미지 로딩 상태 확인."""
+    from pathlib import Path
+    import os
+    base = Path("/app/storage/models")
+    files = {}
+    if base.exists():
+        for f in sorted(base.iterdir()):
+            files[f.name] = f.stat().st_size
+    bytes_data = await _get_default_model_bytes("female", None)
+    sample = None
+    if bytes_data:
+        magic = bytes_data[:8].hex()
+        sample = {"len": len(bytes_data), "magic_hex": magic, "is_png": bytes_data[:8] == b"\x89PNG\r\n\x1a\n"}
+    return {
+        "commit": os.environ.get("RENDER_GIT_COMMIT", "?")[:8],
+        "supabase_url_set": bool(settings.supabase_url),
+        "model_dir_exists": base.exists(),
+        "model_files": files,
+        "_get_default_model_bytes": sample,
+    }
 
 
 @router.post("/generate", response_model=TryonGenerateResponse)
