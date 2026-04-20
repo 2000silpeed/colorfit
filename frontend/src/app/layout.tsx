@@ -36,6 +36,14 @@ export default function RootLayout({
       className={cn("h-full", "antialiased", lora.variable, pretendard.variable, "font-sans", geist.variable)}
       suppressHydrationWarning
     >
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600&display=swap"
+        />
+      </head>
       <body className="min-h-full flex flex-col items-center bg-[#E8E4DF]">
         <div className="w-full max-w-[430px] min-h-full bg-[var(--color-bg)] shadow-[0_0_40px_rgba(0,0,0,0.08)]">
           {children}
