@@ -11,6 +11,7 @@ class StyleSeedRequest(BaseModel):
 
 
 class OnboardingRequest(BaseModel):
+    user_id: str | None = Field(None, description="기존 로그인 유저 ID (있으면 프로필 업데이트)")
     gender: str = Field(..., pattern="^(male|female)$")
     age_group: str | None = Field(None, pattern="^(20s|30s|40plus)$")
     tone_id: str = Field(..., min_length=1, max_length=30)

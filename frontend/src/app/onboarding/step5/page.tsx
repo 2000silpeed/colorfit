@@ -90,8 +90,10 @@ export default function Step5Page() {
       const confidence = Object.keys(seedsRef.current).length;
       localStorage.setItem("colorfit_seed_confidence", String(confidence));
 
+      const existingUserId = localStorage.getItem("colorfit_user_id");
       const gender = localStorage.getItem("colorfit_gender") || "female";
       const toneId = localStorage.getItem("colorfit_tone") || "";
+      const ageGroup = localStorage.getItem("colorfit_age_group") || null;
       const tpoList = JSON.parse(localStorage.getItem("colorfit_tpos") || "[]");
       const styleMoods = JSON.parse(localStorage.getItem("colorfit_moods") || "[]");
       const budget = JSON.parse(localStorage.getItem("colorfit_budget") || "[null,null]");
@@ -101,8 +103,10 @@ export default function Step5Page() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          user_id: existingUserId,
           gender,
           tone_id: toneId,
+          age_group: ageGroup,
           tpo_list: tpoList,
           style_moods: styleMoods,
           budget_min: budget[0],
@@ -164,7 +168,7 @@ export default function Step5Page() {
     <div className="flex-1 flex flex-col pb-[var(--space-lg)]">
       {/* 헤드라인 */}
       <div className="mt-[var(--space-xl)]">
-        <h1 className="font-display text-[24px] font-bold text-text-primary text-center leading-[1.25]">
+        <h1 className="font-display text-[24px] font-semibold text-text-primary text-center leading-[1.25]">
           어떤 코디가 마음에 드세요?
         </h1>
         <p className="mt-[var(--space-xs)] font-body text-[14px] text-text-secondary text-center">
