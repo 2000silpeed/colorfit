@@ -389,10 +389,8 @@ async def generate_tryon_image(
         early_mime = "image/png" if early_model_bytes[:8] == b"\x89PNG\r\n\x1a\n" else "image/jpeg"
         content_parts.append(types.Part.from_text(
             text="★★★ MAIN SUBJECT REFERENCE — KOREAN EAST ASIAN MODEL ★★★\n"
-                 "The following image shows the EXACT person who must appear in the final output. "
-                 "Use this person's face, ethnicity (Korean East Asian), skin tone, hair, body, and proportions. "
-                 "ABSOLUTELY DO NOT change the ethnicity. "
-                 "Do NOT generate African, Caucasian, Latina, Middle Eastern, or any other ethnicity — only Korean East Asian. "
+                 "The following image shows the person who must appear in the final output. "
+                 "Preserve this Korean East Asian person's face, complexion, hair, body, and proportions exactly. "
                  "Do NOT substitute with any model from the product images that follow."
         ))
         content_parts.append(types.Part.from_bytes(data=early_model_bytes, mime_type=early_mime))
@@ -427,22 +425,20 @@ async def generate_tryon_image(
     )
 
     # nanobanana 구조화 프롬프트: Subject → Wardrobe → Skin/Lighting → Camera → Style
-    # 인종은 항상 Korean East Asian으로 강제. 톤 설명은 undertone(언더톤)으로만 해석.
+    # 모델은 항상 Korean East Asian. 톤 설명은 undertone(언더톤)으로만 해석.
     if skin_desc:
         skin_block = (
-            f"\n[SKIN TONE — CRITICAL]\n"
-            f"Ethnicity: Korean East Asian (NOT African, NOT Caucasian, NOT Latina, NOT Middle Eastern, NOT South Asian).\n"
-            f"Personal color type: {user_tone_id}\n"
-            f"Korean East Asian skin with this undertone profile: {skin_desc}\n"
-            f"IMPORTANT: 'tan', 'bronze', 'deep', 'honey' words above describe UNDERTONE only — "
-            f"the model is still a Korean East Asian person with their characteristic complexion. "
-            f"DO NOT change the ethnicity to match those words.\n"
+            f"\n[SKIN TONE]\n"
+            f"The model is a Korean East Asian person — match the reference photo above for ethnicity and complexion.\n"
+            f"Personal color season: {user_tone_id}. Subtle undertone hint: {skin_desc}\n"
+            f"Words like 'tan', 'bronze', 'deep', 'honey' describe undertone nuance only — "
+            f"keep the model's complexion within the natural Korean East Asian range as shown in the reference photo.\n"
         )
     else:
         skin_block = (
-            "\n[SKIN TONE — CRITICAL]\n"
-            "Ethnicity: Korean East Asian. Skin: warm light beige, smooth and refined.\n"
-            "NOT African, NOT Caucasian, NOT Latina, NOT Middle Eastern, NOT South Asian.\n"
+            "\n[SKIN TONE]\n"
+            "The model is a Korean East Asian person with warm light beige skin, "
+            "matching the reference photo above.\n"
         )
 
     lighting_block = (
