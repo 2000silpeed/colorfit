@@ -239,7 +239,6 @@ body {
   background: var(--color-bg-primary);
   color: var(--color-text-primary);
   font-family: var(--font-body);
-  font-synthesis-weight: none;
 }
 
 .dark {
