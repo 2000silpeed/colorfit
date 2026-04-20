@@ -148,14 +148,30 @@ _MODEL_IMAGE_KEYS: dict[str, str] = {
 
 
 def _get_default_model_bytes(gender: str | None, age_group: str | None) -> bytes | None:
-    """로컬 저장된 기본 모델 이미지를 직접 읽는다."""
+    """기본 모델 이미지를 반환한다. 로컬 → Supabase Storage 순서로 시도."""
     key = f"{gender}_{age_group}" if gender and age_group else (gender or "")
     path = _MODEL_IMAGE_KEYS.get(key) or _MODEL_IMAGE_KEYS.get(gender or "")
     if not path:
         return None
+
+    # 1. 로컬 파일 시도
     filepath = Path(__file__).resolve().parents[2] / "storage" / path
     if filepath.exists():
         return filepath.read_bytes()
+
+    # 2. Supabase Storage에서 다운로드 (Render 재배포 시 로컬 파일 유실 대응)
+    if settings.supabase_url:
+        try:
+            url = f"{settings.supabase_url}/storage/v1/object/public/{SUPABASE_STORAGE_BUCKET}/{path}"
+            resp = httpx.get(url, timeout=15.0)
+            if resp.status_code == 200:
+                # 로컬에도 캐시
+                filepath.parent.mkdir(parents=True, exist_ok=True)
+                filepath.write_bytes(resp.content)
+                return resp.content
+        except Exception as exc:
+            logger.warning("model image download failed: %s", exc)
+
     return None
 
 ALLOWED_IMAGE_HOSTS: set[str] = {
