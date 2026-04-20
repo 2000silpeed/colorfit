@@ -382,6 +382,19 @@ async def generate_tryon_image(
     ordered_items = other_items + shoe_items  # 신발을 마지막에 → Gemini가 더 잘 기억
 
     content_parts: list[types.Part] = []
+
+    # 모델 이미지를 맨 앞에 배치 (제품 이미지의 서양인 모델 영향 차단)
+    early_model_bytes = await _get_default_model_bytes(user_gender, user_age_group)
+    if early_model_bytes:
+        early_mime = "image/png" if early_model_bytes[:8] == b"\x89PNG\r\n\x1a\n" else "image/jpeg"
+        content_parts.append(types.Part.from_text(
+            text="★★★ MAIN SUBJECT REFERENCE ★★★\n"
+                 "The following image shows the EXACT person who must appear in the final output. "
+                 "Use this person's face, ethnicity, hair, body, and proportions. "
+                 "Korean / East Asian model. Do NOT substitute with any model from the product images that follow."
+        ))
+        content_parts.append(types.Part.from_bytes(data=early_model_bytes, mime_type=early_mime))
+
     items_json: list[dict] = []
     for idx, info in ordered_items:
         img_bytes = await _fetch_image_bytes(info.image_url)
@@ -463,21 +476,20 @@ async def generate_tryon_image(
         f"Clean, minimal, professional. No text overlays or watermarks."
     )
 
-    # 항상 기본 모델 이미지를 사용 (제품 이미지의 모델이 반영되는 것 방지)
-    model_bytes = await _get_default_model_bytes(user_gender, user_age_group)
+    # 모델 이미지 (이미 맨 앞에 배치됨). 없으면 폴백 시도.
+    model_bytes = early_model_bytes
     if not model_bytes and model_image_url:
         try:
             model_bytes = await _fetch_image_bytes(model_image_url)
+            if model_bytes:
+                fb_mime = "image/png" if model_bytes[:8] == b"\x89PNG\r\n\x1a\n" else "image/jpeg"
+                content_parts.append(types.Part.from_text(text="[REFERENCE MODEL PHOTO — use this person's face and body]"))
+                content_parts.append(types.Part.from_bytes(data=model_bytes, mime_type=fb_mime))
         except Exception as exc:
             logger.warning("user model image fetch failed (%s)", exc)
 
     if model_bytes:
-        model_mime = "image/png" if model_bytes[:8] == b"\x89PNG\r\n\x1a\n" else "image/jpeg"
-        content_parts.append(types.Part.from_text(text="[REFERENCE MODEL PHOTO — use this person's face and body]"))
-        content_parts.append(
-            types.Part.from_bytes(data=model_bytes, mime_type=model_mime)
-        )
-        logger.info("attached reference model image: %d bytes, mime=%s", len(model_bytes), model_mime)
+        logger.info("reference model image attached: %d bytes", len(model_bytes))
         prompt_text = (
             f"[TASK] Generate a photorealistic fashion editorial full-body photo "
             f"using the reference model photo provided above.\n"
